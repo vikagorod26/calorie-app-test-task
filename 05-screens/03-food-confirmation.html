@@ -1,0 +1,1276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#FFFDF9">
+<title>Measured Kitchen · 03 Food Confirmation</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css"><!-- Inter + Newsreader, vendored locally (Stage 7b): no network needed -->
+<style>
+/* =====================================================================
+   SYSTEM — verbatim copy of 04-design-system/components-v1.html
+   (tokens, type roles, components). Do not edit here: change the system
+   first (tokens-v1.md + components-v1.html), then rebuild.
+   ===================================================================== */
+/* =====================================================================
+   TOKENS v1 — mirror of tokens-v1.md. Names must match that document.
+   ===================================================================== */
+:root{
+  /* --- Primitives --- */
+  --color-oat:#F2EDE6;
+  --color-oat-deep:#E7DFD4;
+  --color-paper:#FFFDF9;
+  --color-ink:#1F2421;
+  --color-ink-soft:#5E605A;
+  --color-rule:#E3DCD2;
+  --color-stone:#857F76;
+  --color-pine:#2F5245;
+  --color-pine-light:#DCE6DF;
+  --color-terracotta:#B0513A;
+  --color-ochre:#A87A1F;
+  --color-slate:#4D6A85;
+  --color-error:#B3261E; /* added Stage 6 — §10: a true validation error, not J1's over-target */
+
+  /* --- Semantic: surfaces --- */
+  --surface-ground:var(--color-oat);
+  --surface-paper:var(--color-paper);
+  --surface-sunken:var(--color-oat-deep);
+  --surface-viewfinder:var(--color-ink); /* stands in for the live camera feed (Screens, IA 2) */
+  /* --- Semantic: text --- */
+  --text-primary:var(--color-ink);
+  --text-secondary:var(--color-ink-soft);
+  --text-action:var(--color-pine);
+  --text-on-action:var(--color-paper);
+  /* --- Semantic: figures --- */
+  --figure-value:var(--color-ink);
+  --figure-unit:var(--color-ink-soft);
+  /* --- Semantic: lines --- */
+  --line-hairline:var(--color-rule);
+  --line-control:var(--color-stone);
+  --line-selected:var(--color-pine);
+  --line-guide:var(--color-paper);
+  /* --- Semantic: action --- */
+  --action-primary:var(--color-pine);
+  --action-selected:var(--color-pine-light);
+  --focus-ring:var(--color-pine);
+  /* --- Semantic: interaction states (added Stage 6, §10) --- */
+  --state-error:var(--color-error);
+  --state-hover-opacity:0.08;
+  --state-pressed-opacity:0.12;
+  /* --- Semantic: data --- */
+  --macro-protein:var(--color-terracotta);
+  --macro-carbs:var(--color-ochre);
+  --macro-fat:var(--color-slate);
+  --meter-track:var(--color-oat);
+  --meter-fill:var(--color-ink);
+
+  /* --- Type families --- */
+  --font-voice:"Newsreader","Iowan Old Style",Georgia,"Times New Roman",serif;
+  --font-ui:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+
+  /* --- Spacing scale --- */
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px;
+  --space-6:24px; --space-8:32px; --space-10:40px; --space-12:48px; --space-16:64px;
+  /* --- Semantic spacing --- */
+  --inset-screen:var(--space-5);
+  --inset-block:var(--space-4);
+  --row-pad-y:var(--space-3);
+  --gap-inline:var(--space-2);
+  --gap-stack:var(--space-3);
+  --gap-section-log:var(--space-6);
+  --gap-section-recipe:var(--space-10);
+
+  /* --- Sizing --- */
+  --size-hit-min:48px;
+  --size-control:48px;
+  --size-button:52px;
+  --size-chip:40px;
+  --size-icon:20px;
+  --size-mark:10px;
+  --size-meter:8px;
+  --size-icon-sm:16px;
+  --size-stepper-value:64px;
+  --size-separator:2px;
+  --size-hatch-period:6px;
+  --meter-target:87%;
+  --size-viewfinder-min:320px;
+  --size-guide-corner:var(--space-6);
+  --ratio-guide-barcode:2 / 1;
+  --ratio-guide-photo:1 / 1;
+  --size-thumb:120px;
+  --ratio-recipe-image:4 / 3;
+  /* size-placeholder-stripe retired at the Stage 7 imagery pass: M1 carries real images, so the
+     striped placeholder fill it sized no longer exists. Nothing else ever referenced it. */
+  /* one conservative clearance for any sticky S2/S3 bar (added Stage 6, §10.6 — WCAG 2.2 SC 2.4.11):
+     sized to the tallest bar (two stacked S3 buttons), so a shorter bar just gets extra headroom */
+  --scroll-clear-bottom:calc(var(--size-button) * 2 + var(--space-8) + var(--inset-safe-bottom));
+
+  /* --- Stroke --- */
+  --stroke-hairline:1px;
+  --stroke-emphasis:1.5px;
+  --stroke-focus:2px;
+  --stroke-hatch:2px;
+  --stroke-icon:1.75;
+  --stroke-guide:3px;
+
+  /* --- Type roles (font shorthand + tracking) --- */
+  --type-voice-display:400 32px/36px var(--font-voice);   --track-voice-display:-.015em;
+  --type-voice-title:400 26px/32px var(--font-voice);     --track-voice-title:-.01em;
+  --type-voice-heading:400 22px/28px var(--font-voice);
+  --type-voice-card:400 20px/26px var(--font-voice);
+  --type-ui-body:400 16px/24px var(--font-ui);
+  --type-ui-body-strong:500 16px/24px var(--font-ui);
+  --type-ui-label:600 16px/20px var(--font-ui);
+  --type-ui-chip:500 14px/20px var(--font-ui);
+  --type-ui-chip-selected:600 14px/20px var(--font-ui);
+  --type-ui-secondary:400 14px/20px var(--font-ui);
+  --type-ui-secondary-strong:500 14px/20px var(--font-ui);
+  --type-ui-overline:500 12px/16px var(--font-ui);       --track-ui-overline:.08em;
+  --type-figure-hero:600 48px/52px var(--font-ui);        --track-figure-hero:-.02em;
+  --type-figure-lg:600 24px/28px var(--font-ui);          --track-figure-lg:-.01em;
+  --type-figure-md:500 16px/24px var(--font-ui);
+  --type-figure-md-key:600 16px/24px var(--font-ui);
+  --type-figure-sm:500 14px/20px var(--font-ui);
+  --type-figure-sm-key:600 14px/20px var(--font-ui);
+  --type-unit-hero:500 17px/24px var(--font-ui);
+  --type-unit-lg:400 15px/28px var(--font-ui);
+  --type-unit-md:400 14px/24px var(--font-ui);
+  --type-unit-sm:400 13px/20px var(--font-ui);
+  --type-unit-hero-strong:600 17px/24px var(--font-ui);
+  --type-unit-sm-strong:600 13px/20px var(--font-ui);
+  --figure-numerals:tabular-nums lining-nums;
+
+  /* --- Radius --- */
+  --radius-xs:3px; --radius-sm:8px; --radius-md:14px; --radius-lg:20px; --radius-full:999px;
+
+  /* --- Platform insets (added at Screens): provided by the OS, not the design scale --- */
+  --inset-safe-top:env(safe-area-inset-top,0px);
+  --inset-safe-bottom:env(safe-area-inset-bottom,0px);
+}
+
+/* =====================================================================
+   TYPE ROLES: classes only apply --type-* tokens. The `font` shorthand
+   resets font-variant-numeric, so figure numerals are declared after it.
+   ===================================================================== */
+.voice-display{font:var(--type-voice-display);letter-spacing:var(--track-voice-display);font-optical-sizing:auto}
+.voice-title{font:var(--type-voice-title);letter-spacing:var(--track-voice-title);font-optical-sizing:auto}
+.voice-heading{font:var(--type-voice-heading);font-optical-sizing:auto}
+.voice-card{font:var(--type-voice-card);font-optical-sizing:auto}
+.ui-body{font:var(--type-ui-body)}
+.ui-body-strong{font:var(--type-ui-body-strong)}
+.ui-label{font:var(--type-ui-label)}
+.ui-chip{font:var(--type-ui-chip)}
+.ui-secondary{font:var(--type-ui-secondary)}
+.ui-secondary-strong{font:var(--type-ui-secondary-strong)}
+.ui-overline{font:var(--type-ui-overline);letter-spacing:var(--track-ui-overline);text-transform:uppercase}
+
+.fig{color:var(--figure-value);white-space:nowrap}
+.fig-hero{display:inline-flex;flex-wrap:wrap;align-items:baseline;column-gap:var(--space-1);font:var(--type-figure-hero);letter-spacing:var(--track-figure-hero)}
+.fig-lg{font:var(--type-figure-lg);letter-spacing:var(--track-figure-lg)}
+.fig-md{font:var(--type-figure-md)}
+.fig-md.key{font:var(--type-figure-md-key)}
+.fig-sm{font:var(--type-figure-sm)}
+.fig-sm.key{font:var(--type-figure-sm-key)}
+.fig-hero,.fig-lg,.fig-md,.fig-sm,.fig-md.key,.fig-sm.key{font-variant-numeric:var(--figure-numerals)}
+.fig .unit{color:var(--figure-unit);letter-spacing:0}
+.fig-hero .unit{font:var(--type-unit-hero)}
+.fig-lg .unit{font:var(--type-unit-lg)}
+.fig-md .unit{font:var(--type-unit-md)}
+.fig-sm .unit{font:var(--type-unit-sm)}
+/* status word inside a unit (J1 revised at Screens): "over" reads at a glance, still no hue */
+.fig .unit-strong{color:var(--figure-value)}
+.fig-hero .unit-strong{font:var(--type-unit-hero-strong)}
+.fig-sm .unit-strong{font:var(--type-unit-sm-strong)}
+
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.ico{width:var(--size-icon);height:var(--size-icon);fill:none;stroke:currentColor;stroke-width:var(--stroke-icon);stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ico.sm{width:var(--size-icon-sm);height:var(--size-icon-sm)}
+
+/* =====================================================================
+   COMPONENTS: semantic tokens only. No raw px, font size or weight.
+   ===================================================================== */
+
+/* B · Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;text-align:center;gap:var(--gap-inline);min-height:var(--size-button);padding-block:0;padding-inline:var(--space-6);border:0;border-radius:var(--radius-md);font:var(--type-ui-label);cursor:pointer;text-decoration:none;touch-action:manipulation}
+.btn-primary{background:var(--action-primary);color:var(--text-on-action)}
+.btn-secondary{background:var(--surface-paper);color:var(--text-action);box-shadow:inset 0 0 0 var(--stroke-emphasis) var(--action-primary)}
+.btn-text{background:transparent;color:var(--text-action);min-height:var(--size-hit-min);padding-inline:var(--space-3)}
+.btn-block{display:flex;width:100%}
+/* B3 addition (Screens, IA 3): a text button at the start of a column, pulled into the gutter so its icon or first letter lines up with the content edge (Back, Cancel) */
+.btn-flush{justify-self:start;margin-inline-start:calc(var(--space-3) * -1)}
+/* focus ring: outline rendering, not just the token. Pine already clears 3:1 on every surface it
+   sits on (§1.4), and a 2px outline at a 2px offset meets WCAG 2.2 SC 2.4.13's minimum area even
+   though this system only targets AA (2.4.7). See §10.6 for the one gap that check found: a
+   sticky S2/S3 bar can cover a focused control lower on the screen (SC 2.4.11), fixed below. */
+.btn:focus-visible,.chip:focus-visible,.seg button:focus-visible,.stepper button:focus-visible,.tab:focus-visible{outline:var(--stroke-focus) solid var(--focus-ring);outline-offset:var(--stroke-focus)}
+
+/* --- States (added Stage 6, §10) ---
+   Hover/pressed follow Material 3's state-layer convention: a low-opacity overlay in the
+   control's own foreground color, over its resting fill (checked against Material 3 directly,
+   per the Stage 4 carry-forward rule; the exact opacities are an aesthetic pick within that
+   convention). Hover is gated to pointer devices so touch never gets a stuck hover; pressed
+   applies everywhere, since :active fires on touch too. */
+@media (hover:hover){
+  .btn-primary:hover{background:color-mix(in srgb, var(--action-primary), var(--text-on-action) calc(var(--state-hover-opacity) * 100%))}
+  .btn-secondary:hover,.btn-text:hover{background:color-mix(in srgb, var(--surface-paper), var(--text-action) calc(var(--state-hover-opacity) * 100%))}
+}
+.btn-primary:active{background:color-mix(in srgb, var(--action-primary), var(--text-on-action) calc(var(--state-pressed-opacity) * 100%))}
+.btn-secondary:active,.btn-text:active{background:color-mix(in srgb, var(--surface-paper), var(--text-action) calc(var(--state-pressed-opacity) * 100%))}
+/* Disabled: the neutral pair §1.4 already measured (Ink Soft on Oat Deep, 4.82:1), not a fourth
+   opacity token. WCAG 2.2's non-text-contrast note explicitly exempts inactive controls from any
+   contrast minimum (1.4.11) — this still clears AA anyway, which is why it was picked over a
+   washed-out opacity fade (measured at 2.05:1, legible but needlessly so for a non-interactive state). */
+.btn:disabled,.btn[aria-disabled="true"]{background:var(--surface-sunken);color:var(--text-secondary);box-shadow:none;cursor:not-allowed}
+.btn-secondary:disabled,.btn-secondary[aria-disabled="true"]{background:var(--surface-paper);box-shadow:inset 0 0 0 var(--stroke-hairline) var(--line-hairline)}
+/* Loading: the label is hidden, not removed, so the button keeps its width and never reflows;
+   a spinner takes its place. aria-disabled stops a second tap, and the sr-only text is the only
+   thing that changes for a screen reader, announced once via the button's own accessible name. */
+.btn.is-loading{position:relative;pointer-events:none}
+.btn.is-loading .btn-label{visibility:hidden}
+/* .btn-label carries the button’s own row layout, so a label made of more than one element
+   ("Log this · 1.5 servings", IA 5) can be wrapped into the single element .is-loading hides,
+   without changing anything at rest — same gap, same centring as .btn itself.
+   Added at Propagation (Stage 6 → 05-screens), the first time a real screen used the loading hook. */
+.btn-label{display:inline-flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--gap-inline)}
+.btn .spinner{display:none}
+.btn.is-loading .spinner{display:block;position:absolute;inset:0;margin:auto}
+.spinner{width:var(--size-icon);height:var(--size-icon);border-radius:50%;border:calc(var(--stroke-icon) * 1px) solid currentColor;border-top-color:transparent;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(1turn)}}
+@media (prefers-reduced-motion:reduce){.spinner{animation-duration:1.6s}}
+
+/* C1 · Paper block */
+.block{background:var(--surface-paper);border-radius:var(--radius-lg);padding:var(--inset-block)}
+.block.list{padding-block:var(--space-1)}
+.overline{margin:0;color:var(--text-secondary)}
+
+/* C2 · Ledger row */
+.ledger{list-style:none;margin:0;padding:0}
+.ledger > li + li{border-top:var(--stroke-hairline) solid var(--line-hairline)}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:var(--space-4);padding-block:var(--row-pad-y);min-height:var(--size-hit-min)}
+.row-name{font:var(--type-ui-body-strong);color:var(--text-primary)}
+.row-meta{display:flex;flex-wrap:wrap;align-items:center;column-gap:var(--space-3);font:var(--type-ui-secondary);color:var(--text-secondary)}
+.row > .fig{grid-column:2;grid-row:1 / span 2;align-self:center;text-align:right}
+/* meta line (typeset pass): source first and most legible; amount is a figure; time last. "amount · time" wraps as one unit, the source never moves */
+.row-source{display:inline-flex;align-items:center;gap:var(--gap-inline);min-width:0;font:var(--type-ui-secondary-strong);color:var(--text-primary)}
+.row-when{white-space:nowrap}
+/* tappable row (Screens, Flow 4): a link with a trailing chevron */
+.row-link{grid-template-columns:minmax(0,1fr) auto auto;column-gap:var(--space-3);color:inherit;text-decoration:none;touch-action:manipulation}
+.row-link > .ico{grid-column:3;grid-row:1 / span 2;align-self:center;color:var(--text-secondary)}
+.row-link:focus-visible{outline:var(--stroke-focus) solid var(--focus-ring);outline-offset:calc(var(--stroke-focus) * -1);border-radius:var(--radius-sm)}
+/* Focus not obscured (added Stage 6, §10.6, WCAG 2.2 SC 2.4.11): S2/S3 are sticky, so the last
+   rows of a scrollable list can land underneath one when a focused row scrolls into view.
+   scroll-margin-block reserves that space, the same way inset-safe-bottom reserves the OS's */
+.row-link,.rcard-link{scroll-margin-block:var(--scroll-clear-bottom)}
+
+/* C3 · Recipe card */
+.rcard{background:var(--surface-paper);border-radius:var(--radius-lg);overflow:hidden}
+/* the image slot is M1 (.rimg), a real image since the Stage 7 imagery pass */
+.rcard-img{aspect-ratio:var(--ratio-recipe-image)}
+/* Screens, IA 4: the results list, and the whole card as one link to Recipe Detail (no chevron: a card already reads as an object, not a data row) */
+.rcards{list-style:none;margin:0;padding:0;display:grid;gap:var(--space-4)}
+.rcard-link{display:block;color:inherit;text-decoration:none;touch-action:manipulation}
+.rcard-link:focus-visible{outline:var(--stroke-focus) solid var(--focus-ring);outline-offset:var(--stroke-focus)}
+/* C3 compact (Screens, IA 4 critique): a results card is a row, thumbnail beside the body, reusing M1's
+   .thumb. A full-bleed 4:3 image cost 262 px of a 398 px card, so no two results were ever comparable
+   on one screen — and a results list exists to be compared. The hero crop stays for Recipe Detail. */
+.rcard.compact{display:flex;flex-wrap:wrap;align-items:flex-start;gap:var(--inset-block);padding:var(--inset-block)}
+/* the body wraps below the thumbnail rather than being squeezed, as in the S1 head with media.
+   Its basis is 1.2 x size-thumb, not 1.5: a card body carries three short lines, not a title and
+   a context line, so it keeps the row down to a 360 px phone instead of only a 390 px one. */
+.rcard.compact > .rcard-body{padding:0;flex:1 1 calc(var(--size-thumb) * 1.2);min-width:0}
+.rcard-body{padding:var(--inset-block);display:grid;gap:var(--gap-stack)}
+.rcard-title{margin:0;color:var(--text-primary)}
+.matches{list-style:none;margin:0;padding:var(--space-3) 0 0;border-top:var(--stroke-hairline) solid var(--line-hairline);display:flex;flex-wrap:wrap;gap:var(--space-1) var(--space-4);font:var(--type-ui-secondary);color:var(--text-primary)}
+.matches li{display:inline-flex;align-items:center;gap:var(--gap-inline)}
+.matches .ico{color:var(--text-secondary)}
+
+/* M1 · Recipe image (Screens, IA 3; filled at the Krea imagery pass, Stage 7): the recipe picture.
+   It carries no text, badge or figure of any kind — every figure sits below it on paper (hybrid §7, L1/L2).
+   Supersedes the striped "IMAGE · UNVALIDATED (§7)" placeholder this component shipped as through Stage 6b. */
+.rimg{position:relative;display:block;overflow:hidden;background:var(--surface-sunken)}
+/* the crop is the component's, not the file's: one 4:3 source per dish, cover-fitted at every size,
+   so a thumbnail is the same picture as the card it was chosen from (A9) */
+.rimg > img{display:block;width:100%;height:100%;object-fit:cover}
+.rimg.thumb{flex:none;width:var(--size-thumb);aspect-ratio:var(--ratio-recipe-image);border-radius:var(--radius-sm)}
+/* hero (Screens, IA 5): the detail screen's one picture, full width and on the same crop as the card
+   it was chosen from, so the thumbnail, the card and the hero are three sizes of one image, not three crops */
+.rimg.hero{width:100%;aspect-ratio:var(--ratio-recipe-image)}
+
+/* N1 · Nutrition strip */
+.strip{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-1) var(--space-4)}
+.strip.compact{column-gap:var(--space-3)}
+.mac{display:inline-flex;align-items:center;gap:var(--space-1);white-space:nowrap}
+.mark{width:var(--size-mark);height:var(--size-mark);border-radius:var(--radius-xs);background:var(--mc);flex:none}
+.mac-label{font:var(--type-ui-body);color:var(--text-secondary)}
+.compact .mac-label{font:var(--type-ui-secondary)}
+.p{--mc:var(--macro-protein)} .c{--mc:var(--macro-carbs)} .f{--mc:var(--macro-fat)}
+
+/* N2 · Macro breakdown */
+.split{display:flex;gap:var(--size-separator);height:var(--size-meter);border-radius:var(--radius-full);overflow:hidden;margin-block:var(--space-4) var(--space-1)}
+.split span{flex:var(--fl);background:var(--mc)}
+.mb-rows{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr) auto auto;column-gap:var(--space-4)}
+.mb-rows li{grid-column:1 / -1;display:grid;grid-template-columns:subgrid;align-items:center;padding-block:var(--row-pad-y)}
+.mb-rows li + li{border-top:var(--stroke-hairline) solid var(--line-hairline)}
+.mb-rows .mac-label{color:var(--text-primary)}
+.mb-rows .fig{text-align:right}
+/* N2 addition (Screens, IA 5 critique): when the label names the AMOUNT the figures describe rather than
+   the section they sit in, it takes the stronger of the two label treatments. text-secondary is barred from
+   anything the user must read to act (tokens §1.2), and on a screen whose control is below the fold this
+   label is the only thing that says whether 412 kcal is a serving or the pot. A section name ("Your portion")
+   stays an overline; an amount ("For 1.5 servings") does not. */
+.mb-amount{margin:0;font:var(--type-ui-secondary-strong);color:var(--text-primary)}
+/* N2 addition (Screens, IA 3 critique): one column label names the share, so “53%” is never read as a share of a target */
+.mb-rows .mb-head{padding-block:0 var(--space-1);font:var(--type-ui-secondary);color:var(--text-secondary)}
+.mb-head > :last-child{text-align:right}
+
+/* N3 · Daily target summary */
+.sum-hero{margin-block:0 var(--space-3)}
+.meter{position:relative;display:flex;gap:var(--size-separator);height:var(--size-meter);background:var(--meter-track);border-radius:var(--radius-full)}
+.meter .fill{flex:0 0 var(--w);border-radius:var(--radius-full);background:var(--mc,var(--meter-fill))}
+.meter .over{flex:0 1 var(--wo);min-width:0;border-radius:var(--radius-full);background:repeating-linear-gradient(135deg,var(--mc,var(--meter-fill)) 0 var(--stroke-hatch),transparent var(--stroke-hatch) var(--size-hatch-period))}
+/* shared scale (critique run 2): every track puts the target at meter-target, marked by a tick that fills the separator gap */
+.meter::before{content:"";position:absolute;inset-block:calc(var(--space-1) * -1);left:var(--meter-target);width:var(--size-separator);background:var(--meter-fill)}
+.sum-caption{display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--space-1) var(--space-4);margin-top:var(--space-2)}
+.mmeters{display:grid;gap:var(--space-4);margin-top:var(--space-5);padding-top:var(--space-4);border-top:var(--stroke-hairline) solid var(--line-hairline)}
+.mm-top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:var(--space-1) var(--space-3);margin-bottom:var(--space-2)}
+.mm-label{display:inline-flex;flex-wrap:wrap;align-items:center;column-gap:var(--gap-inline);min-width:0}
+.mm-top .mac-label{font:var(--type-ui-secondary);color:var(--text-primary)}
+
+/* N4 · Source note, plus the J2 helper line that goes with a photo estimate */
+.source{display:inline-flex;align-items:center;gap:var(--gap-inline);font:var(--type-ui-secondary-strong);color:var(--text-primary)}
+.helper{margin:0;padding-top:var(--space-3);border-top:var(--stroke-hairline) solid var(--line-hairline);font:var(--type-ui-secondary);color:var(--text-secondary)}
+
+/* F1/F2 · Filter chips */
+.chips{display:flex;flex-wrap:wrap;gap:var(--gap-inline)}
+.chip{position:relative;display:inline-flex;align-items:center;gap:var(--gap-inline);min-height:var(--size-chip);padding-block:0;padding-inline:var(--space-4);border:0;border-radius:var(--radius-full);background:var(--surface-paper);box-shadow:inset 0 0 0 var(--stroke-hairline) var(--line-control);color:var(--text-primary);font:var(--type-ui-chip);cursor:pointer;white-space:nowrap;touch-action:manipulation}
+/* invisible hit-area extension: (size-chip - size-hit-min) / 2 above and below */
+.chip::after,.seg button::after{content:"";position:absolute;inset:calc((var(--size-chip) - var(--size-hit-min)) / 2) 0}
+.chip[aria-pressed="true"]{background:var(--action-selected);box-shadow:inset 0 0 0 var(--stroke-emphasis) var(--line-selected);padding-left:var(--space-3)}
+.chip .ico{color:var(--text-action)}
+/* States (added Stage 6, §10): same state-layer convention as buttons, tinted with the
+   label's own color (Ink) rather than Pine, since an unselected chip has no Pine to tint with */
+@media (hover:hover){
+  .chip:hover{background:color-mix(in srgb, var(--surface-paper), var(--text-primary) calc(var(--state-hover-opacity) * 100%))}
+  .chip[aria-pressed="true"]:hover{background:color-mix(in srgb, var(--action-selected), var(--text-primary) calc(var(--state-hover-opacity) * 100%))}
+}
+.chip:active{background:color-mix(in srgb, var(--surface-paper), var(--text-primary) calc(var(--state-pressed-opacity) * 100%))}
+.chip[aria-pressed="true"]:active{background:color-mix(in srgb, var(--action-selected), var(--text-primary) calc(var(--state-pressed-opacity) * 100%))}
+/* Disabled: provisioned for the system, not yet asked for by an IA screen (like B2/B3 once were) */
+.chip:disabled,.chip[aria-disabled="true"]{background:var(--surface-sunken);color:var(--text-secondary);box-shadow:none;cursor:not-allowed}
+.chip:disabled .ico,.chip[aria-disabled="true"] .ico{color:var(--text-secondary)}
+/* Error and loading: not applicable. A chip is a value toggle, never a submission — there's
+   nothing to validate and nothing to wait on (left undocumented rather than invented, §10.7) */
+
+/* F3 · Mode switch */
+.seg{display:flex;gap:var(--space-1);padding:var(--space-1);background:var(--surface-sunken);border-radius:var(--radius-full)}
+.seg button{position:relative;flex:1 1 0;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:var(--gap-inline);min-height:var(--size-chip);padding-block:0;padding-inline:var(--space-3);border:0;border-radius:var(--radius-full);background:transparent;color:var(--text-primary);font:var(--type-ui-chip);cursor:pointer;white-space:nowrap;touch-action:manipulation}
+/* A8 (resolved at Add Food): labels only; icons appear only when the screen is too narrow for the words (S1 container rule) */
+.seg .ico{display:none}
+/* A7 (resolved at Add Food): the switch is a tablist; each mode swaps the panel below it */
+.seg [role="tab"][aria-selected="true"]{background:var(--action-selected);box-shadow:inset 0 0 0 var(--stroke-emphasis) var(--line-selected);font:var(--type-ui-chip-selected)}
+/* States (added Stage 6, §10): same convention as F1/F2, tinted transparent→Ink so the sunken
+   track shows through an unselected segment, or Ink over the selected fill */
+@media (hover:hover){
+  .seg button:hover{background:color-mix(in srgb, transparent, var(--text-primary) calc(var(--state-hover-opacity) * 100%))}
+  .seg [role="tab"][aria-selected="true"]:hover{background:color-mix(in srgb, var(--action-selected), var(--text-primary) calc(var(--state-hover-opacity) * 100%))}
+}
+.seg button:active{background:color-mix(in srgb, transparent, var(--text-primary) calc(var(--state-pressed-opacity) * 100%))}
+.seg [role="tab"][aria-selected="true"]:active{background:color-mix(in srgb, var(--action-selected), var(--text-primary) calc(var(--state-pressed-opacity) * 100%))}
+/* Disabled: a mode with no camera permission (IA 2 Barcode/Photo) is the evidenced case — the
+   permission *request* flow itself is still v2 (Add Food carry notes), but the affordance exists now */
+.seg button:disabled,.seg [aria-disabled="true"]{color:var(--text-secondary);cursor:not-allowed}
+.seg button:disabled:hover,.seg button:disabled:active,.seg [aria-disabled="true"]:hover,.seg [aria-disabled="true"]:active{background:none}
+
+/* F · Filter group (Screens, IA 4): the mode switch and the panel of controls it owns.
+   A group is a label plus one set of chips or fields, so both halves of "suitable for me" are built the same way. */
+.filters{display:grid;gap:var(--gap-stack)}
+.filter-panel{display:grid;gap:var(--gap-stack)}
+.fgroup{display:grid;gap:var(--space-2)}
+/* where a pre-filled figure is derived rather than saved, the group says where it came from */
+.fgroup-note{margin:0;font:var(--type-ui-secondary);color:var(--text-secondary);text-wrap:pretty}
+
+/* I · Inputs */
+.field-label{display:block;font:var(--type-ui-secondary-strong);color:var(--text-primary);margin-bottom:var(--space-2)}
+.field{position:relative;display:flex;align-items:stretch;gap:var(--gap-inline);min-height:var(--size-control);padding-inline:var(--space-4);background:var(--surface-paper);border-radius:var(--radius-md);box-shadow:inset 0 0 0 var(--stroke-hairline) var(--line-control);color:var(--text-secondary)}
+.field > .ico,.field > .unit,.field > .spinner{align-self:center}
+.field:focus-within{box-shadow:inset 0 0 0 var(--stroke-focus) var(--focus-ring)}
+/* Hover (added Stage 6, §10): the edge only, since a filled hover would fight focus-within
+   for the same signal. Pressed doesn't apply to a field — there's no press, only focus */
+@media (hover:hover){
+  .field:hover{box-shadow:inset 0 0 0 var(--stroke-hairline) color-mix(in srgb, var(--line-control), var(--text-primary) calc(var(--state-hover-opacity) * 100%))}
+}
+/* Disabled: the same neutral pair as buttons and chips (surface-sunken + text-secondary) */
+.field:has(:disabled),.field.disabled{background:var(--surface-sunken);box-shadow:inset 0 0 0 var(--stroke-hairline) var(--line-hairline);color:var(--text-secondary)}
+.field:has(:disabled) input,.field.disabled input{color:var(--text-secondary)}
+/* Error: the container and its icon carry state-error; a typed figure never does (L1 — figures
+   are never tinted — extends to an out-of-range one, exactly as J2 kept a photo estimate exact
+   in form). Text identifies the problem too, not color alone (WCAG 2.2 SC 3.3.1) */
+.field.error,.field:has([aria-invalid="true"]){box-shadow:inset 0 0 0 var(--stroke-emphasis) var(--state-error)}
+.field-error{display:flex;align-items:center;gap:var(--gap-inline);margin-top:var(--space-2);font:var(--type-ui-secondary);color:var(--state-error)}
+.field-error .ico{color:var(--state-error)}
+/* Loading: I1 only (search-as-you-type). The spinner takes the icon's place; the icon returns
+   once results (or E1's no-match message) land. aria-busy so a screen reader doesn't read a stale list */
+.field .spinner{display:none;color:var(--text-secondary)}
+.field.is-loading > .ico{display:none}
+.field.is-loading .spinner{display:block}
+.field input,.field select{flex:1;min-width:0;width:100%;margin:0;border:0;background:transparent;padding:0;font:var(--type-ui-body);color:var(--text-primary);outline:none;appearance:none;-webkit-appearance:none}
+.field input::placeholder{color:var(--text-secondary);opacity:1}
+.field.num input{font:var(--type-figure-md);font-variant-numeric:var(--figure-numerals);color:var(--figure-value)}
+.field .unit{font:var(--type-unit-md);color:var(--figure-unit)}
+/* select variant: the select fills the whole field, so the whole field is the target; chevron drawn over it */
+.field.select{padding-inline:0}
+.field.select select{padding-inline:var(--space-4) calc(var(--space-4) + var(--size-icon) + var(--gap-inline));cursor:pointer}
+.field.select > .ico{position:absolute;right:var(--space-4);top:50%;translate:0 -50%;pointer-events:none}
+.field-pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-3)}
+/* portion: the unit field wraps below the stepper instead of shrinking under 2 x hit target */
+.portion{display:flex;flex-wrap:wrap;gap:var(--gap-inline)}
+.portion .stepper{flex:none}
+.portion .field{flex:1 1 calc(var(--size-hit-min) * 2);min-height:var(--size-button)}
+.stepper{display:flex;align-items:stretch;min-height:var(--size-button);background:var(--surface-paper);border-radius:var(--radius-md);box-shadow:inset 0 0 0 var(--stroke-hairline) var(--line-control)}
+.stepper button{width:var(--size-hit-min);padding:0;display:grid;place-items:center;border:0;background:transparent;color:var(--text-action);font:var(--type-ui-label);cursor:pointer;border-radius:var(--radius-md);touch-action:manipulation}
+/* States (added Stage 6, §10): ± buttons are ghost buttons on Paper, so they tint with their
+   own glyph color (Pine) rather than Ink */
+@media (hover:hover){
+  .stepper button:hover:not(:disabled){background:color-mix(in srgb, transparent, var(--text-action) calc(var(--state-hover-opacity) * 100%))}
+}
+.stepper button:active:not(:disabled){background:color-mix(in srgb, transparent, var(--text-action) calc(var(--state-pressed-opacity) * 100%))}
+/* Disabled at a floor or ceiling: the affordance a screen already enforces (a count capped at
+   99, a weight/volume at 5,000, Stage 5b) now shows on the button, not just in aria-valuemax.
+   Where a screen also enforces a floor (Recipe Detail's 0.5), pair this with aria-valuemin —
+   left unset everywhere else, same "only where real" rule the audit set for the ceiling */
+.stepper button:disabled{color:var(--text-secondary);cursor:not-allowed}
+.stepper button:disabled:hover,.stepper button:disabled:active{background:none}
+.stepper input{width:var(--size-stepper-value);margin:0;border:0;border-inline:var(--stroke-hairline) solid var(--line-hairline);background:transparent;text-align:center;padding:0;font:var(--type-figure-lg);letter-spacing:var(--track-figure-lg);font-variant-numeric:var(--figure-numerals);color:var(--figure-value)}
+.stepper input:focus-visible{outline:var(--stroke-focus) solid var(--focus-ring);outline-offset:calc(var(--stroke-focus) * -1)}
+/* Error (added Stage 6, §10): the wrapper carries state-error, never the input — an out-of-range
+   amount stays exact-form Ink (L1), exactly as J2 kept a photo estimate exact in form */
+.stepper.error{box-shadow:inset 0 0 0 var(--stroke-emphasis) var(--state-error)}
+/* Loading: not applicable. Every stepper edit in this system is local state, resolved
+   instantly — there is no request in flight to wait on (left undocumented, §10.7) */
+.stepper-static{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-3)}
+/* I3 addition (Screens, IA 3): the portion group; a J2 helper line sits directly above the label and control */
+.portion-wrap{display:grid;gap:var(--gap-stack)}
+
+/* C1 addition (Screens, IA 1) · label above a list block, aligned with the row text inside it */
+.list-label{margin:0 0 var(--space-2);padding-inline:var(--inset-block)}
+/* C1 addition (Screens, IA 4): the label row, when one control acts on the whole list ("Reset to my usual").
+   The control sits with the thing it changes, in one place and one treatment, in every state. */
+.list-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-1) var(--space-3);margin-bottom:var(--space-2);padding-inline:var(--inset-block)}
+.list-head > .list-label{margin:0;padding-inline:0}
+.list-head > .btn-text{margin-inline-end:calc(var(--space-3) * -1)}
+
+/* S1 · Screen scaffold (Screens, IA 1): header + body + bottom bar, with platform safe-area insets */
+.screen{container:screen / inline-size;display:flex;flex-direction:column;min-height:100%;background:var(--surface-ground);color:var(--text-primary)}
+.screen-head{display:grid;gap:var(--space-1);padding-block:calc(var(--inset-safe-top) + var(--space-4)) 0;padding-inline:var(--inset-screen)}
+.screen-title{margin:0;color:var(--text-primary)}
+.screen-sub{margin:0;font:var(--type-ui-secondary);color:var(--text-secondary)}
+.screen-body{flex:1;display:grid;grid-template-columns:minmax(0,1fr);align-content:start;gap:var(--gap-section-log);padding-block:var(--gap-section-log);padding-inline:var(--inset-screen)}
+.screen-body.recipe{gap:var(--gap-section-recipe);padding-block:var(--gap-section-recipe)}
+
+/* S2 · Bottom bar (Screens, IA 1): Today tab · Add food (B1) · Recipes tab */
+.bar{position:sticky;bottom:0;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:var(--gap-inline);padding-block:var(--space-2) calc(var(--space-2) + var(--inset-safe-bottom));padding-inline:var(--inset-screen);background:var(--surface-paper);border-top:var(--stroke-hairline) solid var(--line-hairline)}
+.tab{display:grid;justify-items:center;align-content:center;gap:var(--space-1);min-width:var(--size-hit-min);min-height:var(--size-button);color:var(--text-primary);font:var(--type-ui-chip);text-decoration:none;touch-action:manipulation}
+.tab-ind{display:grid;place-items:center;padding-block:var(--space-1);padding-inline:var(--space-4);border-radius:var(--radius-full)}
+.tab[aria-current="page"]{font:var(--type-ui-chip-selected)}
+.tab[aria-current="page"] .tab-ind{background:var(--action-selected);box-shadow:inset 0 0 0 var(--stroke-emphasis) var(--line-selected)}
+.lbl-short{display:none}
+
+/* S1 addition (Screens, IA 2) · task header: title plus one dismiss action (B3); a body with no bar below clears the safe area itself */
+.screen-head-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--gap-inline)}
+.screen-head-row .btn-text{margin-inline-end:calc(var(--space-3) * -1)}
+.screen-body:last-child{padding-bottom:calc(var(--gap-section-log) + var(--inset-safe-bottom))}
+.panel{display:grid;align-content:start;gap:var(--gap-section-log)}
+.screen-body.fill{grid-template-rows:auto minmax(0,1fr);align-content:stretch}
+.fill > .panel{grid-template-rows:minmax(var(--size-viewfinder-min),1fr) auto;align-content:stretch;gap:var(--gap-stack)}
+
+/* S1 addition (Screens, IA 3) · step header: B3 "Back" (.btn-flush) above the title, because a step inside a task goes back while a task closes.
+   Head with media: the Flow 3 recipe thumbnail (M1) beside the title; it wraps below when the title column would be narrower than 1.5 x size-thumb */
+.screen-head-media{display:flex;flex-wrap:wrap;align-items:flex-start;gap:var(--space-4)}
+.screen-head-media > :first-child{flex:1 1 calc(var(--size-thumb) * 1.5);min-width:0;display:grid;gap:var(--space-1)}
+
+/* S1 addition (Screens, IA 5) · media band: a full-width image between the header and the body, running
+   to both screen edges. A detail screen has one picture and no list to compare it against, so it is not
+   held inside the gutter the way a card's thumbnail is. */
+.screen-media{margin-top:var(--gap-stack)}
+
+/* S3 · Action bar (Screens, IA 2; reused by IA 3 and 5): the screen's one or two actions, sticky within thumb reach */
+.actionbar{position:sticky;bottom:0;z-index:1;display:grid;gap:var(--gap-inline);padding-block:var(--space-3) calc(var(--space-3) + var(--inset-safe-bottom));padding-inline:var(--inset-screen);background:var(--surface-paper);border-top:var(--stroke-hairline) solid var(--line-hairline)}
+
+/* V1 · Viewfinder (Screens, IA 2): the camera feed with a framing guide; instructions sit below it, never over the feed */
+.viewfinder{container-type:size;display:grid;place-items:center;padding:var(--space-8);border-radius:var(--radius-lg);background:var(--surface-viewfinder);overflow:hidden}
+.vf-guide{width:100%;aspect-ratio:var(--ratio-guide-barcode);--c:var(--line-guide);--l:min(var(--size-guide-corner),25%);--s:var(--stroke-guide);
+  background:
+    linear-gradient(var(--c),var(--c)) top left / var(--l) var(--s),linear-gradient(var(--c),var(--c)) top left / var(--s) var(--l),
+    linear-gradient(var(--c),var(--c)) top right / var(--l) var(--s),linear-gradient(var(--c),var(--c)) top right / var(--s) var(--l),
+    linear-gradient(var(--c),var(--c)) bottom left / var(--l) var(--s),linear-gradient(var(--c),var(--c)) bottom left / var(--s) var(--l),
+    linear-gradient(var(--c),var(--c)) bottom right / var(--l) var(--s),linear-gradient(var(--c),var(--c)) bottom right / var(--s) var(--l);
+  background-repeat:no-repeat}
+/* photo: the largest square that fits the camera area (container units of the viewfinder's content box) */
+.vf-guide.photo{aspect-ratio:var(--ratio-guide-photo);width:min(100cqw,100cqh)}
+.vf-hint{margin:0;font:var(--type-ui-body);color:var(--text-primary);text-wrap:pretty}
+/* found (critique, Add Food): the corners join into a closed frame and the hint names the product, just before Food Confirmation opens */
+.vf-guide.found{box-shadow:inset 0 0 0 var(--stroke-hairline) var(--line-guide)}
+
+/* E1 · Message (critique, Add Food): a no-result state inside a panel. Plain words and the next step; no status hue, no illustration */
+.message{display:grid;gap:var(--space-1)}
+.message-title{margin:0;font:var(--type-ui-body-strong);color:var(--text-primary)}
+.message-text{margin:0;font:var(--type-ui-body);color:var(--text-primary);text-wrap:pretty}
+
+/* R · Recipe content (Screens, IA 5). The unifying rule at the scale of a section: the quantities are
+   figures in a ledger on Paper, the method is words on the ground. Same tokens, opposite emphasis (L3). */
+
+/* R1 · Ingredient list: a quantity column that lines up because every figure is tabular, and the
+   ingredient in words beside it */
+.ingredients{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:auto minmax(0,1fr)}
+.ingredients li{grid-column:1 / -1;display:grid;grid-template-columns:subgrid;column-gap:var(--space-4);align-items:baseline;padding-block:var(--row-pad-y)}
+.ingredients li + li{border-top:var(--stroke-hairline) solid var(--line-hairline)}
+.ingredients .ing-name{font:var(--type-ui-body);color:var(--text-primary);text-wrap:pretty}
+/* an ingredient with nothing to measure ("sea salt, to taste") keeps the empty column, so the names stay aligned */
+.ingredients .ing-none{font:var(--type-ui-secondary);color:var(--text-secondary)}
+
+/* R2 · Method steps: prose on the ground. A step number is not a nutrition figure, so it takes a ui role
+   rather than a figure role (L1) — but it is still tabular, so the column holds at step 10. */
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:var(--gap-stack);counter-reset:step}
+.steps li{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:var(--space-4);align-items:baseline;font:var(--type-ui-body);color:var(--text-primary);text-wrap:pretty}
+.steps li::before{counter-increment:step;content:counter(step);font:var(--type-ui-secondary-strong);font-variant-numeric:var(--figure-numerals);color:var(--text-secondary)}
+
+/* a titled section on a recipe screen: one heading and the content it names, at the within-block step
+   while the sections themselves keep the 40 of gap-section-recipe */
+.rsec{display:grid;gap:var(--gap-stack)}
+.rsec-head{display:grid;gap:var(--space-1)}
+.rsec-title{margin:0;color:var(--text-primary)}
+/* one line where a section needs saying what its content is measured against ("For all 4 servings") */
+.rsec-note{margin:0;color:var(--text-secondary);text-wrap:pretty}
+
+/* Narrow screens (Screens, critique R4). Container conditions can't read custom properties,
+   so these two widths are the documented breakpoints bp-screen-narrow (320) and bp-screen-compact (280). */
+@container screen (width < 320px){
+  .bar .lbl-full{display:none}
+  .bar .lbl-short{display:inline}
+  /* F3 (A8): icon-only; the label stays as the accessible name; gaps close so segments keep size-hit-min down to 195 */
+  .seg{gap:0}
+  .seg .ico{display:block}
+  .seg .seg-label{position:absolute;clip-path:inset(50%);white-space:nowrap}
+}
+@container screen (width < 280px){
+  .bar{padding-inline:var(--space-2);gap:var(--space-1)}
+  .bar .lbl-short{display:none}
+  .bar .btn{padding-inline:0;min-width:var(--size-button)}
+  .row{grid-template-columns:minmax(0,1fr)}
+  .row-link{grid-template-columns:minmax(0,1fr) auto}
+  .row > .fig{grid-column:1;grid-row:auto;text-align:left}
+  .row-link > .ico{grid-column:2;grid-row:1 / span 3}
+  /* IA 4: two number fields side by side fall under 2 x hit target here, so they stack */
+  .field-pair{grid-template-columns:minmax(0,1fr)}
+}
+
+/* =====================================================================
+   PRESENTATION CHROME — not part of the screen or the system.
+   Device frame, captions and annotations. Raw values are allowed here,
+   exactly as in the components-v1.html page chrome.
+   ===================================================================== */
+*{box-sizing:border-box}
+html{scroll-padding-top:16px}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+body{margin:0;background:var(--color-paper);color:var(--color-ink);font:400 16px/1.55 var(--font-ui)}
+a{color:var(--color-pine);text-underline-offset:.18em}
+::selection{background:var(--color-pine-light);color:var(--color-ink)}
+.skip{position:absolute;left:16px;top:-64px;z-index:10;padding:8px 14px;border-radius:999px;background:var(--color-ink);color:var(--color-paper);font-weight:600;text-decoration:none}
+.skip:focus{top:16px}
+code{font:500 13px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--color-oat);padding:1px 5px;border-radius:4px}
+
+.top{background:var(--color-ink);color:var(--color-paper);padding-block:clamp(36px,5vw,56px);padding-inline:clamp(16px,4vw,48px)}
+.top-inner{max-width:1240px;margin:0 auto}
+.top h1{font:400 clamp(36px,5vw,60px)/1.04 var(--font-voice);letter-spacing:-.025em;margin:0 0 16px;text-wrap:balance}
+.top .lede{margin:0;max-width:58ch;font-size:18px;color:var(--color-rule);text-wrap:pretty}
+.top .lede b{color:var(--color-paper);font-weight:500}
+.top a{color:inherit}
+.facts{list-style:none;margin:28px 0 0;padding:20px 0 0;border-top:1px solid rgba(255,253,249,.3);display:flex;flex-wrap:wrap;gap:8px 32px;font-size:14px}
+.facts b{font-weight:600}
+
+.wrap{max-width:1240px;margin:0 auto;padding-inline:clamp(16px,4vw,48px)}
+
+/* Device frames */
+.bay{background:var(--color-oat-deep)}
+.frames{display:flex;flex-wrap:wrap;justify-content:center;gap:56px;padding-block:56px}
+.frame{display:grid;gap:18px;justify-items:center;align-content:start;margin:0}
+.frame-cap{margin:0;max-width:390px;text-align:center;font:400 14px/20px var(--font-ui);color:var(--color-ink-soft);text-wrap:pretty}
+.frame-cap b{display:block;font:600 15px/22px var(--font-ui);color:var(--color-ink)}
+.device{--inset-safe-top:59px;--inset-safe-bottom:34px; /* iPhone 15-class safe areas, simulated */
+  position:relative;width:390px;height:844px;border-radius:56px;overflow:hidden;isolation:isolate;background:var(--surface-ground);
+  box-shadow:0 0 0 10px var(--color-ink),0 30px 60px rgba(31,36,33,.22)}
+.viewport{position:absolute;inset:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+.viewport::-webkit-scrollbar{display:none}
+.statusbar{position:absolute;z-index:3;inset:0 0 auto;height:59px;display:flex;align-items:center;justify-content:space-between;padding:8px 34px 0 52px;background:var(--surface-ground);font:600 17px/1 var(--font-ui);color:var(--color-ink);pointer-events:none;font-variant-numeric:tabular-nums}
+.island{position:absolute;left:50%;top:11px;translate:-50% 0;width:124px;height:36px;border-radius:20px;background:var(--color-ink)}
+.batt{position:relative;display:inline-block;width:27px;height:13px;border-radius:4px;box-shadow:inset 0 0 0 1.5px var(--color-ink)}
+.batt::after{content:"";position:absolute;inset:3px 7px 3px 3px;border-radius:1.5px;background:var(--color-ink)}
+.home-ind{position:absolute;z-index:3;left:50%;bottom:8px;translate:-50% 0;width:134px;height:5px;border-radius:3px;background:var(--color-ink);pointer-events:none}
+@media (max-width:520px){
+  .frames{display:grid;gap:40px;padding-block:24px 40px}
+  .frame{justify-items:stretch}
+  .frame-cap{max-width:none;padding-inline:16px}
+  .device{--inset-safe-top:env(safe-area-inset-top,0px);--inset-safe-bottom:env(safe-area-inset-bottom,0px);width:auto;height:auto;border-radius:0;overflow:visible;box-shadow:none;margin-inline:calc(-1 * clamp(16px,4vw,48px))}
+  .viewport{position:static;overflow:visible}
+  .statusbar,.home-ind{display:none}
+}
+
+/* Annotations */
+main.doc{max-width:1080px;padding-block:8px 120px}
+.sec{padding-block:56px 8px;border-top:2px solid var(--color-ink)}
+.sec:first-of-type{border-top:0}
+.sec h2{font:400 clamp(30px,3.6vw,42px)/1.1 var(--font-voice);letter-spacing:-.015em;margin:0 0 12px;text-wrap:balance}
+.sec h3{font:600 18px/1.3 var(--font-ui);margin:40px 0 12px;text-wrap:balance}
+.lead{max-width:62ch;color:var(--color-ink-soft);margin:0 0 28px;font-size:17px;text-wrap:pretty}
+.lead b{color:var(--color-ink);font-weight:600}
+.note{font-size:14px;color:var(--color-ink-soft);max-width:62ch;margin:14px 0 0}
+.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table.ref{width:100%;border-collapse:collapse;font-size:14px;line-height:1.5}
+table.ref th{text-align:left;font-weight:600;color:var(--color-ink-soft);padding:0 16px 10px 0;border-bottom:1.5px solid var(--color-ink);white-space:nowrap;vertical-align:bottom}
+table.ref td{padding:12px 16px 12px 0;border-bottom:1px solid var(--color-rule);vertical-align:top}
+table.ref td:first-child{font-weight:600;font-variant-numeric:tabular-nums}
+table.ref td b{font-weight:600}
+@media (max-width:720px){
+  table.ref thead{display:none} /* each cell shows its column name via data-label */
+  table.ref,table.ref tbody,table.ref tr,table.ref td{display:block;width:100%}
+  table.ref tr{padding-block:12px;border-bottom:1px solid var(--color-rule)}
+  table.ref td{border:0;padding:3px 0}
+  table.ref td::before{content:attr(data-label);display:block;font:600 13px/18px var(--font-ui);color:var(--color-ink-soft)}
+  table.ref td[data-label=""]::before{content:none}
+}
+.st{display:inline-block;margin:0 4px 4px 0;padding:1px 8px;border-radius:999px;font:600 11px/18px var(--font-ui);letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;color:var(--color-ink)}
+.st-ev{background:var(--color-ink);color:var(--color-paper)}
+.st-ia{box-shadow:inset 0 0 0 1px var(--color-ink)}
+.st-sys{background:var(--color-oat-deep)}
+.st-jc{outline:1.5px dashed var(--color-ink);outline-offset:-1.5px}
+.st-new{background:var(--color-pine-light);box-shadow:inset 0 0 0 1px var(--color-pine)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 24px;margin:0 0 24px;padding:0;list-style:none;font-size:14px;color:var(--color-ink-soft)}
+.refs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:4px 40px;margin:0;padding:0;list-style:none}
+.refs li{padding:12px 0;border-top:1px solid var(--color-rule);font-size:15px}
+.refs li b{font-weight:600}
+.refs .took{display:block;margin-top:4px;font-size:14px;color:var(--color-ink-soft)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:8px 48px}
+.cols h3{margin-top:0}
+.cols ul{margin:0;padding-left:18px;max-width:62ch}
+.cols li{margin-bottom:8px}
+@media (max-width:720px){.st{white-space:normal}}
+</style>
+</head>
+<body>
+<a class="skip" href="#doc">Skip to the notes</a>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="13" r="3.25"/></symbol>
+  <symbol id="i-barcode" viewBox="0 0 24 24"><path d="M4 8V5h3M17 5h3v3M20 16v3h-3M7 19H4v-3M8 9v6M11 9v6M13.5 9v6M16 9v6"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M5 5.5A1.5 1.5 0 0 1 6.5 4H19v13H6.5A1.5 1.5 0 0 0 5 18.5z"/><path d="M5 18.5A1.5 1.5 0 0 0 6.5 20H19"/></symbol>
+  <symbol id="i-today" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 9h6M9 12.5h6M9 16h3.5"/></symbol>
+  <symbol id="i-chev-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-chev-left" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
+  <symbol id="i-error" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.75"/><path d="M12 8v4.5M12 16.2v.01"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="top-inner">
+    <h1>Food Confirmation &amp; Log</h1>
+    <p class="lede">The one screen every way of adding food ends on (IA 3): <b>search, barcode and photo</b> from Add Food, <b>a recipe</b> from Recipe Detail, and <b>an entry already on Today</b>. Same skeleton, same portion control, same place for the action; only named slots change. Built only from <a href="../04-design-system/components-v1.html">Design System v1</a>.</p>
+    <ul class="facts">
+      <li><b>Stage 5 · Screens</b>, 03 of 05 · revision 2, after one critique</li>
+      <li><b>Phone frame:</b> 390 × 844 with iPhone safe areas; the portion controls work</li>
+      <li><b>Sample figures</b> are illustrative, never real nutrition data</li>
+    </ul>
+  </div>
+</header>
+
+<div class="bay">
+  <div class="wrap frames">
+    <figure class="frame" id="frame-a">
+      <div class="device" role="region" aria-label="Food Confirmation screen, from search">
+        <div class="statusbar" aria-hidden="true"><span>16:40</span><span class="island"></span><span class="batt"></span></div>
+        <div class="viewport">
+          <div class="screen">
+            <header class="screen-head">
+              <a class="btn btn-text btn-flush" href="#flows"><svg class="ico" aria-hidden="true"><use href="#i-chev-left"/></svg>Back<span class="sr-only"> to the search results</span></a>
+              <span class="source"><svg class="ico sm" aria-hidden="true"><use href="#i-search"/></svg>Food database</span>
+              <h2 class="screen-title voice-title"><span class="sr-only">Frame A, from search: </span>Greek yogurt, 2%</h2>
+            </header>
+
+            <div class="screen-body">
+              <section class="block" aria-labelledby="a-nut">
+                <h3 class="overline ui-overline" id="a-nut">Your portion</h3>
+                <span class="fig fig-hero"><span data-out="kcal">130</span><span class="unit">&nbsp;kcal</span></span>
+                <div class="split" aria-hidden="true"><span class="p" data-out="pe" style="--fl:68"></span><span class="c" data-out="ce" style="--fl:24"></span><span class="f" data-out="fe" style="--fl:36"></span></div>
+                <ul class="mb-rows">
+                  <li class="mb-head" aria-hidden="true"><span></span><span></span><span>% of kcal</span></li>
+                  <li><span class="mac"><span class="mark p"></span><span class="mac-label">Protein</span></span><span class="fig fig-md"><span data-out="p">17</span>&nbsp;<span class="unit">g</span></span><span class="fig fig-sm"><span data-out="ps">53</span><span class="unit">%</span><span class="sr-only"> of kcal</span></span></li>
+                  <li><span class="mac"><span class="mark c"></span><span class="mac-label">Carbs</span></span><span class="fig fig-md"><span data-out="c">6</span>&nbsp;<span class="unit">g</span></span><span class="fig fig-sm"><span data-out="cs">19</span><span class="unit">%</span><span class="sr-only"> of kcal</span></span></li>
+                  <li><span class="mac"><span class="mark f"></span><span class="mac-label">Fat</span></span><span class="fig fig-md"><span data-out="f">4</span>&nbsp;<span class="unit">g</span></span><span class="fig fig-sm"><span data-out="fs">28</span><span class="unit">%</span><span class="sr-only"> of kcal</span></span></li>
+                </ul>
+                <p class="sr-only" aria-live="polite" data-out="say"></p>
+              </section>
+              <div class="portion-wrap" data-portion='{"per":{"kcal":0.7647058823529411,"p":0.1,"c":0.03529411764705882,"f":0.023529411764705882},"units":[["g","g",1,10,5000],["serving (170 g)","servings (170 g)",170,0.5,99]],"u":0}'>
+                <div>
+                  <span class="field-label" id="a-pl">Portion</span>
+                  <div class="portion" role="group" aria-labelledby="a-pl"><div class="stepper"><button type="button" data-step="-1" aria-label="Decrease amount"><svg class="ico" aria-hidden="true"><use href="#i-minus"/></svg></button><input type="text" inputmode="decimal" name="amount" autocomplete="off" value="170" aria-label="Amount" role="spinbutton"><button type="button" data-step="1" aria-label="Increase amount"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></button></div><div class="field select"><select name="unit" aria-label="Unit"><option value="0" selected>g</option><option value="1">serving (170 g)</option></select><svg class="ico" aria-hidden="true"><use href="#i-chev"/></svg></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="actionbar"><button type="button" class="btn btn-primary btn-block"><span class="btn-label">Log it</span><span class="spinner" role="status"><span class="sr-only">Logging&hellip;</span></span></button></div>
+          </div>
+        </div>
+        <div class="home-ind" aria-hidden="true"></div>
+      </div>
+      <figcaption class="frame-cap"><b>A · From search</b>Opened from a search result on Add Food. The figures are for 170&nbsp;g; step the amount or change the unit and every figure follows. Back returns to the results.</figcaption>
+    </figure>
+    <figure class="frame" id="frame-b">
+      <div class="device" role="region" aria-label="Food Confirmation screen, from a barcode">
+        <div class="statusbar" aria-hidden="true"><span>16:41</span><span class="island"></span><span class="batt"></span></div>
+        <div class="viewport">
+          <div class="screen">
+            <header class="screen-head">
+              <div class="screen-head-row"><a class="btn btn-text btn-flush" href="#flows"><svg class="ico" aria-hidden="true"><use href="#i-chev-left"/></svg>Back<span class="sr-only"> to the scanner</span></a><a class="btn btn-text" href="#flows"><span class="sr-only">Wrong product? </span>Search instead</a></div>
+              <span class="source"><svg class="ico sm" aria-hidden="true"><use href="#i-barcode"/></svg>Barcode</span>
+              <h2 class="screen-title voice-title"><span class="sr-only">Frame B, from a barcode: </span>Protein bar</h2>
+            </header>
+
+            <div class="screen-body">
+              <section class="block" aria-labelledby="b-nut">
+                <h3 class="overline ui-overline" id="b-nut">Your portion</h3>
+                <span class="fig fig-hero"><span data-out="kcal">210</span><span class="unit">&nbsp;kcal</span></span>
+                <div class="split" aria-hidden="true"><span class="p" data-out="pe" style="--fl:80"></span><span class="c" data-out="ce" style="--fl:80"></span><span class="f" data-out="fe" style="--fl:54"></span></div>
+                <ul class="mb-rows">
+                  <li class="mb-head" aria-hidden="true"><span></span><span></span><span>% of kcal</span></li>
+                  <li><span class="mac"><span class="mark p"></span><span class="mac-label">Protein</span></span><span class="fig fig-md"><span data-out="p">20</span>&nbsp;<span class="unit">g</span></span><span class="fig fig-sm"><span data-out="ps">38</span><span class="unit">%</span><span class="sr-only"> of kcal</span></span></li>
+                  <li><span class="mac"><span class="mark c"></span><span class="mac-label">Carbs</span></span><span class="fig fig-md"><span data-out="c">20</span>&nbsp;<span class="unit">g</span></span><span class="fig fig-sm"><span data-out="cs">37</span><span class="unit">%</span><span class="sr-only"> of kcal</span></span></li>
+                  <li><span class="mac"><span class="mark f"></span><span class="mac-label">Fat</span></span><span class="fig fig-md"><span data-out="f">6</span>&nbsp;<span class="unit">g</span></span><span class="fig fig-sm"><span data-out="fs">25</span><span class="unit">%</span><span class="sr-only"> of kcal</span></span></li>
+                </ul>
+                <p class="sr-only" aria-live="polite" data-out="say"></p>
+              </section>
+              <div class="portion-wrap" data-portion='{"per":{"kcal":210,"p":20,"c":20,"f":6},"units":[["bar","bars",1,0.5,99],["g","g",0.016666666666666666,5,5000]],"u":0}'>
+                <div>
+                  <span class="field-label" id="b-pl">Portion</span>
+                  <div class="portion" role="group" aria-labelledby="b-pl"><div class="stepper"><button type="button" data-step="-1" aria-label="Decrease amount"><svg class="ico" aria-hidden="true"><use href="#i-minus"/></svg></button><input type="text" inputmode="decimal" name="amount" autocomplete="off" value="1" aria-label="Amount" role="spinbutton"><button type="button" data-step="1" aria-label="Increase amount"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></button></div><div class="field select"><select name="unit" aria-label="Unit"><option value="0" selected>bar</option><option value="1">g</option></select><svg class="ico" aria-hidden="true"><use href="#i-chev"/></svg></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="actionbar"><button type="button" class="btn btn-primary btn-block"><span class="btn-label">Log it</span><span class="spinner" role="status"><span class="sr-only">Logging&hellip;</span></span></button></div>
+          </div>
+        </div>
+        <div class="home-ind" aria-hidden="true"></div>
+      </div>
+      <figcaption class="frame-cap"><b>B · From a barcode</b>The same screen after a scan. Only the source note changes, and the product name comes before any figure, so a wrong match is caught before it’s logged.</figcaption>
+    </figure>
+    <figure class="frame" id="frame-c">
+      <div class="device" role="region" aria-label="Food Confirmation screen, from a photo">
+        <div class="statusbar" aria-hidden="true"><span>16:19</span><span class="island"></span><span class="batt"></span></div>
+        <div class="viewport">
+          <div class="screen">
+            <header class="screen-head">
+              <div class="screen-head-row"><a class="btn btn-text btn-flush" href="#flows"><svg class="ico" aria-hidden="true"><use href="#i-chev-left"/></svg>Back<span class="sr-only"> to the camera</span></a><a class="btn btn-text" href="#flows"><span class="sr-only">Wrong food? </span>Search instead</a></div>
+              <span class="source"><svg class="ico sm" aria-hidden="true"><use href="#i-camera"/></svg>Photo estimate</span>
+              <h2 class="screen-title voice-title"><span class="sr-only">Frame C, from a photo: </span>Banana &amp; peanut butter toast</h2>
+            </header>
+
+            <div class="screen-body">
+              <section class="block" aria-labelledby="c-nut">
+                <h3 class="overline ui-overline" id="c-nut">Your portion</h3>
+                <span class="fig fig-hero"><span data-out="kcal">290</span><span class="unit">&nbsp;kcal</span></span>
+                <div class="split" aria-hidden="true"><span class="p" data-out="pe" style="--fl:40"></span><span class="c" data-out="ce" style="--fl:144"></span><span class="f" data-out="fe" style="--fl:108"></span></div>
+                <ul class="mb-rows">
+                  <li class="mb-head" aria-hidden="true"><span></span><span></span><span>% of kcal</span></li>
+                  <li><span class="mac"><span class="mark p"></span><span class="mac-label">Protein</span></span><span class="fig fig-md"><span data-out="p">10</span>&nbsp;<span class="unit">g</span></span><span class="fig fig-sm"><span data-out="ps">14</span><span class="unit">%</span><span class="sr-only"> of kcal</span></span></li>
+                  <li><span class="mac"><span class="mark c"></span><span class="mac-label">Carbs</span></span><span class="fig fig-md"><span data-out="c">36</span>&nbsp;<span class="unit">g</span></span><span class="fig fig-sm"><span data-out="cs">49</span><span class="unit">%</span><span class="sr-only"> of kcal</span></span></li>
+                  <li><span class="mac"><span class="mark f"></span><span class="mac-label">Fat</span></span><span class="fig fig-md"><span data-out="f">12</span>&nbsp;<span class="unit">g</span></span><span class="fig fig-sm"><span data-out="fs">37</span><span class="unit">%</span><span class="sr-only"> of kcal</span></span></li>
+                </ul>
+                <p class="sr-only" aria-live="polite" data-out="say"></p>
+              </section>
+              <div class="portion-wrap" data-portion='{"per":{"kcal":290,"p":10,"c":36,"f":12},"units":[["slice","slices",1,0.5,99],["g","g",0.00909090909090909,10,5000]],"u":0}'>
+                <p class="helper">Estimated from your photo. Check the portion before you log it.</p>
+                <div>
+                  <span class="field-label" id="c-pl">Portion</span>
+                  <div class="portion" role="group" aria-labelledby="c-pl"><div class="stepper"><button type="button" data-step="-1" aria-label="Decrease amount"><svg class="ico" aria-hidden="true"><use href="#i-minus"/></svg></button><input type="text" inputmode="decimal" name="amount" autocomplete="off" value="1" aria-label="Amount" role="spinbutton"><button type="button" data-step="1" aria-label="Increase amount"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></button></div><div class="field select"><select name="unit" aria-label="Unit"><option value="0" selected>slice</option><option value="1">g</option></select><svg class="ico" aria-hidden="true"><use href="#i-chev"/></svg></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="actionbar"><button type="button" class="btn btn-secondary btn-block"><svg class="ico" aria-hidden="true"><use href="#i-camera"/></svg>Retake photo</button><button type="button" class="btn btn-primary btn-block"><span class="btn-label">Log it</span><span class="spinner" role="status"><span class="sr-only">Logging&hellip;</span></span></button></div>
+          </div>
+        </div>
+        <div class="home-ind" aria-hidden="true"></div>
+      </div>
+      <figcaption class="frame-cap"><b>C · From a photo</b>An estimate is set exactly like a database figure. The source note and one line above the portion say it’s an estimate; “Retake photo” sits above “Log it”, which doesn’t move.</figcaption>
+    </figure>
+    <figure class="frame" id="frame-d">
+      <div class="device" role="region" aria-label="Food Confirmation screen, from a recipe">
+        <div class="statusbar" aria-hidden="true"><span>13:04</span><span class="island"></span><span class="batt"></span></div>
+        <div class="viewport">
+          <div class="screen">
+            <header class="screen-head">
+              <a class="btn btn-text btn-flush" href="#flows"><svg class="ico" aria-hidden="true"><use href="#i-chev-left"/></svg>Back<span class="sr-only"> to the recipe</span></a>
+              <div class="screen-head-media">
+                <div>
+                  <span class="source"><svg class="ico sm" aria-hidden="true"><use href="#i-book"/></svg>From recipe</span>
+                  <h2 class="screen-title voice-title"><span class="sr-only">Frame D, from a recipe: </span>Chickpea &amp; spinach stew</h2>
+                </div>
+                <div class="rimg thumb"><img src="../assets/images/chickpea-spinach-stew.jpg" alt=""></div>
+              </div>
+            </header>
+
+            <div class="screen-body">
+              <section class="block" aria-labelledby="d-nut">
+                <h3 class="overline ui-overline" id="d-nut">Your portion</h3>
+                <span class="fig fig-hero"><span data-out="kcal">412</span><span class="unit">&nbsp;kcal</span></span>
+                <div class="split" aria-hidden="true"><span class="p" data-out="pe" style="--fl:104"></span><span class="c" data-out="ce" style="--fl:192"></span><span class="f" data-out="fe" style="--fl:108"></span></div>
+                <ul class="mb-rows">
+                  <li class="mb-head" aria-hidden="true"><span></span><span></span><span>% of kcal</span></li>
+                  <li><span class="mac"><span class="mark p"></span><span class="mac-label">Protein</span></span><span class="fig fig-md"><span data-out="p">26</span>&nbsp;<span class="unit">g</span></span><span class="fig fig-sm"><span data-out="ps">26</span><span class="unit">%</span><span class="sr-only"> of kcal</span></span></li>
+                  <li><span class="mac"><span class="mark c"></span><span class="mac-label">Carbs</span></span><span class="fig fig-md"><span data-out="c">48</span>&nbsp;<span class="unit">g</span></span><span class="fig fig-sm"><span data-out="cs">47</span><span class="unit">%</span><span class="sr-only"> of kcal</span></span></li>
+                  <li><span class="mac"><span class="mark f"></span><span class="mac-label">Fat</span></span><span class="fig fig-md"><span data-out="f">12</span>&nbsp;<span class="unit">g</span></span><span class="fig fig-sm"><span data-out="fs">27</span><span class="unit">%</span><span class="sr-only"> of kcal</span></span></li>
+                </ul>
+                <p class="sr-only" aria-live="polite" data-out="say"></p>
+              </section>
+              <div class="portion-wrap" data-portion='{"per":{"kcal":412,"p":26,"c":48,"f":12},"units":[["serving","servings",1,0.5,99]],"u":0}'>
+                <div>
+                  <span class="field-label" id="d-pl">Portion</span>
+                  <div class="stepper-static" role="group" aria-labelledby="d-pl"><div class="stepper"><button type="button" data-step="-1" aria-label="Decrease amount"><svg class="ico" aria-hidden="true"><use href="#i-minus"/></svg></button><input type="text" inputmode="decimal" name="amount" autocomplete="off" value="1" aria-label="Amount" role="spinbutton"><button type="button" data-step="1" aria-label="Increase amount"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></button></div><span class="fig fig-lg"><span class="unit" data-out="unit">serving</span></span></div>
+                </div>
+              </div>
+            </div>
+            <div class="actionbar"><button type="button" class="btn btn-primary btn-block"><span class="btn-label">Log it</span><span class="spinner" role="status"><span class="sr-only">Logging&hellip;</span></span></button></div>
+          </div>
+        </div>
+        <div class="home-ind" aria-hidden="true"></div>
+      </div>
+      <figcaption class="frame-cap"><b>D · From a recipe (Flow 3)</b>“Log this” on Recipe Detail opens the same screen, pre-filled with the recipe’s figures <b>at the serving count that screen was left showing</b> — 1 here, which is where its frame A sits. The thumbnail keeps the recipe’s identity; the action is the same “Log it”.</figcaption>
+    </figure>
+    <figure class="frame" id="frame-e">
+      <div class="device" role="region" aria-label="Food Confirmation screen, correcting a logged entry">
+        <div class="statusbar" aria-hidden="true"><span>09:02</span><span class="island"></span><span class="batt"></span></div>
+        <div class="viewport">
+          <div class="screen">
+            <header class="screen-head">
+              <div class="screen-head-row"><a class="btn btn-text btn-flush" href="#flows">Cancel<span class="sr-only"> and return to Today</span></a><button type="button" class="btn btn-text">Remove entry</button></div>
+              <span class="source"><svg class="ico sm" aria-hidden="true"><use href="#i-search"/></svg>Food database</span>
+              <h2 class="screen-title voice-title"><span class="sr-only">Frame E, correcting a logged entry: </span>Rolled oats</h2>
+              <p class="screen-sub">Logged at 08:10 as <span class="fig fig-sm">40&nbsp;<span class="unit">g</span></span> · <span class="fig fig-sm">150&nbsp;<span class="unit">kcal</span></span></p>
+            </header>
+
+            <div class="screen-body">
+              <section class="block" aria-labelledby="e-nut">
+                <h3 class="overline ui-overline" id="e-nut">Your portion</h3>
+                <span class="fig fig-hero"><span data-out="kcal">225</span><span class="unit">&nbsp;kcal</span></span>
+                <div class="split" aria-hidden="true"><span class="p" data-out="pe" style="--fl:32"></span><span class="c" data-out="ce" style="--fl:160"></span><span class="f" data-out="fe" style="--fl:36"></span></div>
+                <ul class="mb-rows">
+                  <li class="mb-head" aria-hidden="true"><span></span><span></span><span>% of kcal</span></li>
+                  <li><span class="mac"><span class="mark p"></span><span class="mac-label">Protein</span></span><span class="fig fig-md"><span data-out="p">8</span>&nbsp;<span class="unit">g</span></span><span class="fig fig-sm"><span data-out="ps">14</span><span class="unit">%</span><span class="sr-only"> of kcal</span></span></li>
+                  <li><span class="mac"><span class="mark c"></span><span class="mac-label">Carbs</span></span><span class="fig fig-md"><span data-out="c">40</span>&nbsp;<span class="unit">g</span></span><span class="fig fig-sm"><span data-out="cs">70</span><span class="unit">%</span><span class="sr-only"> of kcal</span></span></li>
+                  <li><span class="mac"><span class="mark f"></span><span class="mac-label">Fat</span></span><span class="fig fig-md"><span data-out="f">4</span>&nbsp;<span class="unit">g</span></span><span class="fig fig-sm"><span data-out="fs">16</span><span class="unit">%</span><span class="sr-only"> of kcal</span></span></li>
+                </ul>
+                <p class="sr-only" aria-live="polite" data-out="say"></p>
+              </section>
+              <div class="portion-wrap" data-portion='{"per":{"kcal":3.75,"p":0.13333333333333333,"c":0.6666666666666666,"f":0.06666666666666667},"units":[["g","g",1,10,5000],["serving (40 g)","servings (40 g)",40,0.5,99]],"u":0}'>
+                <div>
+                  <span class="field-label" id="e-pl">Portion</span>
+                  <div class="portion" role="group" aria-labelledby="e-pl"><div class="stepper"><button type="button" data-step="-1" aria-label="Decrease amount"><svg class="ico" aria-hidden="true"><use href="#i-minus"/></svg></button><input type="text" inputmode="decimal" name="amount" autocomplete="off" value="60" aria-label="Amount" role="spinbutton"><button type="button" data-step="1" aria-label="Increase amount"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></button></div><div class="field select"><select name="unit" aria-label="Unit"><option value="0" selected>g</option><option value="1">serving (40 g)</option></select><svg class="ico" aria-hidden="true"><use href="#i-chev"/></svg></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="actionbar"><button type="button" class="btn btn-primary btn-block"><span class="btn-label">Save changes</span><span class="spinner" role="status"><span class="sr-only">Saving&hellip;</span></span></button></div>
+          </div>
+        </div>
+        <div class="home-ind" aria-hidden="true"></div>
+      </div>
+      <figcaption class="frame-cap"><b>E · Correcting an entry (Flow 4)</b>Tapped on Today. The line under the name keeps what was logged in view; here 40&nbsp;g became 60&nbsp;g. “Cancel” discards the change and “Save changes” replaces “Log it”; “Remove entry” sits at the top, out of thumb reach and far from Save.</figcaption>
+    </figure>
+  </div>
+</div>
+
+<main class="wrap doc" id="doc">
+<section class="sec" aria-labelledby="n-glance">
+  <h2 id="n-glance">At a glance</h2>
+  <p class="lead">Revision 2. Revision 1 was generated in one pass from Design System v1 and scored <b>25/40</b> in one <code>/impeccable critique</code> run: 0 P0, 1 P1 and 4 P2 issues, all fixed (details below). The trace below shows how each of the three kinds of arrival (a new item, a recipe, an existing entry) fills the same skeleton without contradicting the others.</p>
+  <div class="cols">
+    <div>
+      <h3>What the screen does</h3>
+      <ul>
+        <li>Shows what an item is before it counts: where the number came from, the kcal for your portion, and the macros behind it.</li>
+        <li>Lets you set the portion in the unit you think in; every figure follows it.</li>
+        <li>Takes three kinds of arrival (a new item, a recipe, an entry already logged) and changes only what differs between them.</li>
+        <li>Always ends on Today: “Log it” adds, “Save changes” updates, “Remove entry” deletes.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Decided here</h3>
+      <ul>
+        <li>One skeleton with named slots; a path can fill a slot, never add a layout of its own (next section).</li>
+        <li>“Back” in the top start corner: a step inside a task goes back, while a task (Add Food) closes.</li>
+        <li>The recipe thumbnail joins the system as M1, the labelled image placeholder.</li>
+        <li>Two actions stack with the primary last, so “Log it” never moves. On an edit, “Cancel” and “Remove entry” share the top row, far from “Save changes”.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Still open</h3>
+      <ul>
+        <li>Undo after “Log it” or “Remove entry”, and “discard changes?” on Back: v2 states (IA Flow 4).</li>
+        <li><b>Closed at IA 5:</b> the serving count means <i>the servings you are eating</i>, and it carries over, so this screen opens at whatever Recipe Detail was left on — 1 in frame D.</li>
+        <li><b>Corrected while building IA 5:</b> frame D&rsquo;s macros were 18&nbsp;/&nbsp;52&nbsp;/&nbsp;14&nbsp;g, while the card the same dish is chosen from on 04&nbsp;Recipes&nbsp;&amp;&nbsp;Filter reads 26&nbsp;/&nbsp;48&nbsp;/&nbsp;12&nbsp;g. One dish cannot carry two sets of figures through a handoff whose whole claim is continuity, so the card&rsquo;s figures are canonical and this frame now matches them. The 05 build asserts the three screens agree before it writes a byte.</li>
+        <li>Real images: M1 placeholders until the Krea pass.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="sec" aria-labelledby="n-paths">
+  <h2 id="n-paths">Three ways in, one screen</h2>
+  <p class="lead">IA 3 is the convergence point of Flows 1, 3 and 4. <b>The screen is one skeleton with named slots.</b> A path may fill a slot differently; it may not move, add or remove anything else. Each path is traced below, then checked against the others.</p>
+
+  <h3>How each path arrives, and what it changes</h3>
+  <div class="tablewrap"><table class="ref">
+    <thead><tr><th scope="col">Path</th><th scope="col">Entered from</th><th scope="col">Arrives pre-filled with</th><th scope="col">Slots it changes</th><th scope="col">Leaves to</th></tr></thead>
+    <tbody>
+      <tr><td data-label="Path">1 · New item, search or barcode <span class="st st-ia">Flow 1</span></td><td data-label="Entered from">Add Food: a tapped result, or a recognised barcode after “Found: …”</td><td data-label="Arrives pre-filled with">Name, the database or package figures, and the item’s own serving (170&nbsp;g; 1 bar)</td><td data-label="Slots it changes">Source note: “Food database” or “Barcode”. Back leads to the results or the scanner. <b>Nothing else.</b> (Frames A, B)</td><td data-label="Leaves to">“Log it” → Today, new entry at the top</td></tr>
+      <tr><td data-label="Path">1 · New item, photo <span class="st st-ia">Flow 1</span></td><td data-label="Entered from">Add Food: “Take photo”</td><td data-label="Arrives pre-filled with">The AI estimate: a name, figures and an estimated portion (1 slice)</td><td data-label="Slots it changes">Source note: “Photo estimate”. The J2 helper line directly above the portion. “Retake photo” (B2) above “Log it”. “Search instead” (B3) at the far end of the Back row. (Frame C)</td><td data-label="Leaves to">“Log it” → Today · “Retake photo” → Add Food, Photo · “Search instead” → Add Food, Search</td></tr>
+      <tr><td data-label="Path">2 · Recipe <span class="st st-ia">Flow 3</span></td><td data-label="Entered from">Recipe Detail: “Log this”</td><td data-label="Arrives pre-filled with">The recipe’s calculated nutrition per serving, at the serving count handed over. <b>Settled at IA 5:</b> that count is the servings you are eating, so this screen opens on the number the recipe screen was left showing (1 serving here)</td><td data-label="Slots it changes">Source note: “From recipe”. M1 thumbnail beside the name. The portion unit is fixed to servings, using Recipe Detail’s own stepper. (Frame D)</td><td data-label="Leaves to">“Log it” → Today, an entry identical in form to any other</td></tr>
+      <tr><td data-label="Path">3 · Entry already logged <span class="st st-ia">Flow 4</span></td><td data-label="Entered from">Today: tap an entry (R1)</td><td data-label="Arrives pre-filled with">The entry as logged: name, source, portion</td><td data-label="Slots it changes">A context line under the name (“Logged at 08:10 as 40&nbsp;g · 150&nbsp;kcal”). Back reads “Cancel”, and “Remove entry” (B3) takes the top end of the same row. “Save changes” replaces “Log it”. (Frame E)</td><td data-label="Leaves to">“Save changes” or “Remove entry” → Today, totals recalculated</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>What no path may change</h3>
+  <div class="tablewrap"><table class="ref">
+    <thead><tr><th scope="col">Slot</th><th scope="col">Rule on every path</th><th scope="col">Why it must hold</th></tr></thead>
+    <tbody>
+      <tr><td data-label="Slot">Back, top start</td><td data-label="Rule on every path">Always there; always returns to the screen that opened this one; commits nothing. On an edit the same slot reads “Cancel”, because leaving discards the change.</td><td data-label="Why it must hold">One way out, so a wrong result, a wrong recipe or an accidental tap on Today costs one step and never a bad entry.</td></tr>
+      <tr><td data-label="Slot">Source, then name</td><td data-label="Rule on every path">The source note comes first and names the method; the name is the screen’s one serif element.</td><td data-label="Why it must hold">J2 and H2: the method is what users judge a number by. Source-first matches Today’s rows, so an entry reads the same before and after logging.</td></tr>
+      <tr><td data-label="Slot">Nutrition block (N2)</td><td data-label="Rule on every path">Same hero, energy split and rows for every source, labelled “Your portion”. An estimate is set exactly like a database figure.</td><td data-label="Why it must hold">L1 and J2: whatever is logged sums into Today, so every figure must look summable. IA Flow 3: a recipe logs “with the same accuracy” as anything else.</td></tr>
+      <tr><td data-label="Slot">Portion (I3)</td><td data-label="Rule on every path">Below the block, above the action. Every figure in the block follows it.</td><td data-label="Why it must hold">The evidenced serving-size friction is handled in one place for every source, which is why the IA consolidates on one screen.</td></tr>
+      <tr><td data-label="Slot">Primary action (B1 in S3)</td><td data-label="Rule on every path">Same button, bottom of the bar. The label says what happens to Today.</td><td data-label="Why it must hold">H4 and IA Flow 3: “the same screen and the same action as Flow 1’s last step”. The recipe handoff is visibly the same step, not a parallel path.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Where the paths could contradict each other, and how it resolves</h3>
+  <div class="tablewrap"><table class="ref">
+    <thead><tr><th scope="col">Case</th><th scope="col">Resolution</th><th scope="col">Status</th></tr></thead>
+    <tbody>
+      <tr><td data-label="Case">A recipe entry reopened from Today (Flow 4 on a Flow 3 entry)</td><td data-label="Resolution"><b>No thumbnail.</b> The thumbnail belongs to arriving from Recipe Detail, and Today has no image slot, so an entry doesn’t gain a picture when you correct it. Source stays “From recipe”, the unit stays servings, and the action is “Save changes”.</td><td data-label="Status"><span class="st st-sys">Image rule</span><span class="st st-jc">Judgment call</span></td></tr>
+      <tr><td data-label="Case">A photo entry reopened from Today</td><td data-label="Resolution">Keeps its source note and helper line, since the portion is still an estimate. The helper drops “before you log it”, which only fits a new entry: “Estimated from your photo. Check the portion.” No “Retake photo”: the photo belongs to the moment it was taken.</td><td data-label="Status"><span class="st st-sys">J2</span><span class="st st-new">J2 copy note</span></td></tr>
+      <tr><td data-label="Case">“Log it” on an existing entry</td><td data-label="Resolution">Never shown. Flow 4 has only “Save changes” and “Remove entry”, so correcting an entry can’t log it a second time.</td><td data-label="Status"><span class="st st-ia">IA Flow 4</span></td></tr>
+      <tr><td data-label="Case">Back after changing the portion in Flow 4</td><td data-label="Resolution">The exit reads “Cancel”, so leaving is visibly a discard, and Today keeps what was logged. The context line keeps the logged amount and kcal in view. A “discard changes?” prompt and undo after removal stay v2.</td><td data-label="Status"><span class="st st-new">Critique P1</span><span class="st st-jc">Undo · v2</span></td></tr>
+      <tr><td data-label="Case">Back after arriving from a recipe</td><td data-label="Resolution">Returns to Recipe Detail, where “Log this” is still present. The recipe still doesn’t dead-end.</td><td data-label="Status"><span class="st st-ia">Structural rule 2</span></td></tr>
+      <tr><td data-label="Case">A barcode that matched the wrong product</td><td data-label="Resolution">The name sits right under “Barcode”, above every figure, so the mismatch shows before the numbers do. Back returns to the scanner and its “Type the barcode number” fallback. The figures of a wrong product aren’t editable here.</td><td data-label="Status"><span class="st st-ev">Evidenced</span></td></tr>
+      <tr><td data-label="Case">Units a source can’t convert</td><td data-label="Resolution">A recipe is measured in servings only, because a serving’s weight isn’t in the recipe data; its unit is text, not a menu. Search, barcode and photo offer the item’s own serving and grams.</td><td data-label="Status"><span class="st st-jc">Judgment call</span></td></tr>
+      <tr><td data-label="Case">The serving count handed over by Recipe Detail</td><td data-label="Resolution"><b>Settled at IA 5:</b> the stepper means <i>the servings you are eating</i>, so it carries over and this screen opens on it. The deciding argument is that the other reading would have to rescale every ingredient quantity, which IA 5 never asks for. The recipe’s yield (“Makes 4 servings”) stays on Recipe Detail as information, not as a control. Frame D shows 1 serving, which is where frame A of <code>05-recipe-detail.html</code> leaves it.</td><td data-label="Status"><span class="st st-jc">Judgment call</span><span class="st st-new">Closed at IA 5</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="sec" aria-labelledby="n-trace">
+  <h2 id="n-trace">Why each element is where it is</h2>
+  <p class="lead">Top to bottom, in screen order and prominence. Each row cites its source. <b>Dashed badges mark judgment calls:</b> decisions without direct evidence, open to challenge.</p>
+  <ul class="legend">
+    <li><span class="st st-ev">Evidenced</span>research finding</li>
+    <li><span class="st st-ia">IA</span>information architecture</li>
+    <li><span class="st st-sys">System</span>design system or Stage 3 rule</li>
+    <li><span class="st st-jc">Judgment call</span>designer’s decision</li>
+    <li><span class="st st-new">New</span>added to the system for this screen</li>
+  </ul>
+  <div class="tablewrap"><table class="ref">
+    <thead><tr><th scope="col">#</th><th scope="col">Element · prominence</th><th scope="col">Why</th><th scope="col">Source</th><th scope="col">Status</th></tr></thead>
+    <tbody>
+      <tr><td data-label="#">1</td><td data-label="Element · prominence"><b>“Back”</b> (B3 with a chevron), first in the header, top start, on every path.</td><td data-label="Why">Every path starts somewhere else, and each needs one way back that commits nothing. A step inside a task goes back to where it came from; Add Food, the task itself, closes. The system back gesture does the same. On an edit it reads “Cancel”, since leaving discards the change (critique P1).</td><td data-label="Source">IA Flows 1, 3, 4; Add Food notes (“choosing the wrong result costs one step back”); heuristic 3</td><td data-label="Status"><span class="st st-ia">IA</span><span class="st st-jc">Back, top start</span><span class="st st-new">S1 step header</span></td></tr>
+      <tr><td data-label="#">2</td><td data-label="Element · prominence"><b>Source note</b> (N4) above the name: “Food database”, “Barcode”, “Photo estimate” or “From recipe”.</td><td data-label="Why">Trust depends on each logging method’s accuracy, so the method comes first on every path, as it does in Today’s rows. No path is singled out as a defect.</td><td data-label="Source">J2; H2; cross-app accuracy pattern (<code>01-secondary-research.md</code>)</td><td data-label="Status"><span class="st st-ev">Evidenced</span><span class="st st-sys">J2</span></td></tr>
+      <tr><td data-label="#">3</td><td data-label="Element · prominence"><b>Name</b> of the food or dish (<code>voice-title</code>), the screen’s one serif element.</td><td data-label="Why">Says what is about to be logged before any figure does, which is where a wrong match gets caught. On a recipe it keeps the dish’s identity.</td><td data-label="Source">IA 3 content; hybrid §3 (serif = food/dish name on Confirmation); tokens §2.3 rule 3</td><td data-label="Status"><span class="st st-ia">IA</span><span class="st st-sys">System</span></td></tr>
+      <tr><td data-label="#">4</td><td data-label="Element · prominence"><b>Recipe thumbnail</b> (M1), Flow 3 only, beside the name at 120&nbsp;px in the card’s 4:3 crop; wraps below the name on narrow screens.</td><td data-label="Why">Continuity with the card the recipe was chosen from. It stays a labelled placeholder until the imagery pass.</td><td data-label="Source">Hybrid §3 (“recipe thumbnail only when arriving from Flow 3”) and §7; the image standing rule in <code>CLAUDE.md</code></td><td data-label="Status"><span class="st st-sys">System</span><span class="st st-jc">Size and place</span><span class="st st-new">M1</span></td></tr>
+      <tr><td data-label="#">5</td><td data-label="Element · prominence"><b>Context line</b>, Flow 4 only: “Logged at 08:10 as 40&nbsp;g · 150&nbsp;kcal”.</td><td data-label="Why">Tells an edit apart from a new item at a glance, and keeps the logged amount and its kcal in view while the portion changes, so the correction can be checked without remembering the old total (critique P2).</td><td data-label="Source">IA Flow 4 (“pre-filled with that entry”); heuristics 1 and 6</td><td data-label="Status"><span class="st st-ia">IA</span><span class="st st-jc">Copy</span></td></tr>
+      <tr><td data-label="#">6</td><td data-label="Element · prominence"><b>Nutrition block</b> (N2) labelled “Your portion”: hero kcal, energy split, then protein, carbs and fat with grams and share of energy.</td><td data-label="Why">The answer first, at Today’s hero size, then the full breakdown. Shares are of macro energy, computed from the grams (4/4/9&nbsp;kcal per g), and one column label says so (“% of kcal”, critique P2), so they can be checked against the grams. The kcal total is the source’s own figure and can differ by a few kcal from the macro sum (fibre, rounding).</td><td data-label="Source">IA 3 (“calorie count, full macro breakdown”); P0 #4; Segment 1 (“a number I can trust”); Stage 3 guardrail (“checkable”)</td><td data-label="Status"><span class="st st-ev">Evidenced</span><span class="st st-ia">IA</span><span class="st st-sys">System</span></td></tr>
+      <tr><td data-label="#">7</td><td data-label="Element · prominence"><b>An estimate looks like any other figure</b>: no “~”, range, fading or confidence score.</td><td data-label="Why">The entry will sum into Today’s total, so it must look summable; the words carry the uncertainty instead.</td><td data-label="Source">J2; Cal AI accuracy complaints; L1</td><td data-label="Status"><span class="st st-sys">J2</span><span class="st st-jc">J2</span></td></tr>
+      <tr><td data-label="#">8</td><td data-label="Element · prominence"><b>Helper line</b>, photo only, directly above the portion: “Estimated from your photo. Check the portion before you log it.”</td><td data-label="Why">The portion is what photo estimates get wrong most often, so the line points at the control that fixes it, at the moment it matters.</td><td data-label="Source">J2 point 3; Cal AI complaints on misjudged portions (<code>01-secondary-research.md</code>)</td><td data-label="Status"><span class="st st-ev">Evidenced</span><span class="st st-sys">J2</span></td></tr>
+      <tr><td data-label="#">9</td><td data-label="Element · prominence"><b>Portion</b> (I3) below the block, just above the action: stepper, typed amount and unit; a recipe uses servings only.</td><td data-label="Why">Serving size is its own friction point, and a label serving often isn’t what people eat, so the unit follows how the item is measured. It sits in the lower half, right before the action it changes. The recipe path uses Recipe Detail’s own stepper, so the handoff feels like one control.</td><td data-label="Source">IA 3 (“portion/serving-size control, editable”); Cronometer serving-size and unit-conversion threads; Segment 1 (“often one-handed”); H4</td><td data-label="Status"><span class="st st-ev">Evidenced</span><span class="st st-ia">IA</span><span class="st st-jc">Answer above, portion below</span><span class="st st-new">I3 portion group</span></td></tr>
+      <tr><td data-label="#">10</td><td data-label="Element · prominence"><b>Figures follow the portion</b> as you step or type, and the new totals are announced politely.</td><td data-label="Why">If changing the amount didn’t visibly change the answer, the control would read as decoration and the figures couldn’t be checked. An empty, zero or unreadable amount never leaves stale figures: the last valid amount comes back when you leave the field, and “−” never raises it (critique P2).</td><td data-label="Source">Heuristic 1; Stage 3 guardrail (“checkable”)</td><td data-label="Status"><span class="st st-jc">Live update</span></td></tr>
+      <tr><td data-label="#">11</td><td data-label="Element · prominence"><b>“Log it”</b> (B1) in the action bar, in the same place on every path that adds an entry.</td><td data-label="Why">The handoff promise made visible: “Log this” on a recipe ends on the same button as a search result.</td><td data-label="Source">IA Flow 3 (“same screen and same action as Flow 1”); H4; hybrid §3; S3</td><td data-label="Status"><span class="st st-ev">Evidenced</span><span class="st st-ia">IA</span><span class="st st-sys">System</span></td></tr>
+      <tr><td data-label="#">12</td><td data-label="Element · prominence"><b>“Retake photo”</b> (B2), photo only, stacked above “Log it”.</td><td data-label="Why">A misidentified food can’t be fixed by changing the portion. Stacking it above keeps “Log it” where it is on every other path.</td><td data-label="Source">Cal AI misidentification complaints; Add Food carry-forward; S3 stacking rule</td><td data-label="Status"><span class="st st-ev">Evidenced</span><span class="st st-new">S3 primary last</span></td></tr>
+      <tr><td data-label="#">12a</td><td data-label="Element · prominence"><b>“Search instead”</b> (B3), photo only, at the far end of the Back row; screen readers hear “Wrong food? Search instead”.</td><td data-label="Why">A retake of the same plate is likely to be identified the same wrong way; Search names the food exactly. It shares the row with Back, the other way out, so it adds no height. Placed under the name, it pushed the portion check below the action bar.</td><td data-label="Source">Cal AI misidentification complaints (<code>01-secondary-research.md</code>); Add Food E1 (a failed method points to another); critique P2</td><td data-label="Status"><span class="st st-ev">Evidenced</span><span class="st st-jc">Placement</span><span class="st st-new">Critique P2</span></td></tr>
+      <tr><td data-label="#">13</td><td data-label="Element · prominence"><b>“Save changes”</b> (B1), Flow 4, in the same place as “Log it”.</td><td data-label="Why">Same place, new label: the label says what will happen to Today.</td><td data-label="Source">IA Flow 4</td><td data-label="Status"><span class="st st-ia">IA</span></td></tr>
+      <tr><td data-label="#">14</td><td data-label="Element · prominence"><b>“Remove entry”</b> (B3), Flow 4, at the top end of the header, opposite “Cancel”.</td><td data-label="Why">Revision 1 put it at the end of the body, 24&nbsp;px under the unit picker and within thumb reach. At the top it is out of the thumb zone and the whole screen away from “Save changes”, so a correction can’t turn into a deletion by a slip. No status hue: v1 has none, and removing an entry isn’t an error.</td><td data-label="Source">IA Flow 4; heuristic 5; tokens §1.3 rule 4; critique P1</td><td data-label="Status"><span class="st st-ia">IA</span><span class="st st-jc">Placement</span><span class="st st-new">Critique P1</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Left off the screen, on purpose</h3>
+  <div class="tablewrap"><table class="ref">
+    <thead><tr><th scope="col">Not shown</th><th scope="col">Why</th><th scope="col">Status</th></tr></thead>
+    <tbody>
+      <tr><td data-label="Not shown">“After logging: 1,143 kcal left”</td><td data-label="Why">Would answer “does it fit my day” here, but IA 3 doesn’t list it and Today shows the result one tap later. Adding it is a scope decision, not a fix.</td><td data-label="Status"><span class="st st-jc">Judgment call · scope</span></td></tr>
+      <tr><td data-label="Not shown">Micronutrients (fibre, sodium…) and % of daily goals, as on MyFitnessPal</td><td data-label="Why">Not in IA 3 or P0; the full macro breakdown is the evidenced need.</td><td data-label="Status"><span class="st st-ia">IA</span></td></tr>
+      <tr><td data-label="Not shown">Itemized “what we identified” list for a photo</td><td data-label="Why">J2 left it to test at Screens because it adds data IA 3 doesn’t list. “Retake photo” and the portion control cover the two named failures: the wrong food and the wrong portion.</td><td data-label="Status"><span class="st st-sys">J2 · open</span></td></tr>
+      <tr><td data-label="Not shown">Your own photo on the photo path</td><td data-label="Why">IA 3 doesn’t list it, and hybrid §7 allows logging screens only the viewfinder and the Flow 3 thumbnail.</td><td data-label="Status"><span class="st st-sys">Image rule</span></td></tr>
+      <tr><td data-label="Not shown">Meal slot (breakfast, lunch…)</td><td data-label="Why">Today is one chronological list with no meal groups.</td><td data-label="Status"><span class="st st-ia">IA</span></td></tr>
+      <tr><td data-label="Not shown">Editing the name or the figures by hand</td><td data-label="Why">An entry’s values come from its source. Typing over them would break “where the number came from”. For the wrong food: Back, or Remove entry.</td><td data-label="Status"><span class="st st-jc">Judgment call</span></td></tr>
+      <tr><td data-label="Not shown">A confirmation dialog before “Remove entry”</td><td data-label="Why">Adds a step to every removal; IA Flow 4 defers an undo message to v2 instead.</td><td data-label="Status"><span class="st st-ia">IA · v2</span></td></tr>
+      <tr><td data-label="Not shown">A premium lock on any source</td><td data-label="Why">Gating a logging method is the loudest complaint in the sample (H2).</td><td data-label="Status"><span class="st st-ev">Evidenced</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="sec" aria-labelledby="flows">
+  <h2 id="flows">Where each control leads</h2>
+  <p class="lead">In this prototype, Back links here and the actions do nothing until the screens they open are built. The portion controls work.</p>
+  <div class="tablewrap"><table class="ref">
+    <thead><tr><th scope="col">Control</th><th scope="col">Opens or does</th><th scope="col">Flow</th></tr></thead>
+    <tbody>
+      <tr><td data-label="Control">Back · Cancel</td><td data-label="Opens or does">The screen that opened this one: Add Food results or scanner (Frames A, B), the camera (C), Recipe Detail (D). On an edit it reads “Cancel” and returns to Today (E). Nothing is logged, saved or removed.</td><td data-label="Flow">1, 3, 4</td></tr>
+      <tr><td data-label="Control">− · amount · +</td><td data-label="Opens or does">Changes the portion; every figure in the block follows. “−” never raises the amount; an empty, zero or unreadable amount goes back to the last valid one when you leave the field.</td><td data-label="Flow">—</td></tr>
+      <tr><td data-label="Control">Unit</td><td data-label="Opens or does">Converts the exact amount to the new unit, so the figures stay the same and switching back returns the same amount.</td><td data-label="Flow">—</td></tr>
+      <tr><td data-label="Control">Log it</td><td data-label="Opens or does">Today, with the new entry at the top of the list and the totals recalculated.</td><td data-label="Flow">Flow 1, Flow 3</td></tr>
+      <tr><td data-label="Control">Retake photo</td><td data-label="Opens or does">Add Food, Photo mode.</td><td data-label="Flow">Flow 1</td></tr>
+      <tr><td data-label="Control">Search instead</td><td data-label="Opens or does">Add Food, Search mode.</td><td data-label="Flow">Flow 1</td></tr>
+      <tr><td data-label="Control">Save changes</td><td data-label="Opens or does">Today, with the entry updated and the totals recalculated.</td><td data-label="Flow">Flow 4</td></tr>
+      <tr><td data-label="Control">Remove entry</td><td data-label="Opens or does">Today, with the entry gone and the totals recalculated. Undo is a v2 state.</td><td data-label="Flow">Flow 4</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="sec" aria-labelledby="n-refs">
+  <h2 id="n-refs">What the reference screens show</h2>
+  <p class="lead">The logging-related images in <code>03-branding/refs/</code> were viewed again. <b>Only one shows a screen close to this one</b>, so the structure follows the IA and the research.</p>
+  <ul class="refs">
+    <li><b>mfp_nutr · MyFitnessPal recipe details.</b> “Percent of Daily Goals” bars, a long nutrient ledger, and “LOG TO DIARY” pinned full width at the bottom. <span class="took">Taken: the pinned action (already S3) and right-aligned figures down a ledger. Left: percent-of-day bars (not in IA 3), fifteen micronutrient rows, a grey hierarchy that gives “Trans&nbsp;–” the weight of Calories, and all caps. No portion control is visible on the screen.</span></li>
+    <li><b>macro1 · MacroFactor expenditure.</b> “1366 kcal”: a big figure with a smaller unit. <span class="took">Taken, via the system: the hero figure and its unit one step down. Left: the tutorial card and the chart.</span></li>
+    <li><b>mfp_scr · MyFitnessPal weekly digest.</b> “Keep it up… 8 days!” in blue. <span class="took">Left: streaks and reward tone, excluded in Stage 3.</span></li>
+    <li><b>calai1, yazio1, lifesum and the rest.</b> None shows a review step before logging. <span class="took">Nothing for this screen.</span></li>
+  </ul>
+</section>
+
+<section class="sec" aria-labelledby="n-heur">
+  <h2 id="n-heur">Heuristics, applied while building</h2>
+  <p class="lead">Nielsen’s ten heuristics served as constraints during generation; the single <code>/impeccable critique</code> run tested them afterwards.</p>
+  <div class="tablewrap"><table class="ref">
+    <thead><tr><th scope="col">Heuristic</th><th scope="col">Applied as</th></tr></thead>
+    <tbody>
+      <tr><td data-label="Heuristic">1 · Visibility of system status</td><td data-label="Applied as">The source is named on every path. Figures change as the portion changes, and the change is announced. The context line marks an edit, and the action label says what will happen to Today.</td></tr>
+      <tr><td data-label="Heuristic">2 · Match with the real world</td><td data-label="Applied as">“Your portion”, “1 slice”, “1 bar”, “Logged at 08:10 as 40&nbsp;g”. Units follow how the item is measured.</td></tr>
+      <tr><td data-label="Heuristic">3 · User control and freedom</td><td data-label="Applied as">Back on every path commits nothing, and on an edit it says “Cancel”. “Remove entry” is at the top, away from “Save changes”. A wrongly identified photo can be retaken or searched for instead.</td></tr>
+      <tr><td data-label="Heuristic">4 · Consistency and standards</td><td data-label="Applied as">One skeleton for five arrivals. “Log this” ends on the same “Log it”. Source first, as on Today. The recipe path uses Recipe Detail’s stepper.</td></tr>
+      <tr><td data-label="Heuristic">5 · Error prevention</td><td data-label="Applied as">Name and source before any figure. A portion check before anything is logged. The destructive action is out of the thumb zone.</td></tr>
+      <tr><td data-label="Heuristic">6 · Recognition over recall</td><td data-label="Applied as">The logged amount stays in view while you edit. Units are named, and shares sit beside the grams.</td></tr>
+      <tr><td data-label="Heuristic">7 · Flexibility and efficiency</td><td data-label="Applied as">Type the amount or step it. When the suggested portion is right, it’s one tap to log.</td></tr>
+      <tr><td data-label="Heuristic">8 · Aesthetic and minimalist design</td><td data-label="Applied as">One serif name, one block, one control, one primary action. No micronutrients, badges or scores.</td></tr>
+      <tr><td data-label="Heuristic">9 · Recognize and recover from errors</td><td data-label="Applied as">Search instead (or retake) for a misidentified photo, Back for a wrong result, Save or Remove for a past mistake. An invalid amount falls back to the last valid one. Undo is v2.</td></tr>
+      <tr><td data-label="Heuristic">10 · Help and documentation</td><td data-label="Applied as">One helper line, only where the risk is: a photo estimate.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="sec" aria-labelledby="n-rev">
+  <h2 id="n-rev">What the critique changed</h2>
+  <p class="lead">One <code>/impeccable critique</code> run, with two isolated assessments: a design review and the automated detector. Revision 1 scored <b>25/40</b> (Acceptable), with 0 P0, 1 P1 and 4 P2 issues. <b>Only the P1 and P2 issues were fixed</b>, system first, then the screen was rebuilt; there was no second round.</p>
+  <div class="tablewrap"><table class="ref">
+    <thead><tr><th scope="col">Finding</th><th scope="col">Revision 1</th><th scope="col">Revision 2</th><th scope="col">Recorded in</th></tr></thead>
+    <tbody>
+      <tr><td data-label="Finding">P1 · No safety net on an edit</td><td data-label="Revision 1">“Remove entry” sat at the end of the body, 24&nbsp;px under the unit picker and within thumb reach; one tap deleted. Back after an edit threw the change away without saying so. The notes wrongly called the button “out of the thumb zone”.</td><td data-label="Revision 2">On an edit the exit reads “Cancel”, and “Remove entry” takes the top end of the same row: out of thumb reach and the whole screen away from “Save changes”. Undo after removal stays a v2 state, as IA Flow 4 already records.</td><td data-label="Recorded in">S1 step header; S3 rule; frame E</td></tr>
+      <tr><td data-label="Finding">P2 · “53%” of what?</td><td data-label="Revision 1">The share column had no label, so a macro planner could read it as a share of their daily target.</td><td data-label="Revision 2">One column label, “% of kcal”, over the shares; screen readers hear “of kcal” after each. The notes now say shares are of macro energy and the kcal total is the source’s own figure.</td><td data-label="Recorded in">N2 <code>.mb-head</code></td></tr>
+      <tr><td data-label="Finding">P2 · Edge amounts</td><td data-label="Revision 1">0, an empty field or text left the old figures on screen; “−” at 5&nbsp;g gave 10&nbsp;g; 175&nbsp;g → servings → grams came back as 170&nbsp;g; every keystroke was announced.</td><td data-label="Revision 2">The last valid amount returns when you leave the field; “−” never raises the amount; a unit change keeps the exact quantity; totals are announced once typing pauses. An error message for invalid amounts is a v2 state.</td><td data-label="Recorded in">Page script (I3 behaviour)</td></tr>
+      <tr><td data-label="Finding">P2 · An edit hid its consequence</td><td data-label="Revision 1">“Logged at 08:10 as 40&nbsp;g” left the logged kcal to memory.</td><td data-label="Revision 2">“Logged at 08:10 as 40&nbsp;g · 150&nbsp;kcal”, above a block showing the new total.</td><td data-label="Recorded in">Frame E</td></tr>
+      <tr><td data-label="Finding">P2 · A misidentified photo</td><td data-label="Revision 1">The only recovery was a retake, which would likely name the same wrong food; Search needed Back plus a mode switch.</td><td data-label="Revision 2">“Search instead” (B3) at the far end of the Back row on the photo path. Placed under the name, it first pushed the portion check below the action bar, so it moved up into the row, where it adds no height.</td><td data-label="Recorded in">Frame C; B3 <code>.btn-flush</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Detector findings</h3>
+  <p class="note">24 findings, <b>none fixed</b>, and 20 of them are identical on 02 Add Food. They are false positives: padding and font shorthands set through <code>var()</code> tokens the detector can’t resolve (the action bar, the unit select, whose padding sits on the <code>select</code> by design), plus the device frame and the notes. The rest are deliberate: the Paper brand color, the striped M1 placeholder and the J1 hatch in the shared CSS. One flag is about the rhythm of these notes’ prose, not product copy. The in-browser overlay couldn’t run: the preview serves local files as <code>data:</code> snapshots, and the live server doesn’t serve project files.</p>
+
+  <h3>Left standing, on purpose</h3>
+  <div class="tablewrap"><table class="ref">
+    <thead><tr><th scope="col">Item</th><th scope="col">Severity</th><th scope="col">Why it stays</th></tr></thead>
+    <tbody>
+      <tr><td data-label="Item">Empty Oat above the action bar on frames A, B and D</td><td data-label="Severity">P3</td><td data-label="Why it stays">The body is short when there is nothing to warn about; the action bar stays pinned, so the space is harmless. Revisit with real content lengths.</td></tr>
+      <tr><td data-label="Item">“stew” alone on the second title line beside the thumbnail</td><td data-label="Severity">P3</td><td data-label="Why it stays">Balanced title wrapping is a polish item for the S1 title, not a fix for this screen.</td></tr>
+      <tr><td data-label="Item">“Log it” doesn’t say what it does to the day</td><td data-label="Severity">Open question</td><td data-label="Why it stays">The same scope question as the “kcal left after logging” preview in “Left off the screen”: not in IA 3.</td></tr>
+      <tr><td data-label="Item">Remove entry on Today with undo instead of here</td><td data-label="Severity">Open question</td><td data-label="Why it stays">IA Flow 4 routes removal through this screen and defers undo to v2. Moving it would be an IA change.</td></tr>
+      <tr><td data-label="Item">A labelled macro sum that differs from the kcal total</td><td data-label="Severity">Minor</td><td data-label="Why it stays">Real sources publish kcal separately from macros (fibre, rounding). The notes no longer promise the two match.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="sec" aria-labelledby="n-img">
+  <h2 id="n-img">Images: one slot, on one path</h2>
+  <p class="lead">Image placeholders go only where the IA or the system calls for a picture. <b>On this screen that is the recipe thumbnail, and only when arriving from Recipe Detail.</b></p>
+  <div class="cols">
+    <ul>
+      <li><b>M1, added to the system before use:</b> 135° stripes in Oat Deep and Paper with a Paper label reading “IMAGE · UNVALIDATED (§7)”, rebuilt from tokens after the pattern in <code>03-direction-preview.html</code>.</li>
+      <li><b>Same crop as the recipe card</b> (<code>ratio-recipe-image</code>, 4:3, still provisional), so the thumbnail is recognisably the card you chose.</li>
+    </ul>
+    <ul>
+      <li><b>No slot on the other paths:</b> not for search, barcode or photo results, and not when a recipe entry is reopened from Today.</li>
+      <li><b>Final pass:</b> real placeholder images come from Krea after all five screens are laid out. Until then, nothing is generated, downloaded or sourced.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="sec" aria-labelledby="n-sys">
+  <h2 id="n-sys">System changes and checks</h2>
+  <p class="lead">Nothing on this screen is styled locally. Whatever it needed went into <code>tokens-v1.md</code> and <code>components-v1.html</code> first; the build copies the system CSS in verbatim, and 01 Today and 02 Add Food were synced to the same copy.</p>
+  <div class="cols">
+    <div>
+      <h3>Added to the system</h3>
+      <ul>
+        <li><b>M1 image placeholder</b> with <code>size-thumb</code>, <code>ratio-recipe-image</code> (now also used by C3) and <code>size-placeholder-stripe</code>.</li>
+        <li><b>S1 step header:</b> B3 “Back” with a new <code>i-chev-left</code> glyph; <b>head with media</b> for the Flow 3 thumbnail.</li>
+        <li><b>B3 <code>.btn-flush</code></b> for a text button at the start of a column (“Back”, “Cancel”, “Search instead”). After the critique, “Remove entry” sits at the top end of the S1 header row.</li>
+        <li><b>I3 portion group</b> (<code>.portion-wrap</code>) with the J2 helper line above it.</li>
+        <li><b>S3 rule:</b> two buttons stack with the primary last; nothing destructive in the bar.</li>
+        <li><b>N2 label by context</b> (“Your portion” here, “Per serving” on Recipe Detail) and, after the critique, a <b>“% of kcal” column label</b>; <b>J2 copy note</b> for reopened photo entries.</li>
+        <li><b>Stage 3 unchanged:</b> no new color; the placeholder uses existing surfaces.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Checks run on this file</h3>
+      <ul>
+        <li><b>Verbatim system CSS</b>, checked at build. Component CSS has no raw px, hex, size or weight values except the two documented <code>@container</code> breakpoints and the standard <code>.sr-only</code> utility. 01 Today and 02 Add Food were synced to the same copy; their markup is unchanged.</li>
+        <li><b>Rendered:</b> 0 colors outside the palette; every figure tabular (8 to 9 per frame); one visible serif element per frame (the name) across all five frames.</li>
+        <li><b>Reflow (revision 2):</b> nothing inside the screen overflows at 390, 320 or 195&nbsp;px. Revision 1 overflowed by 49&nbsp;px at 195 (the recipe stepper plus “servings”), so <code>.stepper-static</code> now wraps. At 195&nbsp;px, Back and “Search instead” overlapped by 4&nbsp;px, so <code>.screen-head-row</code> wraps too.</li>
+        <li><b>Touch targets:</b> every control is at least 48&nbsp;px at 390, 320 and 195&nbsp;px; the stepper and action buttons are 52 tall; “Search instead” sits opposite Back in the header row, 48 tall. On the photo frame the portion control stays above the action bar without scrolling; only its bottom 2&nbsp;px sit under the bar’s edge (the frame scrolls 26&nbsp;px). Back and Cancel sit 8&nbsp;px from the screen edge, so their chevron or first letter lines up with the content.</li>
+        <li><b>Thumbnail:</b> 120 × 90; its label (112 × 56) wraps to three lines without clipping. Beside the name at 390&nbsp;px, below it at 320 and 195.</li>
+        <li><b>Remove entry:</b> now 16&nbsp;px below the top of the screen under the status bar, opposite Cancel; in revision 1 it sat at about y&nbsp;635 of 844.</li>
+        <li><b>Figures:</b> the build and the page script round the same way; shares add up to 100 in all five frames; the “% of kcal” label is right-aligned with the share column to the pixel.</li>
+        <li><b>Portion script, tested after the critique:</b> an empty field or 0 keeps 130&nbsp;kcal and puts 170 back on leaving; “−” at 5&nbsp;g stays at 5 and “+” gives 10; 175&nbsp;g → 1.03 servings → 175&nbsp;g, 134&nbsp;kcal both ways; 99,999 is rejected and restored; after a 700&nbsp;ms pause one announcement reads “170 g: 130 kcal. Protein 17 g, carbs 6 g, fat 4 g.”</li>
+        <li><b>Not verified:</b> a full screen-reader walkthrough, and OS text scaling to 200% (the type tokens are px, audit E6).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</main>
+<script>
+/* Prototype behaviour for I3 on this screen: stepping, typing or changing the unit recalculates every figure in the frame.
+   Same rules as the build: grams round to whole numbers; shares come from macro energy (4/4/9 kcal per g) and add up to 100.
+   After the critique: an empty, zero or unreadable amount never leaves stale figures behind (the last valid amount comes back
+   when you leave the field); "−" never raises the amount; a unit change converts the exact quantity; totals are announced once
+   typing pauses.
+   Cross-screen audit: the ceiling now belongs to the unit rather than to the field — one 9,999 cap applied to every unit, so
+   5,000 "servings" was accepted and rendered 650,000 kcal. A count unit caps at 99, a weight or volume at 5,000. The field is
+   a spinbutton that keeps aria-valuenow / aria-valuetext in step and answers the arrow keys the role promises. The authored
+   state is restored on load, so the browser's form restoration can't leave a frame showing a figure the markup never had. */
+(() => {
+  const MAX_FALLBACK = 9999;
+  const maxOf = unit => unit[4] || MAX_FALLBACK;
+  const fmt = n => String(Number(n.toFixed(2)));
+  const num = v => parseFloat(String(v).replace(",", "."));
+  const valid = (a, unit) => a > 0 && a <= maxOf(unit);
+  let eid = 0;
+  document.querySelectorAll("[data-portion]").forEach(wrap => {
+    const d = JSON.parse(wrap.dataset.portion), scr = wrap.closest(".screen");
+    const out = k => scr.querySelector(`[data-out="${k}"]`);
+    const input = wrap.querySelector("input"), sel = wrap.querySelector("select");
+    /* a reload can restore a stale field and unit; the frames are authored states, so start from the markup */
+    input.value = input.defaultValue;
+    if (sel) sel.selectedIndex = d.u;
+    let u = d.u, qty = num(input.value) * d.units[u][2], timer;
+    /* Stage 6 states (tokens-v1.md §10.3 / §10.4), wired to this screen's own rules. The ± buttons
+       disable where a press would do nothing — the unit's own ceiling (a count 99, a weight or volume
+       5,000, Stage 5b) and the floor its step lands on. An out-of-range typed amount now says so while
+       it is being typed, instead of reverting with no explanation (the item both IA 3 and IA 5 left
+       standing). The figure itself never changes color (L1): the wrapper carries state-error, and an
+       icon plus a sentence identify the problem in words (WCAG 2.2 SC 3.3.1). aria-valuemin stays
+       unset — the step is a floor for stepping, not a bound on what can be typed, the same "only where
+       real" rule the cross-screen audit set for the ceiling. */
+    const stepper = wrap.querySelector(".stepper"), btns = [...wrap.querySelectorAll("[data-step]")];
+    const errId = "amt-err-" + ++eid;
+    let errBox = null;
+    const clearError = () => {
+      stepper.classList.remove("error");
+      input.removeAttribute("aria-invalid");
+      input.removeAttribute("aria-describedby");
+      if (errBox) { errBox.remove(); errBox = null; }
+    };
+    const showError = text => {
+      stepper.classList.add("error");
+      input.setAttribute("aria-invalid", "true");
+      input.setAttribute("aria-describedby", errId);
+      if (!errBox) {
+        errBox = document.createElement("p");
+        errBox.className = "field-error";
+        errBox.id = errId;
+        errBox.innerHTML = '<svg class="ico sm" aria-hidden="true"><use href="#i-error"/></svg><span></span>';
+        wrap.appendChild(errBox);
+      }
+      errBox.lastChild.textContent = text;
+    };
+    const problem = () => {
+      const unit = d.units[u], raw = input.value.trim(), a = num(raw);
+      if (raw === "") return null; /* mid-edit: nothing to say yet */
+      if (!isFinite(a)) return "That is not an amount this control can read.";
+      if (a <= 0) return "Enter an amount greater than 0.";
+      if (a > maxOf(unit)) return `An amount this size looks like a mistake \u2014 the highest this unit accepts is ${maxOf(unit).toLocaleString("en-US")} ${unit[1]}.`;
+      return null;
+    };
+    const bounds = a => {
+      const unit = d.units[u], st = unit[3];
+      btns.forEach(b => {
+        const dir = Number(b.dataset.step);
+        const next = dir > 0 ? Math.floor(a / st + 1 + 1e-9) * st : Math.ceil(a / st - 1 - 1e-9) * st;
+        b.disabled = !valid(next, unit);
+      });
+    };
+    const render = (a, announce) => {
+      const q = a * d.units[u][2];
+      const kcal = Math.round(d.per.kcal * q), g = ["p", "c", "f"].map(k => Math.round(d.per[k] * q));
+      const e = [g[0] * 4, g[1] * 4, g[2] * 9], tot = e[0] + e[1] + e[2];
+      const sh = e.map(x => (tot ? Math.round((x * 100) / tot) : 0));
+      if (tot) sh[sh.indexOf(Math.max(...sh))] += 100 - sh.reduce((s, x) => s + x, 0);
+      out("kcal").textContent = kcal.toLocaleString("en-US");
+      ["p", "c", "f"].forEach((k, i) => {
+        out(k).textContent = g[i];
+        out(k + "s").textContent = sh[i];
+        out(k + "e").style.setProperty("--fl", e[i]);
+      });
+      const word = out("unit");
+      if (word) word.textContent = a === 1 ? d.units[u][0] : d.units[u][1];
+      input.setAttribute("aria-valuenow", fmt(a));
+      input.setAttribute("aria-valuemax", String(maxOf(d.units[u])));
+      input.setAttribute("aria-valuetext", `${fmt(a)} ${a === 1 ? d.units[u][0] : d.units[u][1]}`);
+      bounds(a);
+      clearTimeout(timer);
+      if (announce) timer = setTimeout(() => {
+        out("say").textContent = `${fmt(a)} ${a === 1 ? d.units[u][0] : d.units[u][1]}: ${kcal.toLocaleString("en-US")} kcal. Protein ${g[0]} g, carbs ${g[1]} g, fat ${g[2]} g.`;
+      }, 700);
+    };
+    const current = () => { const a = num(input.value); return valid(a, d.units[u]) ? a : qty / d.units[u][2]; };
+    const set = a => { input.value = fmt(a); qty = a * d.units[u][2]; render(a, true); };
+    const step = dir => {
+      const st = d.units[u][3], a = current();
+      const next = dir > 0 ? Math.floor(a / st + 1 + 1e-9) * st : Math.ceil(a / st - 1 - 1e-9) * st;
+      set(valid(next, d.units[u]) ? next : a);
+    };
+    wrap.querySelectorAll("[data-step]").forEach(b => b.addEventListener("click", () => step(Number(b.dataset.step))));
+    input.addEventListener("keydown", e => {
+      const dir = {ArrowUp: 1, ArrowDown: -1}[e.key];
+      if (dir === undefined) return;
+      e.preventDefault();
+      step(dir);
+    });
+    input.addEventListener("input", () => {
+      const a = num(input.value);
+      if (valid(a, d.units[u])) { clearError(); qty = a * d.units[u][2]; render(a, true); }
+      else { const p = problem(); p ? showError(p) : clearError(); }
+    });
+    input.addEventListener("change", () => { if (!valid(num(input.value), d.units[u])) { clearError(); set(qty / d.units[u][2]); } });
+    const a0 = num(input.value);
+    input.setAttribute("aria-valuenow", fmt(a0));
+    input.setAttribute("aria-valuemax", String(maxOf(d.units[u])));
+    input.setAttribute("aria-valuetext", `${fmt(a0)} ${a0 === 1 ? d.units[u][0] : d.units[u][1]}`);
+    bounds(a0);
+    if (sel)
+      sel.addEventListener("change", () => {
+        u = Number(sel.value);
+        clearError(); /* the ceiling belongs to the unit, so a new unit retires the old unit's message */
+        const a = Number((qty / d.units[u][2]).toFixed(2));
+        input.value = fmt(a);
+        render(a, true); /* qty is kept exact, so switching back returns the same amount */
+      });
+  });
+})();
+</script>
+</body>
+</html>

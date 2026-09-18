@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Measured Kitchen Preview</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css"><!-- Inter + Newsreader, vendored locally (Stage 7b): no network needed -->
+<style>
+  /* Tokens — from 02-hybrid-direction.md §4 (single light look by design; brand preview) */
+  :root{
+    --ground:#F2EDE6; --paper:#FFFDF9; --ink:#1F2421; --ink-2:#5E605A; --rule:#E3DCD2;
+    --pine:#2F5245; --pine-tint:#DCE6DF;
+    --protein:#B0513A; --carbs:#A87A1F; --fat:#4D6A85;
+    --voice:"Newsreader", "Iowan Old Style", Georgia, "Times New Roman", serif;
+    --ui:"Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    --r:12px; /* provisional — shape tokens not yet defined */
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font:16px/1.5 var(--ui);padding-inline:16px}
+  .wrap{max-width:1080px;margin:0 auto;padding-block:40px 72px}
+
+  /* ---------- page chrome ---------- */
+  .page-head h1{font:400 clamp(30px,4.5vw,44px)/1.1 var(--voice);margin:0 0 10px;letter-spacing:-.01em}
+  .page-head p{margin:0 0 6px;color:var(--ink-2);max-width:68ch}
+  .notice{display:inline-flex;gap:8px;align-items:center;margin-top:14px;padding:8px 12px;border:1px dashed var(--ink-2);border-radius:8px;font-size:13px;color:var(--ink)}
+  section.part{margin-top:56px}
+  .part-head{display:flex;gap:14px;align-items:baseline;border-top:1px solid var(--rule);padding-top:18px;margin-bottom:22px}
+  .part-head .n{font:600 12px/1 var(--ui);letter-spacing:.12em;color:var(--ink-2)}
+  .part-head h2{font:600 22px/1.25 var(--ui);margin:0}
+  .part-head p{margin:2px 0 0;color:var(--ink-2);font-size:14px}
+  .pair{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}
+  .col{flex:1 1 300px;min-width:0;max-width:100%}
+  .cap{font-size:13px;color:var(--ink-2);font-weight:600;margin:0 0 10px}
+  .note{font-size:13px;color:var(--ink-2);margin:10px 0 0}
+
+  /* ---------- shared components ---------- */
+  .fig{font-family:var(--ui);font-variant-numeric:tabular-nums lining-nums}
+  .unit{color:var(--ink-2);font-size:max(12px,.72em);font-weight:500;margin-left:.2em}
+  .label{font:600 12px/1.2 var(--ui);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+  .voice{font-family:var(--voice);font-weight:400}
+
+  /* Nutrition strip — ONE component, used on log rows and recipe cards (L1/L3) */
+  .strip{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px;font-size:14px;font-variant-numeric:tabular-nums lining-nums}
+  .strip .kcal{font-weight:600;font-size:15px}
+  .strip .m{display:inline-flex;align-items:baseline;gap:5px}
+  .strip .m::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--mc);align-self:center}
+  .strip .m i{font-style:normal;color:var(--ink-2);font-weight:500}
+  .m.p{--mc:var(--protein)} .m.c{--mc:var(--carbs)} .m.f{--mc:var(--fat)}
+  .strip-demo{outline:1.5px dashed var(--pine);padding:8px 10px;border-radius:6px}
+
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;border:0;border-radius:var(--r);background:var(--pine);color:var(--paper);font:600 16px/1 var(--ui);cursor:pointer}
+  .chip{display:inline-flex;align-items:center;min-height:32px;padding:0 12px;border-radius:999px;background:var(--pine-tint);color:var(--pine);font:500 13px/1 var(--ui)}
+  .chip.off{background:var(--paper);color:var(--ink);box-shadow:inset 0 0 0 1px var(--rule)}
+
+  .img-ph{position:relative;display:flex;align-items:flex-end;background:
+      repeating-linear-gradient(135deg,#E3DCD2 0 10px,#EAE4DB 10px 20px);color:var(--ink);border-radius:var(--r)}
+  .img-ph span{margin:8px;background:var(--paper);padding:3px 7px;border-radius:6px;font:600 12px/1.2 var(--ui);letter-spacing:.02em}
+
+  .paper{background:var(--paper);border-radius:16px}
+  .stepper{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-top:1px solid var(--rule)}
+  .stepper .ctl{display:flex;align-items:center;gap:14px}
+  .stepper b{display:inline-flex;width:36px;height:36px;border-radius:50%;align-items:center;justify-content:center;box-shadow:inset 0 0 0 1px var(--rule);color:var(--pine);font-weight:600}
+
+  /* Phone fragment frame */
+  .phone{width:360px;max-width:100%;background:var(--ground);border-radius:28px;box-shadow:0 0 0 1px var(--rule),0 18px 40px rgba(31,36,33,.10);overflow:hidden}
+  .phone .topbar{display:flex;justify-content:space-between;align-items:center;padding:14px 18px 6px;font-size:14px;color:var(--ink-2)}
+  .phone .inner{padding:8px 16px 18px}
+
+  /* ---------- 1 · strip on log row vs recipe card ---------- */
+  .logrow{padding:14px 16px}
+  .logrow .top{display:flex;justify-content:space-between;gap:12px;margin-bottom:10px}
+  .logrow .name{font-weight:500}
+  .logrow .sub{font-size:14px;color:var(--ink-2)}
+  .rcard{overflow:hidden}
+  .rcard .img-ph{border-radius:0;aspect-ratio:4/3}
+  .rcard .body{padding:12px 14px 14px}
+  .rcard h3{font:400 20px/1.2 var(--voice);margin:0 0 10px}
+
+  /* ---------- 2 · Screen 3 & Screen 5 ---------- */
+  .handoff{display:flex;flex-wrap:wrap;gap:20px;align-items:center}
+  .arrow{flex:0 0 auto;text-align:center;font-size:13px;color:var(--ink-2);padding:0 4px}
+  .arrow b{display:block;font-size:26px;color:var(--pine);line-height:1}
+  .hero-fig{font:600 48px/1 var(--ui);font-variant-numeric:tabular-nums lining-nums;letter-spacing:-.01em}
+  .hero-fig .unit{font-size:18px}
+  .from{display:flex;align-items:center;gap:10px;margin:4px 0 12px}
+  .from .img-ph{width:44px;height:44px;border-radius:8px}
+  .from .img-ph span{display:none}
+  .macro-rows{margin:16px 0 4px}
+  .mrow{display:grid;grid-template-columns:70px 1fr 56px;gap:10px;align-items:center;padding:7px 0;font-size:14px}
+  .mrow .bar{height:6px;border-radius:3px;background:var(--rule);overflow:hidden}
+  .mrow .bar i{display:block;height:100%;background:var(--mc);width:var(--w)}
+  .mrow .v{text-align:right;font-weight:600;font-variant-numeric:tabular-nums lining-nums}
+  .s5 .img-ph{border-radius:0;height:190px}
+  .s5 h3{font:400 30px/1.15 var(--voice);margin:14px 0 10px;letter-spacing:-.005em}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .npanel{display:grid;grid-template-columns:repeat(4,1fr);text-align:left;margin:10px 0 2px}
+  .npanel > div{padding:10px 0 10px 10px;border-left:1px solid var(--rule)}
+  .npanel > div:first-child{border-left:0;padding-left:0}
+  .npanel .v{font:600 20px/1.1 var(--ui);font-variant-numeric:tabular-nums lining-nums}
+  .npanel .k{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--ink-2);margin-top:3px}
+  .npanel .k::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--mc)}
+  .npanel .kc .k::before{display:none}
+
+  /* ---------- 3 · dial ends ---------- */
+  .today h3{font:400 30px/1.1 var(--voice);margin:2px 0 16px}
+  .ledger{padding:4px 16px}
+  .ledger .meal{padding:14px 0 4px}
+  .lrow{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-top:1px solid var(--rule)}
+  .lrow .name{font-weight:500;font-size:15px}
+  .lrow .sub{font-size:13px;color:var(--ink-2)}
+  .lrow .v{font-weight:600;font-variant-numeric:tabular-nums lining-nums;white-space:nowrap}
+  .summary{padding:16px}
+  .summary .of{font-size:14px;color:var(--ink-2);margin-top:6px;font-variant-numeric:tabular-nums}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .grid2 .rcard h3{font-size:17px;margin-bottom:8px}
+  .grid2 .body{padding:10px 10px 12px}
+  .grid2 .strip{font-size:12px;gap:2px 7px;flex-wrap:wrap}
+  .grid2 .strip .kcal{font-size:13px;flex-basis:100%}
+  .grid2 .strip .m{gap:3px;white-space:nowrap}
+  .grid2 .strip .m::before{width:6px;height:6px}
+  .grid2 .match{font-size:12px;line-height:1.35;color:var(--ink-2);margin-top:6px}
+  .seg{display:grid;grid-template-columns:1fr 1fr;background:var(--paper);border-radius:10px;padding:3px;box-shadow:inset 0 0 0 1px var(--rule);margin-bottom:10px}
+  .seg span{text-align:center;padding:8px 4px;font-size:13px;font-weight:500;border-radius:8px}
+  .seg .on{background:var(--pine);color:var(--paper)}
+
+  /* ---------- 4 · type specimens ---------- */
+  .spec{display:grid;grid-template-columns:minmax(150px,220px) 1fr;gap:18px 28px;padding:22px 24px;border-top:1px solid var(--rule)}
+  .spec:first-child{border-top:0}
+  .spec .meta b{display:block;font-size:15px}
+  .spec .meta span{font-size:13px;color:var(--ink-2)}
+  .spec .samples{display:grid;gap:12px;min-width:0}
+  .s-row{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px}
+  .s-row small{font-size:12px;color:var(--ink-2);font-family:var(--ui);font-variant-numeric:tabular-nums}
+  .tcol{display:inline-grid;gap:2px;padding:10px 14px;border-radius:10px;box-shadow:inset 0 0 0 1px var(--rule);font-variant-numeric:tabular-nums lining-nums;text-align:right;font-weight:600}
+  .never{display:inline-flex;gap:10px;align-items:baseline;padding:6px 12px;border-radius:8px;box-shadow:inset 0 0 0 1px var(--rule)}
+  .never s{font:400 24px/1 var(--voice);text-decoration-thickness:2px}
+  .never em{font-style:normal;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
+  @media (max-width:640px){.spec{grid-template-columns:1fr}}
+
+  /* ---------- 5 · palette ---------- */
+  .swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+  .sw{background:var(--paper);border-radius:12px;overflow:hidden;box-shadow:0 0 0 1px var(--rule)}
+  .sw .c{height:72px;background:var(--c);box-shadow:inset 0 -1px 0 var(--rule)}
+  .sw .t{padding:10px 12px 12px;font-size:12.5px;line-height:1.4}
+  .sw code{display:block;font:600 13px/1.3 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  .sw .tok{font-weight:600;font-size:13px}
+  .sw .role{color:var(--ink-2)}
+  .group-cap{margin:22px 0 10px}
+
+  footer{margin-top:56px;border-top:1px solid var(--rule);padding-top:16px;font-size:13px;color:var(--ink-2)}
+  footer ul{margin:6px 0 0;padding-left:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="page-head">
+  <h1>The Measured Kitchen: direction preview</h1>
+  <p>A quick visual check of <a href="02-hybrid-direction.md">02-hybrid-direction.md</a> §9. This is not the final stylescape. Does "words are warm, figures are exact" hold up once it's rendered?</p>
+  <div class="notice">⚠ All figures are <b>sample values</b>, not real nutrition data. Striped blocks are <b>unvalidated image placeholders</b> (§7).</div>
+</header>
+
+<!-- ================= 1 ================= -->
+<section class="part">
+  <div class="part-head"><span class="n">01</span><div><h2>Same nutrition strip, two contexts</h2><p>L1 / L3: the dashed strips are the identical component (same markup, same styles).</p></div></div>
+  <div class="pair">
+    <div class="col">
+      <p class="cap">Log row · Today (Screen 1)</p>
+      <div class="paper logrow">
+        <div class="top">
+          <div><div class="name">Chickpea &amp; spinach stew</div><div class="sub">1 serving · logged from recipe</div></div>
+          <div class="sub">12:40</div>
+        </div>
+        <div class="strip strip-demo">
+          <span class="kcal">412<span class="unit">kcal</span></span>
+          <span class="m p"><i>P</i>18<span class="unit">g</span></span>
+          <span class="m c"><i>C</i>52<span class="unit">g</span></span>
+          <span class="m f"><i>F</i>14<span class="unit">g</span></span>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <p class="cap">Recipe card · Recipes &amp; Filter (Screen 4)</p>
+      <div class="paper rcard" style="max-width:340px">
+        <div class="img-ph"><span>IMAGE · UNVALIDATED (§7)</span></div>
+        <div class="body">
+          <h3>Chickpea &amp; spinach stew</h3>
+          <div class="strip strip-demo">
+            <span class="kcal">412<span class="unit">kcal</span></span>
+            <span class="m p"><i>P</i>18<span class="unit">g</span></span>
+            <span class="m c"><i>C</i>52<span class="unit">g</span></span>
+            <span class="m f"><i>F</i>14<span class="unit">g</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2 ================= -->
+<section class="part">
+  <div class="part-head"><span class="n">02</span><div><h2>Recipe Detail → Food Confirmation: the shared pine button</h2><p>H4 / IA Flow 3: "Log this" carries the same figures into the same confirmation screen every logging method uses.</p></div></div>
+  <div class="handoff">
+    <div class="phone s5">
+      <div class="img-ph" style="border-radius:0"><span>HERO IMAGE · UNVALIDATED (§7)</span></div>
+      <div class="inner">
+        <p class="label" style="margin:14px 0 0">Screen 5 · Recipe detail</p>
+        <h3>Chickpea &amp; spinach stew</h3>
+        <div class="chips"><span class="chip">Vegan</span><span class="chip">≤ 500 kcal</span><span class="chip">Protein ≥ 15 g</span></div>
+        <p class="label" style="margin:18px 0 0">Nutrition per serving</p>
+        <div class="npanel">
+          <div class="kc"><div class="v">412</div><div class="k">kcal</div></div>
+          <div style="--mc:var(--protein)"><div class="v">18<span class="unit">g</span></div><div class="k">Protein</div></div>
+          <div style="--mc:var(--carbs)"><div class="v">52<span class="unit">g</span></div><div class="k">Carbs</div></div>
+          <div style="--mc:var(--fat)"><div class="v">14<span class="unit">g</span></div><div class="k">Fat</div></div>
+        </div>
+        <div class="stepper"><span>Servings</span><span class="ctl"><b>−</b><span class="fig" style="font-weight:600">1</span><b>+</b></span></div>
+        <button class="btn" type="button">Log this</button>
+      </div>
+    </div>
+
+    <div class="arrow" aria-hidden="true"><b>→</b>same figures,<br>same button</div>
+
+    <div class="phone">
+      <div class="topbar"><span>← Back</span><span>Confirm</span><span style="width:40px"></span></div>
+      <div class="inner">
+        <p class="label" style="margin:6px 0 0">Screen 3 · Food confirmation</p>
+        <div class="from"><div class="img-ph"><span>IMG</span></div><span class="label">From recipe</span></div>
+        <h3 class="voice" style="font-size:24px;line-height:1.2;margin:0 0 14px">Chickpea &amp; spinach stew</h3>
+        <div class="hero-fig">412<span class="unit">kcal</span></div>
+        <div class="note" style="margin-top:6px">per serving · 1 serving</div>
+        <div class="macro-rows">
+          <div class="mrow" style="--mc:var(--protein);--w:15%"><span>Protein</span><span class="bar"><i></i></span><span class="v">18<span class="unit">g</span></span></div>
+          <div class="mrow" style="--mc:var(--carbs);--w:23%"><span>Carbs</span><span class="bar"><i></i></span><span class="v">52<span class="unit">g</span></span></div>
+          <div class="mrow" style="--mc:var(--fat);--w:21%"><span>Fat</span><span class="bar"><i></i></span><span class="v">14<span class="unit">g</span></span></div>
+        </div>
+        <p class="note" style="margin:0 0 8px">Bars = share of today's target</p>
+        <div class="stepper"><span>Portion</span><span class="ctl"><b>−</b><span class="fig" style="font-weight:600">1 serving</span><b>+</b></span></div>
+        <button class="btn" type="button">Log it</button>
+      </div>
+    </div>
+  </div>
+  <p class="note">Serif budget check: Screen 3 (logging) uses exactly one serif element, the food name. Screen 5 (recipe) has no cap.</p>
+</section>
+
+<!-- ================= 3 ================= -->
+<section class="part">
+  <div class="part-head"><span class="n">03</span><div><h2>The dial's two ends, on the same ground</h2><p>Ledger (Screen 1) ↔ Cookbook (Screen 4): same tokens, different emphasis.</p></div></div>
+  <div class="pair">
+    <div class="col" style="flex:0 1 360px">
+      <p class="cap">Ledger end · Today</p>
+      <div class="phone today">
+        <div class="inner" style="padding-top:18px">
+          <h3>Today</h3>
+          <div class="paper summary">
+            <div class="label">Remaining</div>
+            <div class="hero-fig" style="margin-top:6px">1,273<span class="unit">kcal</span></div>
+            <div class="of">2,000 target − 727 eaten</div>
+            <div class="macro-rows" style="margin-bottom:0">
+              <div class="mrow" style="--mc:var(--protein);--w:37%"><span>Protein</span><span class="bar"><i></i></span><span class="v">44<span class="unit">/120</span></span></div>
+              <div class="mrow" style="--mc:var(--carbs);--w:48%"><span>Carbs</span><span class="bar"><i></i></span><span class="v">106<span class="unit">/220</span></span></div>
+              <div class="mrow" style="--mc:var(--fat);--w:38%"><span>Fat</span><span class="bar"><i></i></span><span class="v">25<span class="unit">/65</span></span></div>
+            </div>
+          </div>
+          <div class="paper ledger" style="margin-top:10px">
+            <div class="meal label">Breakfast</div>
+            <div class="lrow"><div><div class="name">Greek yogurt, plain</div><div class="sub">170 g</div></div><div class="v">165<span class="unit">kcal</span></div></div>
+            <div class="lrow"><div><div class="name">Rolled oats</div><div class="sub">40 g</div></div><div class="v">150<span class="unit">kcal</span></div></div>
+            <div class="meal label">Lunch</div>
+            <div class="lrow"><div><div class="name">Chickpea &amp; spinach stew</div><div class="sub">1 serving · from recipe</div></div><div class="v">412<span class="unit">kcal</span></div></div>
+          </div>
+          <div style="margin-top:12px"><button class="btn" type="button">+ Add food</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col" style="flex:0 1 360px">
+      <p class="cap">Cookbook end · Recipes &amp; Filter</p>
+      <div class="phone">
+        <div class="inner" style="padding-top:18px">
+          <h3 class="voice" style="font-size:30px;line-height:1.1;margin:2px 0 14px">Recipes for you</h3>
+          <div class="seg"><span class="on">By diet &amp; goals</span><span>By macro match</span></div>
+          <div class="chips" style="margin-bottom:12px"><span class="chip">Vegan</span><span class="chip">≤ 500 kcal</span><span class="chip off">Nut-free</span></div>
+          <div class="grid2">
+            <div class="paper rcard"><div class="img-ph"><span>UNVALIDATED</span></div><div class="body"><h3>Chickpea &amp; spinach stew</h3>
+              <div class="strip"><span class="kcal">412<span class="unit">kcal</span></span><span class="m p"><i>P</i>18</span><span class="m c"><i>C</i>52</span><span class="m f"><i>F</i>14</span></div>
+              <div class="match">✓ Vegan · ≤ 500 kcal</div></div></div>
+            <div class="paper rcard"><div class="img-ph"><span>UNVALIDATED</span></div><div class="body"><h3>Lentil bolognese</h3>
+              <div class="strip"><span class="kcal">468<span class="unit">kcal</span></span><span class="m p"><i>P</i>24</span><span class="m c"><i>C</i>62</span><span class="m f"><i>F</i>12</span></div>
+              <div class="match">✓ Vegan · ≤ 500 kcal</div></div></div>
+            <div class="paper rcard"><div class="img-ph"><span>UNVALIDATED</span></div><div class="body"><h3>Tofu &amp; greens rice bowl</h3>
+              <div class="strip"><span class="kcal">495<span class="unit">kcal</span></span><span class="m p"><i>P</i>26</span><span class="m c"><i>C</i>58</span><span class="m f"><i>F</i>17</span></div>
+              <div class="match">✓ Vegan · ≤ 500 kcal</div></div></div>
+            <div class="paper rcard"><div class="img-ph"><span>UNVALIDATED</span></div><div class="body"><h3>Miso roasted squash</h3>
+              <div class="strip"><span class="kcal">356<span class="unit">kcal</span></span><span class="m p"><i>P</i>9</span><span class="m c"><i>C</i>48</span><span class="m f"><i>F</i>14</span></div>
+              <div class="match">✓ Vegan · ≤ 500 kcal</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="note">Compact strips on cards drop the "g" unit for space. Flag for the design system: decide whether that breaks the "unit always attached" rule (§5 rule 2).</p>
+</section>
+
+<!-- ================= 4 ================= -->
+<section class="part">
+  <div class="part-head"><span class="n">04</span><div><h2>Type roles at real size</h2><p>Two families, three roles. The role decides the face, not the screen.</p></div></div>
+  <div class="paper">
+    <div class="spec">
+      <div class="meta"><b>Voice</b><span>Newsreader · regular<br>Recipe titles, section heads, one title per logging screen</span></div>
+      <div class="samples">
+        <div class="s-row"><span class="voice" style="font-size:32px;line-height:1.15">Chickpea &amp; spinach stew</span><small>32 px</small></div>
+        <div class="s-row"><span class="voice" style="font-size:20px;line-height:1.2">Recipes for you</span><small>20 px</small></div>
+      </div>
+    </div>
+    <div class="spec">
+      <div class="meta"><b>Interface</b><span>Inter · 400 / 500 / 600<br>Buttons, labels, lists, ingredients, steps</span></div>
+      <div class="samples">
+        <div class="s-row"><span style="font-size:16px">Simmer for 20 minutes, then stir in the spinach.</span><small>16 px · 400</small></div>
+        <div class="s-row"><span style="font-size:14px;color:var(--ink-2)">1 serving · logged from recipe</span><small>14 px · ink-2</small></div>
+        <div class="s-row"><span class="label">Nutrition per serving</span><small>12 px · 600 · tracked caps</small></div>
+        <div class="s-row"><span style="font:600 16px/1 var(--ui)">Log it</span><small>16 px · 600 · button</small></div>
+      </div>
+    </div>
+    <div class="spec">
+      <div class="meta"><b>Figure</b><span>Inter · 600 · tabular lining figures<br>Every nutrition value, portion, target</span></div>
+      <div class="samples">
+        <div class="s-row"><span class="hero-fig">1,273<span class="unit">kcal</span></span><small>48 px hero</small></div>
+        <div class="s-row">
+          <span class="tcol"><span>165</span><span>150</span><span>412</span><span style="border-top:1px solid var(--rule);padding-top:2px">727</span></span>
+          <small>16 px · tabular digits align in columns</small>
+        </div>
+        <div class="s-row"><span class="never"><s>412 kcal</s><em>Never serif</em></span><small>§5 rule 1</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 5 ================= -->
+<section class="part">
+  <div class="part-head"><span class="n">05</span><div><h2>Palette</h2><p>One set for both contexts. Contrast values measured in §4 of the direction doc.</p></div></div>
+  <p class="cap group-cap">Neutrals</p>
+  <div class="swatches">
+    <div class="sw"><div class="c" style="--c:#F2EDE6"></div><div class="t"><span class="tok">ground</span><code>#F2EDE6</code><span class="role">App background, both contexts</span></div></div>
+    <div class="sw"><div class="c" style="--c:#FFFDF9"></div><div class="t"><span class="tok">paper</span><code>#FFFDF9</code><span class="role">Every data surface</span></div></div>
+    <div class="sw"><div class="c" style="--c:#1F2421"></div><div class="t"><span class="tok">ink</span><code>#1F2421</code><span class="role">Figures, titles · 15.5:1 on paper</span></div></div>
+    <div class="sw"><div class="c" style="--c:#5E605A"></div><div class="t"><span class="tok">ink-2</span><code>#5E605A</code><span class="role">Secondary text, units · 6.3:1</span></div></div>
+    <div class="sw"><div class="c" style="--c:#E3DCD2"></div><div class="t"><span class="tok">rule</span><code>#E3DCD2</code><span class="role">Hairline ledger dividers</span></div></div>
+  </div>
+  <p class="cap group-cap">Action</p>
+  <div class="swatches">
+    <div class="sw"><div class="c" style="--c:#2F5245"></div><div class="t"><span class="tok">pine</span><code>#2F5245</code><span class="role">The only action color · 8.6:1</span></div></div>
+    <div class="sw"><div class="c" style="--c:#DCE6DF"></div><div class="t"><span class="tok">pine-tint</span><code>#DCE6DF</code><span class="role">Selected chips · pine text 6.8:1</span></div></div>
+  </div>
+  <p class="cap group-cap">Macro marks (never text)</p>
+  <div class="swatches">
+    <div class="sw"><div class="c" style="--c:#B0513A"></div><div class="t"><span class="tok">protein</span><code>#B0513A</code><span class="role">Marks only · 5.1:1</span></div></div>
+    <div class="sw"><div class="c" style="--c:#A87A1F"></div><div class="t"><span class="tok">carbs</span><code>#A87A1F</code><span class="role">Marks only · 3.8:1 (fails as text)</span></div></div>
+    <div class="sw"><div class="c" style="--c:#4D6A85"></div><div class="t"><span class="tok">fat</span><code>#4D6A85</code><span class="role">Marks only · 5.6:1</span></div></div>
+  </div>
+</section>
+
+<footer>
+  <b>Provisional in this preview, not decided:</b>
+  <ul>
+    <li>Corner radius, spacing and button height are placeholders. Shape tokens come in the design-system stage.</li>
+    <li>Status colors (over target, errors) are deferred (§4 rule 4).</li>
+    <li>Food imagery is placeholder only. The approach will be validated with references at the Screens stage (§7).</li>
+    <li>Recipe names and all figures are illustrative samples, not real nutrition data (PRODUCT.md).</li>
+  </ul>
+</footer>
+
+</div>
+</body>
+</html>

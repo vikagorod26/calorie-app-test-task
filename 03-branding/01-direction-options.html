@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Direction Moodboards</title>
+<style>
+  :root{
+    --bg:#F4F3F0; --surface:#FFFFFF; --ink:#16161A; --ink-2:#55555C; --line:#DEDCD6;
+    --pro:#1E7A4C; --con:#B23A2A; --chip:#ECEAE4;
+    --radius:14px;
+    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#121214; --surface:#1C1C20; --ink:#EDEDEF; --ink-2:#A3A3AB; --line:#2E2E34;
+      --pro:#5CC98E; --con:#F07A68; --chip:#26262C;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#121214; --surface:#1C1C20; --ink:#EDEDEF; --ink-2:#A3A3AB; --line:#2E2E34;
+    --pro:#5CC98E; --con:#F07A68; --chip:#26262C;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 var(--sans);padding-inline:16px}
+  .wrap{max-width:1120px;margin:0 auto;padding-block:48px 80px}
+  a{color:inherit}
+  header.page h1{font-size:clamp(28px,4.2vw,44px);line-height:1.1;margin:0 0 12px;letter-spacing:-0.02em}
+  header.page p{max-width:70ch;color:var(--ink-2);margin:0 0 8px}
+  .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+  .meta span{background:var(--chip);border-radius:999px;padding:4px 12px;font-size:13px;color:var(--ink-2)}
+
+  nav.toc{display:flex;flex-wrap:wrap;gap:10px;margin:32px 0 8px}
+  nav.toc a{display:flex;align-items:center;gap:10px;text-decoration:none;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 14px 6px 6px;font-weight:600;font-size:14px}
+  nav.toc i{display:inline-flex;width:26px;height:26px;border-radius:50%;align-items:center;justify-content:center;font-style:normal;font-size:12px}
+
+  section.dir{margin-top:56px;background:var(--surface);border:1px solid var(--line);border-radius:22px;overflow:hidden}
+  .band{padding:28px 28px 24px;color:var(--band-ink);background:var(--band-bg)}
+  .band .tag{font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+  .band h2{margin:6px 0 10px;font-size:clamp(26px,3.6vw,38px);line-height:1.1}
+  .band p{margin:0;max-width:72ch}
+
+  .screens{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;padding:24px 28px;background:var(--band-soft)}
+  figure.shot{margin:0}
+  figure.shot a{display:block;border-radius:18px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.12),0 8px 24px rgba(0,0,0,.10);background:#fff;aspect-ratio:9/19.5}
+  figure.shot img{display:block;width:100%;height:100%;object-fit:cover;object-position:top}
+  figure.shot figcaption{font-size:12.5px;line-height:1.35;margin-top:8px;color:var(--band-cap)}
+  figure.shot figcaption b{display:block;font-size:13px}
+
+  .body{padding:24px 28px 30px;display:grid;gap:28px}
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:28px}
+  h3{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);margin:0 0 12px;font-weight:700}
+
+  .swatches{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+  .sw{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+  .sw .chip{height:64px;background:var(--c)}
+  .sw .lbl{padding:8px 10px;font-size:12px;line-height:1.35}
+  .sw code{font:600 13px/1.2 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;display:block;margin-bottom:2px}
+  .sw span{color:var(--ink-2)}
+
+  .specimen{border:1px solid var(--line);border-radius:12px;padding:16px 18px;background:var(--spec-bg);color:var(--spec-ink)}
+  .specimen .note{font-size:12px;color:#5E5E5E;margin-bottom:10px}
+  .typenotes{margin:12px 0 0;padding-left:18px;color:var(--ink-2)}
+  .typenotes li{margin-bottom:6px}
+
+  .pc{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+  .pc ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+  .pc li{padding:12px 14px;border-radius:10px;background:var(--bg);border-left:3px solid var(--k);font-size:14px}
+  .pc li b{color:var(--ink)}
+  .pc .pros{--k:var(--pro)} .pc .cons{--k:var(--con)}
+  .pc h4{margin:0 0 10px;font-size:18px;display:flex;align-items:center;gap:8px}
+  .pc h4::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--k)}
+
+  /* Direction themes (drawn from each direction's sampled palette) */
+  #a{--band-bg:#0066EA;--band-ink:#FFFFFF;--band-soft:#EAEAF0;--band-cap:#3A3A44;--spec-bg:#FCFCFC;--spec-ink:#000}
+  #b{--band-bg:#364E48;--band-ink:#F0EAE4;--band-soft:#F0EAE4;--band-cap:#4A5450;--spec-bg:#F0EAE4;--spec-ink:#1F2A27}
+  #c{--band-bg:#000000;--band-ink:#FFFFFF;--band-soft:#F6F6F6;--band-cap:#3A3A3A;--spec-bg:#FCFCFC;--spec-ink:#000}
+
+  .spec-a .big{font:700 30px/1.1 var(--sans);letter-spacing:-.01em}
+  .spec-a .row{display:flex;justify-content:space-between;border-top:1px solid #EAEAF0;padding:8px 0;font-size:15px;font-variant-numeric:tabular-nums}
+  .spec-a .row small{display:block;color:#636363;font-size:12px}
+  .spec-a .cta{color:#0066EA;font-weight:600;letter-spacing:.06em;font-size:13px;margin-top:6px}
+  .spec-b .big{font:400 30px/1.2 var(--serif);text-align:center;margin:4px 0 14px}
+  .spec-b .label{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#6B6660;margin-bottom:6px}
+  .spec-b .card{background:#FCF6F6;border-radius:10px;padding:12px;text-align:center;font-weight:600;box-shadow:0 2px 10px rgba(54,78,72,.10)}
+  .spec-c .big{font:900 32px/1.02 var(--sans);letter-spacing:-.03em}
+  .spec-c .num{font:300 44px/1 var(--sans);letter-spacing:-.02em;margin-top:12px}
+  .spec-c .num small{font-size:18px;font-weight:400;margin-left:4px}
+  .spec-c .streak{color:#E49642;font-weight:800;font-size:20px;margin-top:6px}
+  .spec-c .pill{display:inline-block;margin-top:12px;background:#000;color:#fff;border-radius:999px;padding:10px 22px;font-weight:700}
+
+  .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+  table{border-collapse:collapse;width:100%;min-width:640px;font-size:14px}
+  th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+  tr:last-child td{border-bottom:0}
+  td.s{font-weight:700}
+
+  .callout{margin-top:20px;padding:18px 20px;border-radius:14px;background:var(--surface);border:1px dashed var(--line);color:var(--ink-2)}
+  .callout b{color:var(--ink)}
+  footer{margin-top:40px;font-size:13px;color:var(--ink-2)}
+  @media (max-width:520px){.band,.screens,.body{padding-inline:18px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="page">
+  <h1>Visual direction moodboards</h1>
+  <p>Three directions pulled from real, shipped nutrition &amp; health app screens (via Mobbin), each evaluated against the research conclusions and 5W audience segments. Palettes were sampled from the screenshots' pixels; typography is described from what the screens show.</p>
+  <p><b>No direction is selected here.</b> This page is input for that decision. Full notes and citations are in <a href="01-direction-options.md">01-direction-options.md</a>.</p>
+  <div class="meta"><span>12 real screens · 6 apps</span><span>Source: Mobbin</span><span>Checked against 04-conclusions.md &amp; 02-audience-5w.md</span></div>
+</header>
+
+<nav class="toc" aria-label="Directions">
+  <a href="#a"><i style="background:#0066EA;color:#fff">A</i>Clinical Ledger</a>
+  <a href="#b"><i style="background:#364E48;color:#F0EAE4">B</i>Oat &amp; Serif</a>
+  <a href="#c"><i style="background:#000;color:#fff">C</i>Bold Coach</a>
+  <a href="#compare"><i style="background:var(--chip)">≡</i>Side-by-side</a>
+</nav>
+
+<!-- ============ A ============ -->
+<section class="dir" id="a">
+  <div class="band">
+    <div class="tag">Direction A</div>
+    <h2>Clinical Ledger</h2>
+    <p>A spreadsheet in a phone: white grouped lists on light gray, hairline dividers, and every number right-aligned in its own column. Color is used almost only for meaning: one saturated blue for actions and totals, plus small tinted bars for macros. It reads as institutional, complete and auditable, never decorative.</p>
+  </div>
+  <div class="screens">
+    <figure class="shot"><a href="https://mobbin.com/explore/screens/d5384da7-036e-4ed6-94d6-36e5a35a2f8a" target="_blank" rel="noopener"><img loading="lazy" alt="MyFitnessPal Today dashboard" src="refs/mfp_dash.png"></a><figcaption><b>MyFitnessPal</b>Today dashboard · docked search + barcode</figcaption></figure>
+    <figure class="shot"><a href="https://mobbin.com/explore/screens/9b6f1db6-6432-45d2-be77-fc4d7dde8130" target="_blank" rel="noopener"><img loading="lazy" alt="MyFitnessPal food log" src="refs/mfp_log.png"></a><figcaption><b>MyFitnessPal</b>Food log · the calorie equation row</figcaption></figure>
+    <figure class="shot"><a href="https://mobbin.com/explore/screens/e8467de9-aaf9-43c2-8576-5ba52c87230a" target="_blank" rel="noopener"><img loading="lazy" alt="MyFitnessPal recipe nutrient details" src="refs/mfp_nutr.png"></a><figcaption><b>MyFitnessPal</b>Recipe details · sticky "Log to diary"</figcaption></figure>
+    <figure class="shot"><a href="https://mobbin.com/explore/screens/012bb79b-4453-4e02-9a58-9b3023463f4b" target="_blank" rel="noopener"><img loading="lazy" alt="MyFitnessPal weekly digest" src="refs/mfp_scr.png"></a><figcaption><b>MyFitnessPal</b>Weekly digest · all-time stats</figcaption></figure>
+  </div>
+  <div class="body">
+    <div class="grid2">
+      <div>
+        <h3>Palette · sampled</h3>
+        <div class="swatches">
+          <div class="sw"><div class="chip" style="--c:#0066EA"></div><div class="lbl"><code>#0066EA</code><span>Single action color, CTAs, totals</span></div></div>
+          <div class="sw"><div class="chip" style="--c:#FCFCFC"></div><div class="lbl"><code>#FCFCFC</code><span>List / card surface</span></div></div>
+          <div class="sw"><div class="chip" style="--c:#EAEAF0"></div><div class="lbl"><code>#EAEAF0</code><span>Grouped gutters, dividers</span></div></div>
+          <div class="sw"><div class="chip" style="--c:#000000"></div><div class="lbl"><code>#000000</code><span>Ink, food names, numerals</span></div></div>
+        </div>
+      </div>
+      <div>
+        <h3>Typography</h3>
+        <div class="specimen spec-a">
+          <div class="note">Approximation in system sans</div>
+          <div class="big">Breakfast</div>
+          <div class="row"><span>Oatmeal, cooked<small>1 cup</small></span><span>154</span></div>
+          <div class="row"><span>Boiled egg<small>1 small</small></span><span>70</span></div>
+          <div class="cta">ADD FOOD</div>
+        </div>
+        <ul class="typenotes">
+          <li>iOS system sans (SF Pro) throughout. Hierarchy comes from weight and gray, not size.</li>
+          <li>Numerals flush right in columns, so they scan like a ledger.</li>
+          <li>Text buttons in blue all caps with slight tracking. Only the dashboard uses a large bold title.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="pc">
+      <div class="pros"><h4>Pros for this project</h4><ul>
+        <li><b>H2 trust = accuracy:</b> the most transparent idiom. Visible arithmetic and full nutrient tables let Segments 1 &amp; 3 "trust my numbers without redoing the math".</li>
+        <li><b>IA "logging one action away":</b> the docked search + barcode bar is exactly the always-reachable entry point research calls for.</li>
+        <li><b>H4 precedent:</b> a recipe detail that resolves into a sticky "Log to diary" button, so "a recipe is never a dead end" already works in practice.</li>
+        <li>Cheapest to systematize (system type, one accent), which fits "minimize manual work".</li>
+      </ul></div>
+      <div class="cons"><h4>Cons for this project</h4><ul>
+        <li><b>It is the incumbent's look.</b> Segment 1 are switchers burned by MyFitnessPal, and the dashboard literally shows a <b>PREMIUM crown</b> (paywalling is the loudest betrayal signal, H2).</li>
+        <li><b>Weak for H3:</b> gray nutrient tables give home cooks (Segment 2) no appetite or confidence to cook, and they already leave for recipe blogs.</li>
+        <li><b>"Chore" risk (H1):</b> long gray lists and small caps links make daily logging feel like bookkeeping.</li>
+        <li>All four references come from one app, so it's partly a house style with little room to differentiate.</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ B ============ -->
+<section class="dir" id="b">
+  <div class="band">
+    <div class="tag">Direction B</div>
+    <h2 style="font-family:var(--serif);font-weight:400">Oat &amp; Serif</h2>
+    <p>Calm, magazine-like wellness. Warm oat and cream grounds replace white, cards are barely lighter than the page and float on soft shadow, and there's a lot of empty space around one question at a time. Color comes from nature (leaf and pine greens, a grainy gradient) with a single warm coral accent. It feels like a cookbook more than a tool.</p>
+  </div>
+  <div class="screens">
+    <figure class="shot"><a href="https://mobbin.com/screens/234cc9c8-7503-4b05-93a3-16ab472792db" target="_blank" rel="noopener"><img loading="lazy" alt="Lifesum goal selection onboarding" src="refs/lifesum_goal.png"></a><figcaption><b>Lifesum</b>Onboarding · serif question, oat ground</figcaption></figure>
+    <figure class="shot"><a href="https://mobbin.com/screens/9f8ab1ea-c8d7-4ed5-80d7-ff11e56b2f48" target="_blank" rel="noopener"><img loading="lazy" alt="Lifesum dietary needs and preferences" src="refs/lifesum_and.png"></a><figcaption><b>Lifesum (Android)</b>Dietary needs · diet tags + allergies</figcaption></figure>
+    <figure class="shot"><a href="https://mobbin.com/screens/cffdd600-8e10-4cac-b0c4-09e0cc8b597c" target="_blank" rel="noopener"><img loading="lazy" alt="Lifesum launch screen with green gradient" src="refs/lifesum2.png"></a><figcaption><b>Lifesum</b>Launch · grainy green, serif wordmark</figcaption></figure>
+    <figure class="shot"><a href="https://mobbin.com/screens/1a6ccb50-9583-46e8-85f3-2d86e55c7543" target="_blank" rel="noopener"><img loading="lazy" alt="Noom account loading state" src="refs/noom1.png"></a><figcaption><b>Noom</b>Loading · coral mark on cream</figcaption></figure>
+  </div>
+  <div class="body">
+    <div class="grid2">
+      <div>
+        <h3>Palette · sampled</h3>
+        <div class="swatches">
+          <div class="sw"><div class="chip" style="--c:#F0EAE4"></div><div class="lbl"><code>#F0EAE4</code><span>Oat page ground</span></div></div>
+          <div class="sw"><div class="chip" style="--c:#364E48"></div><div class="lbl"><code>#364E48</code><span>Deep pine, darkest brand tone</span></div></div>
+          <div class="sw"><div class="chip" style="--c:#54B44E"></div><div class="lbl"><code>#54B44E</code><span>Leaf green, progress, checks</span></div></div>
+          <div class="sw"><div class="chip" style="--c:#E45A42"></div><div class="lbl"><code>#E45A42</code><span>Coral, single warm mark</span></div></div>
+        </div>
+      </div>
+      <div>
+        <h3>Typography</h3>
+        <div class="specimen spec-b">
+          <div class="note">Approximation in system serif + sans</div>
+          <div class="label">Let's get to know you</div>
+          <div class="big">What goal do you<br>have in mind?</div>
+          <div class="card">Maintain weight</div>
+        </div>
+        <ul class="typenotes">
+          <li>High-contrast transitional serif, regular weight and centered, carries the voice. The wordmark serif has a leaf i-dot.</li>
+          <li>Controls switch to a clean geometric sans in semibold.</li>
+          <li>Small, widely tracked all-caps section labels ("FOOD PREFERENCES"). Noom uses a light tracked grotesk.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="pc">
+      <div class="pros"><h4>Pros for this project</h4><ul>
+        <li><b>Segment 2 &amp; H3:</b> "eating right for me" and confidence <i>before</i> cooking, in couch or commute planning moments. A cookbook tone is the most natural host for recipes as a first-class section.</li>
+        <li><b>IA "profile of me set once":</b> the dietary-needs screen is almost exactly the diet-tag + allergy profile that feeds targets and recipe filters (P0 #5, P1 #6).</li>
+        <li>Distance from the clinical-blue incumbents without going gimmicky.</li>
+        <li>Serif + sans pairing gives an ownable voice from a small kit.</li>
+      </ul></div>
+      <div class="cons"><h4>Cons for this project</h4><ul>
+        <li><b>H1 speed:</b> cards <code>#FCF6F6</code> on <code>#F0EAE4</code> are nearly 1:1 contrast, held by shadow only, and airy layouts slow the one-handed in-the-moment log.</li>
+        <li><b>H2 trust in numbers:</b> the serif, soft-wellness tone can read as approximate, and there's no reference for dense macro UI in this style, so it would have to be invented.</li>
+        <li><b>Paywall association:</b> Lifesum's subscription screen (seen, not used) lists "Free" last, so copying Lifesum wholesale borrows that reputation.</li>
+        <li><b>Cliché risk:</b> beige + green + serif is a crowded wellness look, so differentiation must come from the product (H4).</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ C ============ -->
+<section class="dir" id="c">
+  <div class="band">
+    <div class="tag">Direction C</div>
+    <h2 style="font-weight:900;letter-spacing:-.03em">Bold Coach</h2>
+    <p>Confident and motivational: a stark black-and-white base (black pill buttons, black feature cards) punctuated by one warm energetic hue and occasional character illustration. Numbers and headlines are big and heavy, so they read at arm's length. It's a coach cheering you on rather than a ledger or a cookbook.</p>
+  </div>
+  <div class="screens">
+    <figure class="shot"><a href="https://mobbin.com/explore/screens/8bb9fc32-9cf8-46f9-95e3-9eb43bf38731" target="_blank" rel="noopener"><img loading="lazy" alt="Yazio meal tips with mascot" src="refs/yazio1.png"></a><figcaption><b>Yazio</b>Meal tips · mascot, ultra-heavy headline</figcaption></figure>
+    <figure class="shot"><a href="https://mobbin.com/explore/screens/839a4e83-1af4-427a-bf1d-31b7608214bd" target="_blank" rel="noopener"><img loading="lazy" alt="Cal AI streak celebration" src="refs/calai1.png"></a><figcaption><b>Cal AI</b>Streak modal · amber on mono</figcaption></figure>
+    <figure class="shot"><a href="https://mobbin.com/explore/screens/c82256d1-7c67-4bb8-bc51-86bc460c79ef" target="_blank" rel="noopener"><img loading="lazy" alt="MacroFactor dashboard" src="refs/macro2.png"></a><figcaption><b>MacroFactor</b>Dashboard · black cards, illustration</figcaption></figure>
+    <figure class="shot"><a href="https://mobbin.com/screens/2cc3f680-2069-4da9-ad0a-af70a958dc2a" target="_blank" rel="noopener"><img loading="lazy" alt="MacroFactor expenditure chart" src="refs/macro1.png"></a><figcaption><b>MacroFactor</b>Expenditure · big light numerals</figcaption></figure>
+  </div>
+  <div class="body">
+    <div class="grid2">
+      <div>
+        <h3>Palette · sampled</h3>
+        <div class="swatches">
+          <div class="sw"><div class="chip" style="--c:#000000"></div><div class="lbl"><code>#000000</code><span>CTA pills, feature cards</span></div></div>
+          <div class="sw"><div class="chip" style="--c:#F6F6F6"></div><div class="lbl"><code>#F6F6F6</code><span>Ground behind white cards</span></div></div>
+          <div class="sw"><div class="chip" style="--c:#E49642"></div><div class="lbl"><code>#E49642</code><span>Warm amber (coral <code>#F0906C</code> kin)</span></div></div>
+          <div class="sw"><div class="chip" style="--c:#0CD8AE"></div><div class="lbl"><code>#0CD8AE</code><span>Electric mint, mascot</span></div></div>
+        </div>
+      </div>
+      <div>
+        <h3>Typography</h3>
+        <div class="specimen spec-c">
+          <div class="note">Approximation in system sans</div>
+          <div class="big">Meal tips just for you</div>
+          <div class="num">1366<small>kcal</small></div>
+          <div class="streak">1 Day streak</div>
+          <span class="pill">Continue</span>
+        </div>
+        <ul class="typenotes">
+          <li>Ultra-heavy, tightly spaced display grotesque (Yazio). Bold rounded grotesk in amber (Cal AI).</li>
+          <li>MacroFactor pairs large light-weight numerals with a smaller unit, so numbers read as precise without looking clinical.</li>
+          <li>Bold white-on-black pill buttons, plain humanist body copy.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="pc">
+      <div class="pros"><h4>Pros for this project</h4><ul>
+        <li><b>H1 glanceable, one-handed:</b> max contrast + oversized numerals answer "does this fit my day?" in a second, and one black pill = one obvious action, a clean base for "log this" (H4).</li>
+        <li><b>Segment 1 "visible, measurable progress":</b> momentum cues speak to the payoff trackers cite.</li>
+        <li><b>Data can be bold:</b> big light numerals + coral range chart give Segment 3 precision without A's spreadsheet feel.</li>
+        <li>Strongest distance from blue-list incumbents, and the most memorable brand.</li>
+      </ul></div>
+      <div class="cons"><h4>Cons for this project</h4><ul>
+        <li><b>Outside the audience scope:</b> the 5W segments explicitly exclude gamification, and tips and streaks are engagement surfaces, not the core loop.</li>
+        <li><b>H2 trust:</b> a mascot and celebratory tone can undercut perceived accuracy. Cal AI's photo estimates were a top scrutiny point in research.</li>
+        <li><b>H3:</b> the mono black/white base does nothing for appetite, so food imagery would fight a stark UI.</li>
+        <li><b>Production cost:</b> custom illustration contradicts "minimize manual work", and a mascot-free variant loses much of the personality.</li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Compare ============ -->
+<section id="compare" style="margin-top:56px">
+  <h3>Side-by-side against research</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Criterion (source)</th><th>A · Clinical Ledger</th><th>B · Oat &amp; Serif</th><th>C · Bold Coach</th></tr></thead>
+      <tbody>
+        <tr><td>Fast in-the-moment logging (H1, Seg 1)</td><td>Good</td><td>Weak</td><td class="s">Strongest</td></tr>
+        <tr><td>Trust in numbers (H2, Seg 1 &amp; 3)</td><td class="s">Strongest</td><td>Weak</td><td>Mixed</td></tr>
+        <tr><td>Recipe discovery first-class (H3, Seg 2)</td><td>Weak</td><td class="s">Strongest</td><td>Weak</td></tr>
+        <tr><td>Recipe → log handoff (H4, Seg 3)</td><td>Direct precedent</td><td>Neutral</td><td>Good CTA base</td></tr>
+        <tr><td>Differentiation from paywall-happy incumbents</td><td>Poor</td><td>Moderate</td><td class="s">Strong</td></tr>
+        <tr><td>"Minimize manual work" (brief)</td><td class="s">Cheapest</td><td>Cheap</td><td>Costly if illustrated</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout"><b>What the comparison shows (judgment call, not a selection):</b> no single reference direction covers both user stories. A and C serve story 1 and B serves story 2, which mirrors research's finding that incumbents treat recipes as secondary. The choice is which weakness is cheaper to fix inside the design system: warming up a numerically rigorous base, or sharpening a warm one with a high-contrast data layer.</div>
+  <div class="callout"><b>Known gap:</b> none of the 12 screens shows food photography or recipe browsing, which matches H3 (recipes aren't a headline feature for incumbents). Recipe surfaces will need to be designed without a close reference in this set.</div>
+</section>
+
+<footer>Screens © their respective owners, shown via Mobbin for internal reference only. Each image links to its Mobbin page and falls back to a local copy in <code>refs/</code> if the CDN blocks embedding. Hex values were sampled from the screenshots at ±6 per channel.</footer>
+</div>
+</body>
+</html>

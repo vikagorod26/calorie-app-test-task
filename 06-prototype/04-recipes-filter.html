@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#FFFDF9">
+<title>Measured Kitchen · Prototype · Recipes & Filter</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<style>
+/* =====================================================================
+   SYSTEM — verbatim copy of 04-design-system/components-v1.html
+   (tokens, type roles, components). Do not edit here: change the system
+   first (tokens-v1.md + components-v1.html), then rebuild.
+   ===================================================================== */
+/* =====================================================================
+   TOKENS v1 — mirror of tokens-v1.md. Names must match that document.
+   ===================================================================== */
+:root{
+  /* --- Primitives --- */
+  --color-oat:#F2EDE6;
+  --color-oat-deep:#E7DFD4;
+  --color-paper:#FFFDF9;
+  --color-ink:#1F2421;
+  --color-ink-soft:#5E605A;
+  --color-rule:#E3DCD2;
+  --color-stone:#857F76;
+  --color-pine:#2F5245;
+  --color-pine-light:#DCE6DF;
+  --color-terracotta:#B0513A;
+  --color-ochre:#A87A1F;
+  --color-slate:#4D6A85;
+  --color-error:#B3261E; /* added Stage 6 — §10: a true validation error, not J1's over-target */
+
+  /* --- Semantic: surfaces --- */
+  --surface-ground:var(--color-oat);
+  --surface-paper:var(--color-paper);
+  --surface-sunken:var(--color-oat-deep);
+  --surface-viewfinder:var(--color-ink); /* stands in for the live camera feed (Screens, IA 2) */
+  /* --- Semantic: text --- */
+  --text-primary:var(--color-ink);
+  --text-secondary:var(--color-ink-soft);
+  --text-action:var(--color-pine);
+  --text-on-action:var(--color-paper);
+  /* --- Semantic: figures --- */
+  --figure-value:var(--color-ink);
+  --figure-unit:var(--color-ink-soft);
+  /* --- Semantic: lines --- */
+  --line-hairline:var(--color-rule);
+  --line-control:var(--color-stone);
+  --line-selected:var(--color-pine);
+  --line-guide:var(--color-paper);
+  /* --- Semantic: action --- */
+  --action-primary:var(--color-pine);
+  --action-selected:var(--color-pine-light);
+  --focus-ring:var(--color-pine);
+  /* --- Semantic: interaction states (added Stage 6, §10) --- */
+  --state-error:var(--color-error);
+  --state-hover-opacity:0.08;
+  --state-pressed-opacity:0.12;
+  /* --- Semantic: data --- */
+  --macro-protein:var(--color-terracotta);
+  --macro-carbs:var(--color-ochre);
+  --macro-fat:var(--color-slate);
+  --meter-track:var(--color-oat);
+  --meter-fill:var(--color-ink);
+
+  /* --- Type families --- */
+  --font-voice:"Newsreader","Iowan Old Style",Georgia,"Times New Roman",serif;
+  --font-ui:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+
+  /* --- Spacing scale --- */
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px;
+  --space-6:24px; --space-8:32px; --space-10:40px; --space-12:48px; --space-16:64px;
+  /* --- Semantic spacing --- */
+  --inset-screen:var(--space-5);
+  --inset-block:var(--space-4);
+  --row-pad-y:var(--space-3);
+  --gap-inline:var(--space-2);
+  --gap-stack:var(--space-3);
+  --gap-section-log:var(--space-6);
+  --gap-section-recipe:var(--space-10);
+
+  /* --- Sizing --- */
+  --size-hit-min:48px;
+  --size-control:48px;
+  --size-button:52px;
+  --size-chip:40px;
+  --size-icon:20px;
+  --size-mark:10px;
+  --size-meter:8px;
+  --size-icon-sm:16px;
+  --size-stepper-value:64px;
+  --size-separator:2px;
+  --size-hatch-period:6px;
+  --meter-target:87%;
+  --size-viewfinder-min:320px;
+  --size-guide-corner:var(--space-6);
+  --ratio-guide-barcode:2 / 1;
+  --ratio-guide-photo:1 / 1;
+  --size-thumb:120px;
+  --ratio-recipe-image:4 / 3;
+  /* size-placeholder-stripe retired at the Stage 7 imagery pass: M1 carries real images, so the
+     striped placeholder fill it sized no longer exists. Nothing else ever referenced it. */
+  /* one conservative clearance for any sticky S2/S3 bar (added Stage 6, §10.6 — WCAG 2.2 SC 2.4.11):
+     sized to the tallest bar (two stacked S3 buttons), so a shorter bar just gets extra headroom */
+  --scroll-clear-bottom:calc(var(--size-button) * 2 + var(--space-8) + var(--inset-safe-bottom));
+
+  /* --- Stroke --- */
+  --stroke-hairline:1px;
+  --stroke-emphasis:1.5px;
+  --stroke-focus:2px;
+  --stroke-hatch:2px;
+  --stroke-icon:1.75;
+  --stroke-guide:3px;
+
+  /* --- Type roles (font shorthand + tracking) --- */
+  --type-voice-display:400 32px/36px var(--font-voice);   --track-voice-display:-.015em;
+  --type-voice-title:400 26px/32px var(--font-voice);     --track-voice-title:-.01em;
+  --type-voice-heading:400 22px/28px var(--font-voice);
+  --type-voice-card:400 20px/26px var(--font-voice);
+  --type-ui-body:400 16px/24px var(--font-ui);
+  --type-ui-body-strong:500 16px/24px var(--font-ui);
+  --type-ui-label:600 16px/20px var(--font-ui);
+  --type-ui-chip:500 14px/20px var(--font-ui);
+  --type-ui-chip-selected:600 14px/20px var(--font-ui);
+  --type-ui-secondary:400 14px/20px var(--font-ui);
+  --type-ui-secondary-strong:500 14px/20px var(--font-ui);
+  --type-ui-overline:500 12px/16px var(--font-ui);       --track-ui-overline:.08em;
+  --type-figure-hero:600 48px/52px var(--font-ui);        --track-figure-hero:-.02em;
+  --type-figure-lg:600 24px/28px var(--font-ui);          --track-figure-lg:-.01em;
+  --type-figure-md:500 16px/24px var(--font-ui);
+  --type-figure-md-key:600 16px/24px var(--font-ui);
+  --type-figure-sm:500 14px/20px var(--font-ui);
+  --type-figure-sm-key:600 14px/20px var(--font-ui);
+  --type-unit-hero:500 17px/24px var(--font-ui);
+  --type-unit-lg:400 15px/28px var(--font-ui);
+  --type-unit-md:400 14px/24px var(--font-ui);
+  --type-unit-sm:400 13px/20px var(--font-ui);
+  --type-unit-hero-strong:600 17px/24px var(--font-ui);
+  --type-unit-sm-strong:600 13px/20px var(--font-ui);
+  --figure-numerals:tabular-nums lining-nums;
+
+  /* --- Radius --- */
+  --radius-xs:3px; --radius-sm:8px; --radius-md:14px; --radius-lg:20px; --radius-full:999px;
+
+  /* --- Platform insets (added at Screens): provided by the OS, not the design scale --- */
+  --inset-safe-top:env(safe-area-inset-top,0px);
+  --inset-safe-bottom:env(safe-area-inset-bottom,0px);
+}
+
+/* =====================================================================
+   TYPE ROLES: classes only apply --type-* tokens. The `font` shorthand
+   resets font-variant-numeric, so figure numerals are declared after it.
+   ===================================================================== */
+.voice-display{font:var(--type-voice-display);letter-spacing:var(--track-voice-display);font-optical-sizing:auto}
+.voice-title{font:var(--type-voice-title);letter-spacing:var(--track-voice-title);font-optical-sizing:auto}
+.voice-heading{font:var(--type-voice-heading);font-optical-sizing:auto}
+.voice-card{font:var(--type-voice-card);font-optical-sizing:auto}
+.ui-body{font:var(--type-ui-body)}
+.ui-body-strong{font:var(--type-ui-body-strong)}
+.ui-label{font:var(--type-ui-label)}
+.ui-chip{font:var(--type-ui-chip)}
+.ui-secondary{font:var(--type-ui-secondary)}
+.ui-secondary-strong{font:var(--type-ui-secondary-strong)}
+.ui-overline{font:var(--type-ui-overline);letter-spacing:var(--track-ui-overline);text-transform:uppercase}
+
+.fig{color:var(--figure-value);white-space:nowrap}
+.fig-hero{display:inline-flex;flex-wrap:wrap;align-items:baseline;column-gap:var(--space-1);font:var(--type-figure-hero);letter-spacing:var(--track-figure-hero)}
+.fig-lg{font:var(--type-figure-lg);letter-spacing:var(--track-figure-lg)}
+.fig-md{font:var(--type-figure-md)}
+.fig-md.key{font:var(--type-figure-md-key)}
+.fig-sm{font:var(--type-figure-sm)}
+.fig-sm.key{font:var(--type-figure-sm-key)}
+.fig-hero,.fig-lg,.fig-md,.fig-sm,.fig-md.key,.fig-sm.key{font-variant-numeric:var(--figure-numerals)}
+.fig .unit{color:var(--figure-unit);letter-spacing:0}
+.fig-hero .unit{font:var(--type-unit-hero)}
+.fig-lg .unit{font:var(--type-unit-lg)}
+.fig-md .unit{font:var(--type-unit-md)}
+.fig-sm .unit{font:var(--type-unit-sm)}
+/* status word inside a unit (J1 revised at Screens): "over" reads at a glance, still no hue */
+.fig .unit-strong{color:var(--figure-value)}
+.fig-hero .unit-strong{font:var(--type-unit-hero-strong)}
+.fig-sm .unit-strong{font:var(--type-unit-sm-strong)}
+
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.ico{width:var(--size-icon);height:var(--size-icon);fill:none;stroke:currentColor;stroke-width:var(--stroke-icon);stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ico.sm{width:var(--size-icon-sm);height:var(--size-icon-sm)}
+
+/* =====================================================================
+   COMPONENTS: semantic tokens only. No raw px, font size or weight.
+   ===================================================================== */
+
+/* B · Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;text-align:center;gap:var(--gap-inline);min-height:var(--size-button);padding-block:0;padding-inline:var(--space-6);border:0;border-radius:var(--radius-md);font:var(--type-ui-label);cursor:pointer;text-decoration:none;touch-action:manipulation}
+.btn-primary{background:var(--action-primary);color:var(--text-on-action)}
+.btn-secondary{background:var(--surface-paper);color:var(--text-action);box-shadow:inset 0 0 0 var(--stroke-emphasis) var(--action-primary)}
+.btn-text{background:transparent;color:var(--text-action);min-height:var(--size-hit-min);padding-inline:var(--space-3)}
+.btn-block{display:flex;width:100%}
+/* B3 addition (Screens, IA 3): a text button at the start of a column, pulled into the gutter so its icon or first letter lines up with the content edge (Back, Cancel) */
+.btn-flush{justify-self:start;margin-inline-start:calc(var(--space-3) * -1)}
+/* focus ring: outline rendering, not just the token. Pine already clears 3:1 on every surface it
+   sits on (§1.4), and a 2px outline at a 2px offset meets WCAG 2.2 SC 2.4.13's minimum area even
+   though this system only targets AA (2.4.7). See §10.6 for the one gap that check found: a
+   sticky S2/S3 bar can cover a focused control lower on the screen (SC 2.4.11), fixed below. */
+.btn:focus-visible,.chip:focus-visible,.seg button:focus-visible,.stepper button:focus-visible,.tab:focus-visible{outline:var(--stroke-focus) solid var(--focus-ring);outline-offset:var(--stroke-focus)}
+
+/* --- States (added Stage 6, §10) ---
+   Hover/pressed follow Material 3's state-layer convention: a low-opacity overlay in the
+   control's own foreground color, over its resting fill (checked against Material 3 directly,
+   per the Stage 4 carry-forward rule; the exact opacities are an aesthetic pick within that
+   convention). Hover is gated to pointer devices so touch never gets a stuck hover; pressed
+   applies everywhere, since :active fires on touch too. */
+@media (hover:hover){
+  .btn-primary:hover{background:color-mix(in srgb, var(--action-primary), var(--text-on-action) calc(var(--state-hover-opacity) * 100%))}
+  .btn-secondary:hover,.btn-text:hover{background:color-mix(in srgb, var(--surface-paper), var(--text-action) calc(var(--state-hover-opacity) * 100%))}
+}
+.btn-primary:active{background:color-mix(in srgb, var(--action-primary), var(--text-on-action) calc(var(--state-pressed-opacity) * 100%))}
+.btn-secondary:active,.btn-text:active{background:color-mix(in srgb, var(--surface-paper), var(--text-action) calc(var(--state-pressed-opacity) * 100%))}
+/* Disabled: the neutral pair §1.4 already measured (Ink Soft on Oat Deep, 4.82:1), not a fourth
+   opacity token. WCAG 2.2's non-text-contrast note explicitly exempts inactive controls from any
+   contrast minimum (1.4.11) — this still clears AA anyway, which is why it was picked over a
+   washed-out opacity fade (measured at 2.05:1, legible but needlessly so for a non-interactive state). */
+.btn:disabled,.btn[aria-disabled="true"]{background:var(--surface-sunken);color:var(--text-secondary);box-shadow:none;cursor:not-allowed}
+.btn-secondary:disabled,.btn-secondary[aria-disabled="true"]{background:var(--surface-paper);box-shadow:inset 0 0 0 var(--stroke-hairline) var(--line-hairline)}
+/* Loading: the label is hidden, not removed, so the button keeps its width and never reflows;
+   a spinner takes its place. aria-disabled stops a second tap, and the sr-only text is the only
+   thing that changes for a screen reader, announced once via the button's own accessible name. */
+.btn.is-loading{position:relative;pointer-events:none}
+.btn.is-loading .btn-label{visibility:hidden}
+/* .btn-label carries the button’s own row layout, so a label made of more than one element
+   ("Log this · 1.5 servings", IA 5) can be wrapped into the single element .is-loading hides,
+   without changing anything at rest — same gap, same centring as .btn itself.
+   Added at Propagation (Stage 6 → 05-screens), the first time a real screen used the loading hook. */
+.btn-label{display:inline-flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--gap-inline)}
+.btn .spinner{display:none}
+.btn.is-loading .spinner{display:block;position:absolute;inset:0;margin:auto}
+.spinner{width:var(--size-icon);height:var(--size-icon);border-radius:50%;border:calc(var(--stroke-icon) * 1px) solid currentColor;border-top-color:transparent;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(1turn)}}
+@media (prefers-reduced-motion:reduce){.spinner{animation-duration:1.6s}}
+
+/* C1 · Paper block */
+.block{background:var(--surface-paper);border-radius:var(--radius-lg);padding:var(--inset-block)}
+.block.list{padding-block:var(--space-1)}
+.overline{margin:0;color:var(--text-secondary)}
+
+/* C2 · Ledger row */
+.ledger{list-style:none;margin:0;padding:0}
+.ledger > li + li{border-top:var(--stroke-hairline) solid var(--line-hairline)}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:var(--space-4);padding-block:var(--row-pad-y);min-height:var(--size-hit-min)}
+.row-name{font:var(--type-ui-body-strong);color:var(--text-primary)}
+.row-meta{display:flex;flex-wrap:wrap;align-items:center;column-gap:var(--space-3);font:var(--type-ui-secondary);color:var(--text-secondary)}
+.row > .fig{grid-column:2;grid-row:1 / span 2;align-self:center;text-align:right}
+/* meta line (typeset pass): source first and most legible; amount is a figure; time last. "amount · time" wraps as one unit, the source never moves */
+.row-source{display:inline-flex;align-items:center;gap:var(--gap-inline);min-width:0;font:var(--type-ui-secondary-strong);color:var(--text-primary)}
+.row-when{white-space:nowrap}
+/* tappable row (Screens, Flow 4): a link with a trailing chevron */
+.row-link{grid-template-columns:minmax(0,1fr) auto auto;column-gap:var(--space-3);color:inherit;text-decoration:none;touch-action:manipulation}
+.row-link > .ico{grid-column:3;grid-row:1 / span 2;align-self:center;color:var(--text-secondary)}
+.row-link:focus-visible{outline:var(--stroke-focus) solid var(--focus-ring);outline-offset:calc(var(--stroke-focus) * -1);border-radius:var(--radius-sm)}
+/* Focus not obscured (added Stage 6, §10.6, WCAG 2.2 SC 2.4.11): S2/S3 are sticky, so the last
+   rows of a scrollable list can land underneath one when a focused row scrolls into view.
+   scroll-margin-block reserves that space, the same way inset-safe-bottom reserves the OS's */
+.row-link,.rcard-link{scroll-margin-block:var(--scroll-clear-bottom)}
+
+/* C3 · Recipe card */
+.rcard{background:var(--surface-paper);border-radius:var(--radius-lg);overflow:hidden}
+/* the image slot is M1 (.rimg), a real image since the Stage 7 imagery pass */
+.rcard-img{aspect-ratio:var(--ratio-recipe-image)}
+/* Screens, IA 4: the results list, and the whole card as one link to Recipe Detail (no chevron: a card already reads as an object, not a data row) */
+.rcards{list-style:none;margin:0;padding:0;display:grid;gap:var(--space-4)}
+.rcard-link{display:block;color:inherit;text-decoration:none;touch-action:manipulation}
+.rcard-link:focus-visible{outline:var(--stroke-focus) solid var(--focus-ring);outline-offset:var(--stroke-focus)}
+/* C3 compact (Screens, IA 4 critique): a results card is a row, thumbnail beside the body, reusing M1's
+   .thumb. A full-bleed 4:3 image cost 262 px of a 398 px card, so no two results were ever comparable
+   on one screen — and a results list exists to be compared. The hero crop stays for Recipe Detail. */
+.rcard.compact{display:flex;flex-wrap:wrap;align-items:flex-start;gap:var(--inset-block);padding:var(--inset-block)}
+/* the body wraps below the thumbnail rather than being squeezed, as in the S1 head with media.
+   Its basis is 1.2 x size-thumb, not 1.5: a card body carries three short lines, not a title and
+   a context line, so it keeps the row down to a 360 px phone instead of only a 390 px one. */
+.rcard.compact > .rcard-body{padding:0;flex:1 1 calc(var(--size-thumb) * 1.2);min-width:0}
+.rcard-body{padding:var(--inset-block);display:grid;gap:var(--gap-stack)}
+.rcard-title{margin:0;color:var(--text-primary)}
+.matches{list-style:none;margin:0;padding:var(--space-3) 0 0;border-top:var(--stroke-hairline) solid var(--line-hairline);display:flex;flex-wrap:wrap;gap:var(--space-1) var(--space-4);font:var(--type-ui-secondary);color:var(--text-primary)}
+.matches li{display:inline-flex;align-items:center;gap:var(--gap-inline)}
+.matches .ico{color:var(--text-secondary)}
+
+/* M1 · Recipe image (Screens, IA 3; filled at the Krea imagery pass, Stage 7): the recipe picture.
+   It carries no text, badge or figure of any kind — every figure sits below it on paper (hybrid §7, L1/L2).
+   Supersedes the striped "IMAGE · UNVALIDATED (§7)" placeholder this component shipped as through Stage 6b. */
+.rimg{position:relative;display:block;overflow:hidden;background:var(--surface-sunken)}
+/* the crop is the component's, not the file's: one 4:3 source per dish, cover-fitted at every size,
+   so a thumbnail is the same picture as the card it was chosen from (A9) */
+.rimg > img{display:block;width:100%;height:100%;object-fit:cover}
+.rimg.thumb{flex:none;width:var(--size-thumb);aspect-ratio:var(--ratio-recipe-image);border-radius:var(--radius-sm)}
+/* hero (Screens, IA 5): the detail screen's one picture, full width and on the same crop as the card
+   it was chosen from, so the thumbnail, the card and the hero are three sizes of one image, not three crops */
+.rimg.hero{width:100%;aspect-ratio:var(--ratio-recipe-image)}
+
+/* N1 · Nutrition strip */
+.strip{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-1) var(--space-4)}
+.strip.compact{column-gap:var(--space-3)}
+.mac{display:inline-flex;align-items:center;gap:var(--space-1);white-space:nowrap}
+.mark{width:var(--size-mark);height:var(--size-mark);border-radius:var(--radius-xs);background:var(--mc);flex:none}
+.mac-label{font:var(--type-ui-body);color:var(--text-secondary)}
+.compact .mac-label{font:var(--type-ui-secondary)}
+.p{--mc:var(--macro-protein)} .c{--mc:var(--macro-carbs)} .f{--mc:var(--macro-fat)}
+
+/* N2 · Macro breakdown */
+.split{display:flex;gap:var(--size-separator);height:var(--size-meter);border-radius:var(--radius-full);overflow:hidden;margin-block:var(--space-4) var(--space-1)}
+.split span{flex:var(--fl);background:var(--mc)}
+.mb-rows{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr) auto auto;column-gap:var(--space-4)}
+.mb-rows li{grid-column:1 / -1;display:grid;grid-template-columns:subgrid;align-items:center;padding-block:var(--row-pad-y)}
+.mb-rows li + li{border-top:var(--stroke-hairline) solid var(--line-hairline)}
+.mb-rows .mac-label{color:var(--text-primary)}
+.mb-rows .fig{text-align:right}
+/* N2 addition (Screens, IA 5 critique): when the label names the AMOUNT the figures describe rather than
+   the section they sit in, it takes the stronger of the two label treatments. text-secondary is barred from
+   anything the user must read to act (tokens §1.2), and on a screen whose control is below the fold this
+   label is the only thing that says whether 412 kcal is a serving or the pot. A section name ("Your portion")
+   stays an overline; an amount ("For 1.5 servings") does not. */
+.mb-amount{margin:0;font:var(--type-ui-secondary-strong);color:var(--text-primary)}
+/* N2 addition (Screens, IA 3 critique): one column label names the share, so “53%” is never read as a share of a target */
+.mb-rows .mb-head{padding-block:0 var(--space-1);font:var(--type-ui-secondary);color:var(--text-secondary)}
+.mb-head > :last-child{text-align:right}
+
+/* N3 · Daily target summary */
+.sum-hero{margin-block:0 var(--space-3)}
+.meter{position:relative;display:flex;gap:var(--size-separator);height:var(--size-meter);background:var(--meter-track);border-radius:var(--radius-full)}
+.meter .fill{flex:0 0 var(--w);border-radius:var(--radius-full);background:var(--mc,var(--meter-fill))}
+.meter .over{flex:0 1 var(--wo);min-width:0;border-radius:var(--radius-full);background:repeating-linear-gradient(135deg,var(--mc,var(--meter-fill)) 0 var(--stroke-hatch),transparent var(--stroke-hatch) var(--size-hatch-period))}
+/* shared scale (critique run 2): every track puts the target at meter-target, marked by a tick that fills the separator gap */
+.meter::before{content:"";position:absolute;inset-block:calc(var(--space-1) * -1);left:var(--meter-target);width:var(--size-separator);background:var(--meter-fill)}
+.sum-caption{display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--space-1) var(--space-4);margin-top:var(--space-2)}
+.mmeters{display:grid;gap:var(--space-4);margin-top:var(--space-5);padding-top:var(--space-4);border-top:var(--stroke-hairline) solid var(--line-hairline)}
+.mm-top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:var(--space-1) var(--space-3);margin-bottom:var(--space-2)}
+.mm-label{display:inline-flex;flex-wrap:wrap;align-items:center;column-gap:var(--gap-inline);min-width:0}
+.mm-top .mac-label{font:var(--type-ui-secondary);color:var(--text-primary)}
+
+/* N4 · Source note, plus the J2 helper line that goes with a photo estimate */
+.source{display:inline-flex;align-items:center;gap:var(--gap-inline);font:var(--type-ui-secondary-strong);color:var(--text-primary)}
+.helper{margin:0;padding-top:var(--space-3);border-top:var(--stroke-hairline) solid var(--line-hairline);font:var(--type-ui-secondary);color:var(--text-secondary)}
+
+/* F1/F2 · Filter chips */
+.chips{display:flex;flex-wrap:wrap;gap:var(--gap-inline)}
+.chip{position:relative;display:inline-flex;align-items:center;gap:var(--gap-inline);min-height:var(--size-chip);padding-block:0;padding-inline:var(--space-4);border:0;border-radius:var(--radius-full);background:var(--surface-paper);box-shadow:inset 0 0 0 var(--stroke-hairline) var(--line-control);color:var(--text-primary);font:var(--type-ui-chip);cursor:pointer;white-space:nowrap;touch-action:manipulation}
+/* invisible hit-area extension: (size-chip - size-hit-min) / 2 above and below */
+.chip::after,.seg button::after{content:"";position:absolute;inset:calc((var(--size-chip) - var(--size-hit-min)) / 2) 0}
+.chip[aria-pressed="true"]{background:var(--action-selected);box-shadow:inset 0 0 0 var(--stroke-emphasis) var(--line-selected);padding-left:var(--space-3)}
+.chip .ico{color:var(--text-action)}
+/* States (added Stage 6, §10): same state-layer convention as buttons, tinted with the
+   label's own color (Ink) rather than Pine, since an unselected chip has no Pine to tint with */
+@media (hover:hover){
+  .chip:hover{background:color-mix(in srgb, var(--surface-paper), var(--text-primary) calc(var(--state-hover-opacity) * 100%))}
+  .chip[aria-pressed="true"]:hover{background:color-mix(in srgb, var(--action-selected), var(--text-primary) calc(var(--state-hover-opacity) * 100%))}
+}
+.chip:active{background:color-mix(in srgb, var(--surface-paper), var(--text-primary) calc(var(--state-pressed-opacity) * 100%))}
+.chip[aria-pressed="true"]:active{background:color-mix(in srgb, var(--action-selected), var(--text-primary) calc(var(--state-pressed-opacity) * 100%))}
+/* Disabled: provisioned for the system, not yet asked for by an IA screen (like B2/B3 once were) */
+.chip:disabled,.chip[aria-disabled="true"]{background:var(--surface-sunken);color:var(--text-secondary);box-shadow:none;cursor:not-allowed}
+.chip:disabled .ico,.chip[aria-disabled="true"] .ico{color:var(--text-secondary)}
+/* Error and loading: not applicable. A chip is a value toggle, never a submission — there's
+   nothing to validate and nothing to wait on (left undocumented rather than invented, §10.7) */
+
+/* F3 · Mode switch */
+.seg{display:flex;gap:var(--space-1);padding:var(--space-1);background:var(--surface-sunken);border-radius:var(--radius-full)}
+.seg button{position:relative;flex:1 1 0;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:var(--gap-inline);min-height:var(--size-chip);padding-block:0;padding-inline:var(--space-3);border:0;border-radius:var(--radius-full);background:transparent;color:var(--text-primary);font:var(--type-ui-chip);cursor:pointer;white-space:nowrap;touch-action:manipulation}
+/* A8 (resolved at Add Food): labels only; icons appear only when the screen is too narrow for the words (S1 container rule) */
+.seg .ico{display:none}
+/* A7 (resolved at Add Food): the switch is a tablist; each mode swaps the panel below it */
+.seg [role="tab"][aria-selected="true"]{background:var(--action-selected);box-shadow:inset 0 0 0 var(--stroke-emphasis) var(--line-selected);font:var(--type-ui-chip-selected)}
+/* States (added Stage 6, §10): same convention as F1/F2, tinted transparent→Ink so the sunken
+   track shows through an unselected segment, or Ink over the selected fill */
+@media (hover:hover){
+  .seg button:hover{background:color-mix(in srgb, transparent, var(--text-primary) calc(var(--state-hover-opacity) * 100%))}
+  .seg [role="tab"][aria-selected="true"]:hover{background:color-mix(in srgb, var(--action-selected), var(--text-primary) calc(var(--state-hover-opacity) * 100%))}
+}
+.seg button:active{background:color-mix(in srgb, transparent, var(--text-primary) calc(var(--state-pressed-opacity) * 100%))}
+.seg [role="tab"][aria-selected="true"]:active{background:color-mix(in srgb, var(--action-selected), var(--text-primary) calc(var(--state-pressed-opacity) * 100%))}
+/* Disabled: a mode with no camera permission (IA 2 Barcode/Photo) is the evidenced case — the
+   permission *request* flow itself is still v2 (Add Food carry notes), but the affordance exists now */
+.seg button:disabled,.seg [aria-disabled="true"]{color:var(--text-secondary);cursor:not-allowed}
+.seg button:disabled:hover,.seg button:disabled:active,.seg [aria-disabled="true"]:hover,.seg [aria-disabled="true"]:active{background:none}
+
+/* F · Filter group (Screens, IA 4): the mode switch and the panel of controls it owns.
+   A group is a label plus one set of chips or fields, so both halves of "suitable for me" are built the same way. */
+.filters{display:grid;gap:var(--gap-stack)}
+.filter-panel{display:grid;gap:var(--gap-stack)}
+.fgroup{display:grid;gap:var(--space-2)}
+/* where a pre-filled figure is derived rather than saved, the group says where it came from */
+.fgroup-note{margin:0;font:var(--type-ui-secondary);color:var(--text-secondary);text-wrap:pretty}
+
+/* I · Inputs */
+.field-label{display:block;font:var(--type-ui-secondary-strong);color:var(--text-primary);margin-bottom:var(--space-2)}
+.field{position:relative;display:flex;align-items:stretch;gap:var(--gap-inline);min-height:var(--size-control);padding-inline:var(--space-4);background:var(--surface-paper);border-radius:var(--radius-md);box-shadow:inset 0 0 0 var(--stroke-hairline) var(--line-control);color:var(--text-secondary)}
+.field > .ico,.field > .unit,.field > .spinner{align-self:center}
+.field:focus-within{box-shadow:inset 0 0 0 var(--stroke-focus) var(--focus-ring)}
+/* Hover (added Stage 6, §10): the edge only, since a filled hover would fight focus-within
+   for the same signal. Pressed doesn't apply to a field — there's no press, only focus */
+@media (hover:hover){
+  .field:hover{box-shadow:inset 0 0 0 var(--stroke-hairline) color-mix(in srgb, var(--line-control), var(--text-primary) calc(var(--state-hover-opacity) * 100%))}
+}
+/* Disabled: the same neutral pair as buttons and chips (surface-sunken + text-secondary) */
+.field:has(:disabled),.field.disabled{background:var(--surface-sunken);box-shadow:inset 0 0 0 var(--stroke-hairline) var(--line-hairline);color:var(--text-secondary)}
+.field:has(:disabled) input,.field.disabled input{color:var(--text-secondary)}
+/* Error: the container and its icon carry state-error; a typed figure never does (L1 — figures
+   are never tinted — extends to an out-of-range one, exactly as J2 kept a photo estimate exact
+   in form). Text identifies the problem too, not color alone (WCAG 2.2 SC 3.3.1) */
+.field.error,.field:has([aria-invalid="true"]){box-shadow:inset 0 0 0 var(--stroke-emphasis) var(--state-error)}
+.field-error{display:flex;align-items:center;gap:var(--gap-inline);margin-top:var(--space-2);font:var(--type-ui-secondary);color:var(--state-error)}
+.field-error .ico{color:var(--state-error)}
+/* Loading: I1 only (search-as-you-type). The spinner takes the icon's place; the icon returns
+   once results (or E1's no-match message) land. aria-busy so a screen reader doesn't read a stale list */
+.field .spinner{display:none;color:var(--text-secondary)}
+.field.is-loading > .ico{display:none}
+.field.is-loading .spinner{display:block}
+.field input,.field select{flex:1;min-width:0;width:100%;margin:0;border:0;background:transparent;padding:0;font:var(--type-ui-body);color:var(--text-primary);outline:none;appearance:none;-webkit-appearance:none}
+.field input::placeholder{color:var(--text-secondary);opacity:1}
+.field.num input{font:var(--type-figure-md);font-variant-numeric:var(--figure-numerals);color:var(--figure-value)}
+.field .unit{font:var(--type-unit-md);color:var(--figure-unit)}
+/* select variant: the select fills the whole field, so the whole field is the target; chevron drawn over it */
+.field.select{padding-inline:0}
+.field.select select{padding-inline:var(--space-4) calc(var(--space-4) + var(--size-icon) + var(--gap-inline));cursor:pointer}
+.field.select > .ico{position:absolute;right:var(--space-4);top:50%;translate:0 -50%;pointer-events:none}
+.field-pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-3)}
+/* portion: the unit field wraps below the stepper instead of shrinking under 2 x hit target */
+.portion{display:flex;flex-wrap:wrap;gap:var(--gap-inline)}
+.portion .stepper{flex:none}
+.portion .field{flex:1 1 calc(var(--size-hit-min) * 2);min-height:var(--size-button)}
+.stepper{display:flex;align-items:stretch;min-height:var(--size-button);background:var(--surface-paper);border-radius:var(--radius-md);box-shadow:inset 0 0 0 var(--stroke-hairline) var(--line-control)}
+.stepper button{width:var(--size-hit-min);padding:0;display:grid;place-items:center;border:0;background:transparent;color:var(--text-action);font:var(--type-ui-label);cursor:pointer;border-radius:var(--radius-md);touch-action:manipulation}
+/* States (added Stage 6, §10): ± buttons are ghost buttons on Paper, so they tint with their
+   own glyph color (Pine) rather than Ink */
+@media (hover:hover){
+  .stepper button:hover:not(:disabled){background:color-mix(in srgb, transparent, var(--text-action) calc(var(--state-hover-opacity) * 100%))}
+}
+.stepper button:active:not(:disabled){background:color-mix(in srgb, transparent, var(--text-action) calc(var(--state-pressed-opacity) * 100%))}
+/* Disabled at a floor or ceiling: the affordance a screen already enforces (a count capped at
+   99, a weight/volume at 5,000, Stage 5b) now shows on the button, not just in aria-valuemax.
+   Where a screen also enforces a floor (Recipe Detail's 0.5), pair this with aria-valuemin —
+   left unset everywhere else, same "only where real" rule the audit set for the ceiling */
+.stepper button:disabled{color:var(--text-secondary);cursor:not-allowed}
+.stepper button:disabled:hover,.stepper button:disabled:active{background:none}
+.stepper input{width:var(--size-stepper-value);margin:0;border:0;border-inline:var(--stroke-hairline) solid var(--line-hairline);background:transparent;text-align:center;padding:0;font:var(--type-figure-lg);letter-spacing:var(--track-figure-lg);font-variant-numeric:var(--figure-numerals);color:var(--figure-value)}
+.stepper input:focus-visible{outline:var(--stroke-focus) solid var(--focus-ring);outline-offset:calc(var(--stroke-focus) * -1)}
+/* Error (added Stage 6, §10): the wrapper carries state-error, never the input — an out-of-range
+   amount stays exact-form Ink (L1), exactly as J2 kept a photo estimate exact in form */
+.stepper.error{box-shadow:inset 0 0 0 var(--stroke-emphasis) var(--state-error)}
+/* Loading: not applicable. Every stepper edit in this system is local state, resolved
+   instantly — there is no request in flight to wait on (left undocumented, §10.7) */
+.stepper-static{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-3)}
+/* I3 addition (Screens, IA 3): the portion group; a J2 helper line sits directly above the label and control */
+.portion-wrap{display:grid;gap:var(--gap-stack)}
+
+/* C1 addition (Screens, IA 1) · label above a list block, aligned with the row text inside it */
+.list-label{margin:0 0 var(--space-2);padding-inline:var(--inset-block)}
+/* C1 addition (Screens, IA 4): the label row, when one control acts on the whole list ("Reset to my usual").
+   The control sits with the thing it changes, in one place and one treatment, in every state. */
+.list-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-1) var(--space-3);margin-bottom:var(--space-2);padding-inline:var(--inset-block)}
+.list-head > .list-label{margin:0;padding-inline:0}
+.list-head > .btn-text{margin-inline-end:calc(var(--space-3) * -1)}
+
+/* S1 · Screen scaffold (Screens, IA 1): header + body + bottom bar, with platform safe-area insets */
+.screen{container:screen / inline-size;display:flex;flex-direction:column;min-height:100%;background:var(--surface-ground);color:var(--text-primary)}
+.screen-head{display:grid;gap:var(--space-1);padding-block:calc(var(--inset-safe-top) + var(--space-4)) 0;padding-inline:var(--inset-screen)}
+.screen-title{margin:0;color:var(--text-primary)}
+.screen-sub{margin:0;font:var(--type-ui-secondary);color:var(--text-secondary)}
+.screen-body{flex:1;display:grid;grid-template-columns:minmax(0,1fr);align-content:start;gap:var(--gap-section-log);padding-block:var(--gap-section-log);padding-inline:var(--inset-screen)}
+.screen-body.recipe{gap:var(--gap-section-recipe);padding-block:var(--gap-section-recipe)}
+
+/* S2 · Bottom bar (Screens, IA 1): Today tab · Add food (B1) · Recipes tab */
+.bar{position:sticky;bottom:0;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:var(--gap-inline);padding-block:var(--space-2) calc(var(--space-2) + var(--inset-safe-bottom));padding-inline:var(--inset-screen);background:var(--surface-paper);border-top:var(--stroke-hairline) solid var(--line-hairline)}
+.tab{display:grid;justify-items:center;align-content:center;gap:var(--space-1);min-width:var(--size-hit-min);min-height:var(--size-button);color:var(--text-primary);font:var(--type-ui-chip);text-decoration:none;touch-action:manipulation}
+.tab-ind{display:grid;place-items:center;padding-block:var(--space-1);padding-inline:var(--space-4);border-radius:var(--radius-full)}
+.tab[aria-current="page"]{font:var(--type-ui-chip-selected)}
+.tab[aria-current="page"] .tab-ind{background:var(--action-selected);box-shadow:inset 0 0 0 var(--stroke-emphasis) var(--line-selected)}
+.lbl-short{display:none}
+
+/* S1 addition (Screens, IA 2) · task header: title plus one dismiss action (B3); a body with no bar below clears the safe area itself */
+.screen-head-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--gap-inline)}
+.screen-head-row .btn-text{margin-inline-end:calc(var(--space-3) * -1)}
+.screen-body:last-child{padding-bottom:calc(var(--gap-section-log) + var(--inset-safe-bottom))}
+.panel{display:grid;align-content:start;gap:var(--gap-section-log)}
+.screen-body.fill{grid-template-rows:auto minmax(0,1fr);align-content:stretch}
+.fill > .panel{grid-template-rows:minmax(var(--size-viewfinder-min),1fr) auto;align-content:stretch;gap:var(--gap-stack)}
+
+/* S1 addition (Screens, IA 3) · step header: B3 "Back" (.btn-flush) above the title, because a step inside a task goes back while a task closes.
+   Head with media: the Flow 3 recipe thumbnail (M1) beside the title; it wraps below when the title column would be narrower than 1.5 x size-thumb */
+.screen-head-media{display:flex;flex-wrap:wrap;align-items:flex-start;gap:var(--space-4)}
+.screen-head-media > :first-child{flex:1 1 calc(var(--size-thumb) * 1.5);min-width:0;display:grid;gap:var(--space-1)}
+
+/* S1 addition (Screens, IA 5) · media band: a full-width image between the header and the body, running
+   to both screen edges. A detail screen has one picture and no list to compare it against, so it is not
+   held inside the gutter the way a card's thumbnail is. */
+.screen-media{margin-top:var(--gap-stack)}
+
+/* S3 · Action bar (Screens, IA 2; reused by IA 3 and 5): the screen's one or two actions, sticky within thumb reach */
+.actionbar{position:sticky;bottom:0;z-index:1;display:grid;gap:var(--gap-inline);padding-block:var(--space-3) calc(var(--space-3) + var(--inset-safe-bottom));padding-inline:var(--inset-screen);background:var(--surface-paper);border-top:var(--stroke-hairline) solid var(--line-hairline)}
+
+/* V1 · Viewfinder (Screens, IA 2): the camera feed with a framing guide; instructions sit below it, never over the feed */
+.viewfinder{container-type:size;display:grid;place-items:center;padding:var(--space-8);border-radius:var(--radius-lg);background:var(--surface-viewfinder);overflow:hidden}
+.vf-guide{width:100%;aspect-ratio:var(--ratio-guide-barcode);--c:var(--line-guide);--l:min(var(--size-guide-corner),25%);--s:var(--stroke-guide);
+  background:
+    linear-gradient(var(--c),var(--c)) top left / var(--l) var(--s),linear-gradient(var(--c),var(--c)) top left / var(--s) var(--l),
+    linear-gradient(var(--c),var(--c)) top right / var(--l) var(--s),linear-gradient(var(--c),var(--c)) top right / var(--s) var(--l),
+    linear-gradient(var(--c),var(--c)) bottom left / var(--l) var(--s),linear-gradient(var(--c),var(--c)) bottom left / var(--s) var(--l),
+    linear-gradient(var(--c),var(--c)) bottom right / var(--l) var(--s),linear-gradient(var(--c),var(--c)) bottom right / var(--s) var(--l);
+  background-repeat:no-repeat}
+/* photo: the largest square that fits the camera area (container units of the viewfinder's content box) */
+.vf-guide.photo{aspect-ratio:var(--ratio-guide-photo);width:min(100cqw,100cqh)}
+.vf-hint{margin:0;font:var(--type-ui-body);color:var(--text-primary);text-wrap:pretty}
+/* found (critique, Add Food): the corners join into a closed frame and the hint names the product, just before Food Confirmation opens */
+.vf-guide.found{box-shadow:inset 0 0 0 var(--stroke-hairline) var(--line-guide)}
+
+/* E1 · Message (critique, Add Food): a no-result state inside a panel. Plain words and the next step; no status hue, no illustration */
+.message{display:grid;gap:var(--space-1)}
+.message-title{margin:0;font:var(--type-ui-body-strong);color:var(--text-primary)}
+.message-text{margin:0;font:var(--type-ui-body);color:var(--text-primary);text-wrap:pretty}
+
+/* R · Recipe content (Screens, IA 5). The unifying rule at the scale of a section: the quantities are
+   figures in a ledger on Paper, the method is words on the ground. Same tokens, opposite emphasis (L3). */
+
+/* R1 · Ingredient list: a quantity column that lines up because every figure is tabular, and the
+   ingredient in words beside it */
+.ingredients{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:auto minmax(0,1fr)}
+.ingredients li{grid-column:1 / -1;display:grid;grid-template-columns:subgrid;column-gap:var(--space-4);align-items:baseline;padding-block:var(--row-pad-y)}
+.ingredients li + li{border-top:var(--stroke-hairline) solid var(--line-hairline)}
+.ingredients .ing-name{font:var(--type-ui-body);color:var(--text-primary);text-wrap:pretty}
+/* an ingredient with nothing to measure ("sea salt, to taste") keeps the empty column, so the names stay aligned */
+.ingredients .ing-none{font:var(--type-ui-secondary);color:var(--text-secondary)}
+
+/* R2 · Method steps: prose on the ground. A step number is not a nutrition figure, so it takes a ui role
+   rather than a figure role (L1) — but it is still tabular, so the column holds at step 10. */
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:var(--gap-stack);counter-reset:step}
+.steps li{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:var(--space-4);align-items:baseline;font:var(--type-ui-body);color:var(--text-primary);text-wrap:pretty}
+.steps li::before{counter-increment:step;content:counter(step);font:var(--type-ui-secondary-strong);font-variant-numeric:var(--figure-numerals);color:var(--text-secondary)}
+
+/* a titled section on a recipe screen: one heading and the content it names, at the within-block step
+   while the sections themselves keep the 40 of gap-section-recipe */
+.rsec{display:grid;gap:var(--gap-stack)}
+.rsec-head{display:grid;gap:var(--space-1)}
+.rsec-title{margin:0;color:var(--text-primary)}
+/* one line where a section needs saying what its content is measured against ("For all 4 servings") */
+.rsec-note{margin:0;color:var(--text-secondary);text-wrap:pretty}
+
+/* Narrow screens (Screens, critique R4). Container conditions can't read custom properties,
+   so these two widths are the documented breakpoints bp-screen-narrow (320) and bp-screen-compact (280). */
+@container screen (width < 320px){
+  .bar .lbl-full{display:none}
+  .bar .lbl-short{display:inline}
+  /* F3 (A8): icon-only; the label stays as the accessible name; gaps close so segments keep size-hit-min down to 195 */
+  .seg{gap:0}
+  .seg .ico{display:block}
+  .seg .seg-label{position:absolute;clip-path:inset(50%);white-space:nowrap}
+}
+@container screen (width < 280px){
+  .bar{padding-inline:var(--space-2);gap:var(--space-1)}
+  .bar .lbl-short{display:none}
+  .bar .btn{padding-inline:0;min-width:var(--size-button)}
+  .row{grid-template-columns:minmax(0,1fr)}
+  .row-link{grid-template-columns:minmax(0,1fr) auto}
+  .row > .fig{grid-column:1;grid-row:auto;text-align:left}
+  .row-link > .ico{grid-column:2;grid-row:1 / span 3}
+  /* IA 4: two number fields side by side fall under 2 x hit target here, so they stack */
+  .field-pair{grid-template-columns:minmax(0,1fr)}
+}
+
+/* =====================================================================
+   PROTOTYPE CHROME — the phone shell only. Trimmed from the same
+   05-screens presentation-chrome block (.device/.viewport/.statusbar/
+   .home-ind); the multi-frame gallery rules (.frames/.frame-cap/.top/
+   .wrap/.sec/...) are not needed for a single clickable screen.
+   ===================================================================== */
+*{box-sizing:border-box}
+html{scroll-padding-top:16px}
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--color-oat-deep);font:400 16px/1.55 var(--font-ui)}
+a{color:var(--color-pine);text-underline-offset:.18em}
+::selection{background:var(--color-pine-light);color:var(--color-ink)}
+
+.device{--inset-safe-top:59px;--inset-safe-bottom:34px; /* iPhone 15-class safe areas, simulated */
+  position:relative;width:390px;height:844px;border-radius:56px;overflow:hidden;isolation:isolate;background:var(--surface-ground);
+  box-shadow:0 0 0 10px var(--color-ink),0 30px 60px rgba(31,36,33,.22)}
+.viewport{position:absolute;inset:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+.viewport::-webkit-scrollbar{display:none}
+.statusbar{position:absolute;z-index:3;inset:0 0 auto;height:59px;display:flex;align-items:center;justify-content:space-between;padding:8px 34px 0 52px;background:var(--surface-ground);font:600 17px/1 var(--font-ui);color:var(--color-ink);pointer-events:none;font-variant-numeric:tabular-nums}
+.island{position:absolute;left:50%;top:11px;translate:-50% 0;width:124px;height:36px;border-radius:20px;background:var(--color-ink)}
+.batt{position:relative;display:inline-block;width:27px;height:13px;border-radius:4px;box-shadow:inset 0 0 0 1.5px var(--color-ink)}
+.batt::after{content:"";position:absolute;inset:3px 7px 3px 3px;border-radius:1.5px;background:var(--color-ink)}
+.home-ind{position:absolute;z-index:3;left:50%;bottom:8px;translate:-50% 0;width:134px;height:5px;border-radius:3px;background:var(--color-ink);pointer-events:none}
+@media (max-width:520px){
+  body{display:block}
+  .device{--inset-safe-top:env(safe-area-inset-top,0px);--inset-safe-bottom:env(safe-area-inset-bottom,0px);width:auto;height:auto;min-height:100vh;border-radius:0;overflow:visible;box-shadow:none}
+  .viewport{position:static;overflow:visible}
+  .statusbar,.home-ind{display:none}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="13" r="3.25"/></symbol>
+  <symbol id="i-barcode" viewBox="0 0 24 24"><path d="M4 8V5h3M17 5h3v3M20 16v3h-3M7 19H4v-3M8 9v6M11 9v6M13.5 9v6M16 9v6"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M5 5.5A1.5 1.5 0 0 1 6.5 4H19v13H6.5A1.5 1.5 0 0 0 5 18.5z"/><path d="M5 18.5A1.5 1.5 0 0 0 6.5 20H19"/></symbol>
+  <symbol id="i-today" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 9h6M9 12.5h6M9 16h3.5"/></symbol>
+  <symbol id="i-chev-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-chev-left" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M11.6 3.5H20.5v8.9l-8.06 8.06a1.9 1.9 0 0 1-2.69 0l-6.21-6.21a1.9 1.9 0 0 1 0-2.69z"/><circle cx="16.6" cy="7.4" r="1.15"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.75"/><circle cx="12" cy="12" r="2.9"/></symbol>
+  <symbol id="i-error" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.75"/><path d="M12 8v4.5M12 16.2v.01"/></symbol>
+</svg>
+
+<div class="device" role="region" aria-label="Recipes screen">
+        <div class="statusbar" aria-hidden="true"><span>12:56</span><span class="island"></span><span class="batt"></span></div>
+        <div class="viewport">
+          <div class="screen">
+            <header class="screen-head">
+              <h2 class="screen-title voice-title">Recipes</h2>
+            </header>
+            <div class="screen-body recipe">
+              <section class="filters" aria-label="Filter recipes">
+                <div class="seg" role="tablist" aria-label="Filter mode">
+                  <button type="button" role="tab" id="t-tags" aria-controls="mode-tags-panel" aria-selected="true" tabindex="0" data-mode="tags"><svg class="ico" aria-hidden="true"><use href="#i-tag"/></svg><span class="seg-label">By diet &amp; goals</span></button>
+                  <button type="button" role="tab" id="t-macro" aria-controls="mode-macro-panel" aria-selected="false" tabindex="-1" data-mode="macro"><svg class="ico" aria-hidden="true"><use href="#i-target"/></svg><span class="seg-label">By macro match</span></button>
+                </div>
+                <div class="filter-panel" role="tabpanel" id="mode-tags-panel" aria-labelledby="t-tags"><div class="fgroup"><span class="overline ui-overline" id="a-eat">How you eat</span><div class="chips" role="group" aria-labelledby="a-eat"><button type="button" class="chip" aria-pressed="true"><svg class="ico sm" aria-hidden="true"><use href="#i-check"/></svg>Vegetarian</button><button type="button" class="chip" aria-pressed="false">Vegan</button><button type="button" class="chip" aria-pressed="false">Pescatarian</button><button type="button" class="chip" aria-pressed="true"><svg class="ico sm" aria-hidden="true"><use href="#i-check"/></svg>High-protein</button><button type="button" class="chip" aria-pressed="false">Low-carb</button></div></div><div class="fgroup"><span class="overline ui-overline" id="a-avoid">Avoid</span><div class="chips" role="group" aria-labelledby="a-avoid"><button type="button" class="chip" aria-pressed="false">Nuts</button><button type="button" class="chip" aria-pressed="false">Dairy</button><button type="button" class="chip" aria-pressed="false">Gluten</button><button type="button" class="chip" aria-pressed="true"><svg class="ico sm" aria-hidden="true"><use href="#i-check"/></svg>Shellfish</button><button type="button" class="chip" aria-pressed="false">Egg</button></div></div></div>
+                <div class="filter-panel" role="tabpanel" id="mode-macro-panel" aria-labelledby="t-macro" hidden><div class="fgroup"><span class="overline ui-overline" id="c-per">Per serving</span><div class="field-pair" role="group" aria-labelledby="c-per"><div><label class="field-label" for="c-kcal">Calories, at most</label><div class="field num"><input id="c-kcal" name="kcal" type="text" inputmode="numeric" autocomplete="off" value="665"><span class="unit">kcal</span></div></div><div><label class="field-label" for="c-p">Protein, at least</label><div class="field num"><input id="c-p" name="p" type="text" inputmode="numeric" autocomplete="off" value="40"><span class="unit">g</span></div></div><div><label class="field-label" for="c-c">Carbs, at most</label><div class="field num"><input id="c-c" name="c" type="text" inputmode="numeric" autocomplete="off" value="75"><span class="unit">g</span></div></div><div><label class="field-label" for="c-f">Fat, at most</label><div class="field num"><input id="c-f" name="f" type="text" inputmode="numeric" autocomplete="off" value="20"><span class="unit">g</span></div></div></div><p class="fgroup-note">About a third of your day: <span class="fig fig-sm">2,000&nbsp;<span class="unit">kcal</span></span>, <span class="fig fig-sm">120&nbsp;<span class="unit">g</span></span> protein, <span class="fig fig-sm">220&nbsp;<span class="unit">g</span></span> carbs, <span class="fig fig-sm">65&nbsp;<span class="unit">g</span></span> fat, to the nearest 5.</p></div></div>
+              </section>
+              <section aria-label="Results" id="results-tags"><div class="list-head"><p class="list-label ui-secondary-strong" aria-live="polite"><b>4 recipes</b>, best fit first &middot; vegetarian &middot; high-protein &middot; no shellfish</p></div><ul class="rcards"><li><a class="rcard rcard-link compact" href="05-recipe-detail.html"><div class="rimg thumb"><img src="../assets/images/chickpea-spinach-stew.jpg" alt=""></div><div class="rcard-body"><h3 class="rcard-title voice-card">Chickpea &amp; spinach stew</h3><div class="strip compact"><span class="fig fig-sm key">412&nbsp;<span class="unit">kcal</span></span><span class="mac"><span class="mark p"></span><span class="mac-label" aria-hidden="true">P</span><span class="sr-only">Protein</span><span class="fig fig-sm">26&nbsp;<span class="unit">g</span></span></span><span class="mac"><span class="mark c"></span><span class="mac-label" aria-hidden="true">C</span><span class="sr-only">Carbs</span><span class="fig fig-sm">48&nbsp;<span class="unit">g</span></span></span><span class="mac"><span class="mark f"></span><span class="mac-label" aria-hidden="true">F</span><span class="sr-only">Fat</span><span class="fig fig-sm">12&nbsp;<span class="unit">g</span></span></span></div><ul class="matches" aria-label="Also suits"><li><svg class="ico sm" aria-hidden="true"><use href="#i-check"/></svg>Vegan</li><li><svg class="ico sm" aria-hidden="true"><use href="#i-check"/></svg>Gluten-free</li><li><svg class="ico sm" aria-hidden="true"><use href="#i-check"/></svg>Dairy-free</li></ul></div></a></li><li><a class="rcard rcard-link compact" href="05-recipe-detail.html"><div class="rimg thumb"><img src="../assets/images/red-lentil-tomato-dhal.jpg" alt=""></div><div class="rcard-body"><h3 class="rcard-title voice-card">Red lentil &amp; tomato dhal</h3><div class="strip compact"><span class="fig fig-sm key">386&nbsp;<span class="unit">kcal</span></span><span class="mac"><span class="mark p"></span><span class="mac-label" aria-hidden="true">P</span><span class="sr-only">Protein</span><span class="fig fig-sm">24&nbsp;<span class="unit">g</span></span></span><span class="mac"><span class="mark c"></span><span class="mac-label" aria-hidden="true">C</span><span class="sr-only">Carbs</span><span class="fig fig-sm">52&nbsp;<span class="unit">g</span></span></span><span class="mac"><span class="mark f"></span><span class="mac-label" aria-hidden="true">F</span><span class="sr-only">Fat</span><span class="fig fig-sm">9&nbsp;<span class="unit">g</span></span></span></div><ul class="matches" aria-label="Also suits"><li><svg class="ico sm" aria-hidden="true"><use href="#i-check"/></svg>Vegan</li><li><svg class="ico sm" aria-hidden="true"><use href="#i-check"/></svg>Gluten-free</li><li><svg class="ico sm" aria-hidden="true"><use href="#i-check"/></svg>Nut-free</li></ul></div></a></li><li><a class="rcard rcard-link compact" href="05-recipe-detail.html"><div class="rimg thumb"><img src="../assets/images/halloumi-butter-bean-traybake.jpg" alt=""></div><div class="rcard-body"><h3 class="rcard-title voice-card">Halloumi &amp; butter bean traybake</h3><div class="strip compact"><span class="fig fig-sm key">498&nbsp;<span class="unit">kcal</span></span><span class="mac"><span class="mark p"></span><span class="mac-label" aria-hidden="true">P</span><span class="sr-only">Protein</span><span class="fig fig-sm">31&nbsp;<span class="unit">g</span></span></span><span class="mac"><span class="mark c"></span><span class="mac-label" aria-hidden="true">C</span><span class="sr-only">Carbs</span><span class="fig fig-sm">34&nbsp;<span class="unit">g</span></span></span><span class="mac"><span class="mark f"></span><span class="mac-label" aria-hidden="true">F</span><span class="sr-only">Fat</span><span class="fig fig-sm">26&nbsp;<span class="unit">g</span></span></span></div><ul class="matches" aria-label="Also suits"><li><svg class="ico sm" aria-hidden="true"><use href="#i-check"/></svg>Gluten-free</li><li><svg class="ico sm" aria-hidden="true"><use href="#i-check"/></svg>Nut-free</li></ul></div></a></li><li><a class="rcard rcard-link compact" href="05-recipe-detail.html"><div class="rimg thumb"><img src="../assets/images/baked-tofu-broccoli-noodles.jpg" alt=""></div><div class="rcard-body"><h3 class="rcard-title voice-card">Baked tofu &amp; broccoli noodles</h3><div class="strip compact"><span class="fig fig-sm key">455&nbsp;<span class="unit">kcal</span></span><span class="mac"><span class="mark p"></span><span class="mac-label" aria-hidden="true">P</span><span class="sr-only">Protein</span><span class="fig fig-sm">30&nbsp;<span class="unit">g</span></span></span><span class="mac"><span class="mark c"></span><span class="mac-label" aria-hidden="true">C</span><span class="sr-only">Carbs</span><span class="fig fig-sm">49&nbsp;<span class="unit">g</span></span></span><span class="mac"><span class="mark f"></span><span class="mac-label" aria-hidden="true">F</span><span class="sr-only">Fat</span><span class="fig fig-sm">15&nbsp;<span class="unit">g</span></span></span></div><ul class="matches" aria-label="Also suits"><li><svg class="ico sm" aria-hidden="true"><use href="#i-check"/></svg>Vegan</li><li><svg class="ico sm" aria-hidden="true"><use href="#i-check"/></svg>Dairy-free</li></ul></div></a></li></ul></section>
+              <section aria-label="Results" id="results-macro" hidden><div class="list-head"><p class="list-label ui-secondary-strong" aria-live="polite"><b>3 recipes</b>, best fit first &middot; vegetarian &middot; high-protein &middot; no shellfish &middot; inside your per-serving targets</p></div><ul class="rcards"><li><a class="rcard rcard-link compact" href="05-recipe-detail.html"><div class="rimg thumb"><img src="../assets/images/seitan-black-bean-chilli.jpg" alt=""></div><div class="rcard-body"><h3 class="rcard-title voice-card">Seitan &amp; black bean chilli</h3><div class="strip compact"><span class="fig fig-sm key">495&nbsp;<span class="unit">kcal</span></span><span class="mac"><span class="mark p"></span><span class="mac-label" aria-hidden="true">P</span><span class="sr-only">Protein</span><span class="fig fig-sm">52&nbsp;<span class="unit">g</span></span></span><span class="mac"><span class="mark c"></span><span class="mac-label" aria-hidden="true">C</span><span class="sr-only">Carbs</span><span class="fig fig-sm">50&nbsp;<span class="unit">g</span></span></span><span class="mac"><span class="mark f"></span><span class="mac-label" aria-hidden="true">F</span><span class="sr-only">Fat</span><span class="fig fig-sm">11&nbsp;<span class="unit">g</span></span></span></div><ul class="matches" aria-label="Closest to your limits"><li><svg class="ico sm" aria-hidden="true"><use href="#i-check"/></svg><span class="fig fig-sm">170&nbsp;<span class="unit">kcal</span></span> under your limit</li><li><svg class="ico sm" aria-hidden="true"><use href="#i-check"/></svg><span class="fig fig-sm">12&nbsp;<span class="unit">g</span></span> protein above your minimum</li></ul></div></a></li><li><a class="rcard rcard-link compact" href="05-recipe-detail.html"><div class="rimg thumb"><img src="../assets/images/cottage-cheese-lentil-bake.jpg" alt=""></div><div class="rcard-body"><h3 class="rcard-title voice-card">Cottage cheese &amp; lentil bake</h3><div class="strip compact"><span class="fig fig-sm key">500&nbsp;<span class="unit">kcal</span></span><span class="mac"><span class="mark p"></span><span class="mac-label" aria-hidden="true">P</span><span class="sr-only">Protein</span><span class="fig fig-sm">45&nbsp;<span class="unit">g</span></span></span><span class="mac"><span class="mark c"></span><span class="mac-label" aria-hidden="true">C</span><span class="sr-only">Carbs</span><span class="fig fig-sm">40&nbsp;<span class="unit">g</span></span></span><span class="mac"><span class="mark f"></span><span class="mac-label" aria-hidden="true">F</span><span class="sr-only">Fat</span><span class="fig fig-sm">18&nbsp;<span class="unit">g</span></span></span></div><ul class="matches" aria-label="Closest to your limits"><li><svg class="ico sm" aria-hidden="true"><use href="#i-check"/></svg><span class="fig fig-sm">2&nbsp;<span class="unit">g</span></span> fat under your limit</li><li><svg class="ico sm" aria-hidden="true"><use href="#i-check"/></svg><span class="fig fig-sm">5&nbsp;<span class="unit">g</span></span> protein above your minimum</li></ul></div></a></li><li><a class="rcard rcard-link compact" href="05-recipe-detail.html"><div class="rimg thumb"><img src="../assets/images/tofu-edamame-rice-bowl.jpg" alt=""></div><div class="rcard-body"><h3 class="rcard-title voice-card">Tofu &amp; edamame rice bowl</h3><div class="strip compact"><span class="fig fig-sm key">512&nbsp;<span class="unit">kcal</span></span><span class="mac"><span class="mark p"></span><span class="mac-label" aria-hidden="true">P</span><span class="sr-only">Protein</span><span class="fig fig-sm">41&nbsp;<span class="unit">g</span></span></span><span class="mac"><span class="mark c"></span><span class="mac-label" aria-hidden="true">C</span><span class="sr-only">Carbs</span><span class="fig fig-sm">58&nbsp;<span class="unit">g</span></span></span><span class="mac"><span class="mark f"></span><span class="mac-label" aria-hidden="true">F</span><span class="sr-only">Fat</span><span class="fig fig-sm">14&nbsp;<span class="unit">g</span></span></span></div><ul class="matches" aria-label="Closest to your limits"><li><svg class="ico sm" aria-hidden="true"><use href="#i-check"/></svg><span class="fig fig-sm">1&nbsp;<span class="unit">g</span></span> protein above your minimum</li><li><svg class="ico sm" aria-hidden="true"><use href="#i-check"/></svg><span class="fig fig-sm">17&nbsp;<span class="unit">g</span></span> carbs under your limit</li></ul></div></a></li></ul></section>
+            </div>
+            <nav class="bar" aria-label="Main"><a class="tab" href="index.html"><span class="tab-ind"><svg class="ico" aria-hidden="true"><use href="#i-today"/></svg></span>Today</a><a class="btn btn-primary" href="02-add-food.html" aria-label="Add food"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg><span class="lbl-full">Add food</span><span class="lbl-short">Add</span></a><a class="tab" href="04-recipes-filter.html" aria-current="page"><span class="tab-ind"><svg class="ico" aria-hidden="true"><use href="#i-book"/></svg></span>Recipes</a></nav>
+          </div>
+        </div>
+        <div class="home-ind" aria-hidden="true"></div>
+      </div>
+
+<script>
+/* Prototype behaviour for F3 (A7), reworked for a single-page prototype (06-prototype):
+   the documentation page swapped modes by scrolling to a separate static frame; this page
+   has both the tags and macro filter panels (and their own results lists) in one screen, so
+   a real click/keyboard switch shows and hides the matching pair instead. Arrow keys, Home
+   and End still move focus between tabs (roving tabindex), with manual activation — focus
+   moves, Enter or Space selects — matching 05-screens. Chips toggle their own state;
+   re-filtering is not simulated — the two result lists are the result states. */
+(() => {
+  const tabs = [...document.querySelectorAll('#t-tags, #t-macro')];
+  const groups = {
+    tags: [document.getElementById("mode-tags-panel"), document.getElementById("results-tags")],
+    macro: [document.getElementById("mode-macro-panel"), document.getElementById("results-macro")],
+  };
+  const select = mode => {
+    tabs.forEach(t => {
+      const on = t.dataset.mode === mode;
+      t.setAttribute("aria-selected", String(on));
+      t.tabIndex = on ? 0 : -1;
+    });
+    /* .filter-panel sets its own `display` (grid), an author rule that beats the UA
+       [hidden]{display:none} rule at equal specificity — so `el.hidden = true` alone does not
+       actually hide it. Set the `hidden` attribute for semantics/AT, but force the visual state
+       with inline style too. (The plain <section> results lists have no such override, so
+       [hidden] alone already hides them correctly — the inline style is a no-op there, kept for
+       consistency.) */
+    Object.entries(groups).forEach(([m, els]) => els.forEach(el => {
+      if (!el) return;
+      const off = m !== mode;
+      el.hidden = off;
+      el.style.display = off ? "none" : "";
+    }));
+  };
+  document.querySelectorAll('[role="tablist"]').forEach(list => {
+    list.addEventListener("keydown", e => {
+      const i = tabs.indexOf(document.activeElement); if (i < 0) return;
+      const n = {ArrowRight: (i + 1) % tabs.length, ArrowLeft: (i + tabs.length - 1) % tabs.length, Home: 0, End: tabs.length - 1}[e.key];
+      if (n === undefined) return;
+      /* manual activation, as 05-screens does: move focus, do not select (A7) */
+    e.preventDefault(); tabs.forEach(t => t.tabIndex = -1); tabs[n].tabIndex = 0; tabs[n].focus();
+    });
+    tabs.forEach(t => t.addEventListener("click", () => select(t.dataset.mode)));
+  });
+  select("tags");
+  /* I2 error state (Stage 6, tokens-v1.md §10.4), wired at Propagation: a macro target had no way
+     to say a typed value was out of range — the exact gap §10.4 names for this screen. Empty is allowed
+     (clearing a bound drops it), any other unreadable or non-positive value is not. The typed figure
+     stays Ink and tabular (L1); the border, the i-error icon and a sentence carry the error instead
+     (WCAG 2.2 SC 3.3.1). Re-filtering is still not simulated — the frames are the result states. */
+  let fid = 0;
+  document.querySelectorAll(".filter-panel .field.num input").forEach(input => {
+    const field = input.closest(".field"), slot = field.parentElement;
+    const unit = (field.querySelector(".unit") || {}).textContent || "";
+    const errId = "f-err-" + ++fid;
+    let errBox = null;
+    const clear = () => {
+      field.classList.remove("error");
+      input.removeAttribute("aria-invalid");
+      input.removeAttribute("aria-describedby");
+      if (errBox) { errBox.remove(); errBox = null; }
+    };
+    const show = text => {
+      field.classList.add("error");
+      input.setAttribute("aria-invalid", "true");
+      input.setAttribute("aria-describedby", errId);
+      if (!errBox) {
+        errBox = document.createElement("p");
+        errBox.className = "field-error";
+        errBox.id = errId;
+        errBox.innerHTML = '<svg class="ico sm" aria-hidden="true"><use href="#i-error"/></svg><span></span>';
+        slot.appendChild(errBox);
+      }
+      errBox.lastChild.textContent = text;
+    };
+    const check = () => {
+      const raw = input.value.trim().replace(/,/g, "");
+      if (raw === "") return clear(); /* clearing a bound is how you drop it */
+      const n = Number(raw);
+      if (!isFinite(n)) return show("That is not a number this filter can read.");
+      if (n < 1) return show("Enter at least 1 " + unit + ", or clear the field");
+      clear();
+    };
+    input.addEventListener("input", check);
+    input.addEventListener("change", check);
+  });
+
+  /* F1: a chip shows whether it is chosen. The check appears and disappears with aria-pressed. */
+  document.querySelectorAll(".chip").forEach(c => c.addEventListener("click", () => {
+    const on = c.getAttribute("aria-pressed") !== "true";
+    c.setAttribute("aria-pressed", String(on));
+    const ico = c.querySelector(".ico");
+    if (on && !ico) c.insertAdjacentHTML("afterbegin", '<svg class="ico sm" aria-hidden="true"><use href="#i-check"/></svg>');
+    if (!on && ico) ico.remove();
+  }));
+})();
+</script>
+</body>
+</html>

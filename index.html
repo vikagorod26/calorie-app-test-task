@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#1F2421">
+<meta name="description" content="The Measured Kitchen: a UX/UI design test task. Research, branding, a design system, five screens and a clickable prototype for a calorie tracker that also finds recipes that suit you.">
+<title>The Measured Kitchen · UX/UI test task</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css">
+<style>
+/* Project entry page. Brand palette and faces from 04-design-system (tokens-v1.md);
+   presentation chrome in the same style as the design-system reference page's header band. */
+:root{
+  --oat:#F2EDE6; --oat-deep:#E7DFD4; --paper:#FFFDF9; --ink:#1F2421; --ink-soft:#5E605A;
+  --rule:#E3DCD2; --stone:#857F76; --pine:#2F5245; --pine-light:#DCE6DF;
+  --serif:"Newsreader","Iowan Old Style",Georgia,"Times New Roman",serif;
+  --sans:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --gutter:clamp(16px,4vw,48px);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--oat);color:var(--ink);font:400 16px/1.55 var(--sans)}
+a{color:var(--pine);text-underline-offset:3px}
+a:focus-visible{outline:2px solid var(--pine);outline-offset:2px;border-radius:4px}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:var(--gutter)}
+
+/* header band */
+.top{background:var(--ink);color:var(--paper);padding-block:clamp(48px,8vw,88px) clamp(40px,6vw,64px)}
+.kick{font:500 12px/16px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--rule);margin:0 0 16px}
+h1{font:400 clamp(40px,6.4vw,72px)/1.02 var(--serif);letter-spacing:-.025em;margin:0 0 20px;font-optical-sizing:auto;text-wrap:balance}
+.pitch{margin:0;max-width:34ch;font:400 clamp(20px,2.4vw,24px)/1.4 var(--serif);color:var(--paper);text-wrap:pretty}
+.stories{list-style:none;margin:36px 0 0;padding:24px 0 0;border-top:1px solid rgba(255,253,249,.28);display:grid;gap:12px 40px;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.stories li{color:var(--rule);font-size:15px}
+.stories b{display:block;color:var(--paper);font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+
+main{padding-block:clamp(32px,5vw,56px) clamp(48px,7vw,80px)}
+.label{font:500 12px/16px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 14px}
+
+/* start here: the prototype */
+.start{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);background:var(--paper);border-radius:20px;overflow:hidden}
+.start-media{margin:0;background:var(--oat-deep);min-height:220px}
+.start-media img{display:block;width:100%;height:100%;object-fit:cover;aspect-ratio:4/3}
+.start-body{padding:clamp(24px,4vw,40px);display:grid;align-content:center;gap:14px}
+.start h2{font:400 clamp(28px,3.4vw,36px)/1.1 var(--serif);letter-spacing:-.015em;margin:0}
+.start p{margin:0;color:var(--ink-soft);max-width:44ch}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 24px;border-radius:14px;background:var(--pine);color:var(--paper);font:600 16px/20px var(--sans);text-decoration:none;justify-self:start}
+.btn:hover{background:#294a3e}
+.btn:focus-visible{outline:2px solid var(--pine);outline-offset:3px}
+.btn svg{width:18px;height:18px;flex:none}
+.note{font-size:14px}
+
+/* the rest of the work */
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));margin-top:clamp(40px,6vw,64px)}
+.card{background:var(--paper);border-radius:20px;padding:24px;display:grid;gap:10px;align-content:start}
+.card h3{font:400 24px/1.2 var(--serif);margin:0}
+.card p{margin:0;color:var(--ink-soft);font-size:15px}
+.links{list-style:none;margin:6px 0 0;padding:0;border-top:1px solid var(--rule)}
+.links li{border-bottom:1px solid var(--rule)}
+.links a{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:48px;padding-block:10px;font-weight:500;text-decoration:none}
+.links a::after{content:"";flex:none;width:8px;height:8px;border-top:1.75px solid currentColor;border-right:1.75px solid currentColor;transform:rotate(45deg);margin-right:4px}
+.links a:hover span{text-decoration:underline}
+.links small{display:block;font-weight:400;color:var(--ink-soft);font-size:13px}
+
+footer{border-top:1px solid var(--rule);padding-block:24px 40px;color:var(--ink-soft);font-size:14px}
+footer p{margin:0 0 6px;max-width:80ch}
+
+@media (max-width:720px){
+  .start{grid-template-columns:1fr}
+  .start-media{min-height:0}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <p class="kick">UX/UI design test task</p>
+    <h1>The Measured Kitchen</h1>
+    <p class="pitch">A calorie tracker that also finds recipes that suit you, then logs them just as precisely as you planned them.</p>
+    <ul class="stories" aria-label="The two user stories">
+      <li><b>Story 1</b>As a user, I want to calculate the amount of calories in a dish or a specific product.</li>
+      <li><b>Story 2</b>As a user, I want to find a recipe for a dish that is suitable for me.</li>
+    </ul>
+  </div>
+</header>
+
+<main class="wrap">
+  <p class="label">Start here</p>
+  <section class="start" aria-labelledby="h-proto">
+    <figure class="start-media"><img src="assets/images/chickpea-spinach-stew.jpg" alt="" width="1184" height="896"></figure>
+    <div class="start-body">
+      <h2 id="h-proto">Clickable prototype</h2>
+      <p>Five screens, both stories wired end to end: log a food by search, barcode or photo, or find a recipe that fits and log it in one step.</p>
+      <a class="btn" href="06-prototype/index.html">Open the prototype
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <p class="note">Best viewed at phone width, or at desktop width, where it sits in a phone frame.</p>
+    </div>
+  </section>
+
+  <div class="grid">
+    <section class="card" aria-labelledby="h-why">
+      <h3 id="h-why">Design rationale</h3>
+      <p>The reasoning in one read: what research found, why this brand, the key screen decisions and the open questions.</p>
+      <ul class="links">
+        <li><a href="docs/design-rationale.html"><span>Read the rationale<small>About 8 minutes</small></span></a></li>
+      </ul>
+    </section>
+
+    <section class="card" aria-labelledby="h-brand">
+      <h3 id="h-brand">Branding</h3>
+      <p>Three directions explored against real reference apps, and the hybrid chosen: words are warm, figures are exact.</p>
+      <ul class="links">
+        <li><a href="03-branding/04-stylescape.html"><span>Stylescape<small>The final branding presentation</small></span></a></li>
+        <li><a href="03-branding/01-direction-options.html"><span>Direction options<small>A, B and C, with references</small></span></a></li>
+      </ul>
+    </section>
+
+    <section class="card" aria-labelledby="h-system">
+      <h3 id="h-system">Design system</h3>
+      <p>Tokens and components, including interaction states. Every screen is built only from these.</p>
+      <ul class="links">
+        <li><a href="04-design-system/components-v1.html"><span>Component reference<small>Live tokens and components</small></span></a></li>
+      </ul>
+    </section>
+
+    <section class="card" aria-labelledby="h-screens">
+      <h3 id="h-screens">Screens</h3>
+      <p>Every screen in all its states, with notes tracing each element to research, the IA or a flagged judgment call.</p>
+      <ul class="links">
+        <li><a href="05-screens/01-today.html"><span>01 · Today</span></a></li>
+        <li><a href="05-screens/02-add-food.html"><span>02 · Add Food</span></a></li>
+        <li><a href="05-screens/03-food-confirmation.html"><span>03 · Food Confirmation</span></a></li>
+        <li><a href="05-screens/04-recipes-filter.html"><span>04 · Recipes &amp; Filter</span></a></li>
+        <li><a href="05-screens/05-recipe-detail.html"><span>05 · Recipe Detail</span></a></li>
+      </ul>
+    </section>
+  </div>
+</main>
+
+<footer class="wrap">
+  <p>Made with Claude Code and the <a href="https://github.com/pbakaus/impeccable">impeccable</a> skill; dish images generated with Krea. Fonts: Inter and Newsreader (SIL Open Font License).</p>
+  <p>Sample nutrition figures and recipe images are illustrative placeholders, not real or verified data.</p>
+</footer>
+
+</body>
+</html>

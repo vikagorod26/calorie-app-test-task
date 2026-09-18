@@ -1,0 +1,1009 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#FFFDF9">
+<title>Measured Kitchen · 01 Today</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css"><!-- Inter + Newsreader, vendored locally (Stage 7b): no network needed -->
+<style>
+/* =====================================================================
+   SYSTEM — verbatim copy of 04-design-system/components-v1.html
+   (tokens, type roles, components). Do not edit here: change the system
+   first (tokens-v1.md + components-v1.html), then rebuild.
+   ===================================================================== */
+/* =====================================================================
+   TOKENS v1 — mirror of tokens-v1.md. Names must match that document.
+   ===================================================================== */
+:root{
+  /* --- Primitives --- */
+  --color-oat:#F2EDE6;
+  --color-oat-deep:#E7DFD4;
+  --color-paper:#FFFDF9;
+  --color-ink:#1F2421;
+  --color-ink-soft:#5E605A;
+  --color-rule:#E3DCD2;
+  --color-stone:#857F76;
+  --color-pine:#2F5245;
+  --color-pine-light:#DCE6DF;
+  --color-terracotta:#B0513A;
+  --color-ochre:#A87A1F;
+  --color-slate:#4D6A85;
+  --color-error:#B3261E; /* added Stage 6 — §10: a true validation error, not J1's over-target */
+
+  /* --- Semantic: surfaces --- */
+  --surface-ground:var(--color-oat);
+  --surface-paper:var(--color-paper);
+  --surface-sunken:var(--color-oat-deep);
+  --surface-viewfinder:var(--color-ink); /* stands in for the live camera feed (Screens, IA 2) */
+  /* --- Semantic: text --- */
+  --text-primary:var(--color-ink);
+  --text-secondary:var(--color-ink-soft);
+  --text-action:var(--color-pine);
+  --text-on-action:var(--color-paper);
+  /* --- Semantic: figures --- */
+  --figure-value:var(--color-ink);
+  --figure-unit:var(--color-ink-soft);
+  /* --- Semantic: lines --- */
+  --line-hairline:var(--color-rule);
+  --line-control:var(--color-stone);
+  --line-selected:var(--color-pine);
+  --line-guide:var(--color-paper);
+  /* --- Semantic: action --- */
+  --action-primary:var(--color-pine);
+  --action-selected:var(--color-pine-light);
+  --focus-ring:var(--color-pine);
+  /* --- Semantic: interaction states (added Stage 6, §10) --- */
+  --state-error:var(--color-error);
+  --state-hover-opacity:0.08;
+  --state-pressed-opacity:0.12;
+  /* --- Semantic: data --- */
+  --macro-protein:var(--color-terracotta);
+  --macro-carbs:var(--color-ochre);
+  --macro-fat:var(--color-slate);
+  --meter-track:var(--color-oat);
+  --meter-fill:var(--color-ink);
+
+  /* --- Type families --- */
+  --font-voice:"Newsreader","Iowan Old Style",Georgia,"Times New Roman",serif;
+  --font-ui:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+
+  /* --- Spacing scale --- */
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px;
+  --space-6:24px; --space-8:32px; --space-10:40px; --space-12:48px; --space-16:64px;
+  /* --- Semantic spacing --- */
+  --inset-screen:var(--space-5);
+  --inset-block:var(--space-4);
+  --row-pad-y:var(--space-3);
+  --gap-inline:var(--space-2);
+  --gap-stack:var(--space-3);
+  --gap-section-log:var(--space-6);
+  --gap-section-recipe:var(--space-10);
+
+  /* --- Sizing --- */
+  --size-hit-min:48px;
+  --size-control:48px;
+  --size-button:52px;
+  --size-chip:40px;
+  --size-icon:20px;
+  --size-mark:10px;
+  --size-meter:8px;
+  --size-icon-sm:16px;
+  --size-stepper-value:64px;
+  --size-separator:2px;
+  --size-hatch-period:6px;
+  --meter-target:87%;
+  --size-viewfinder-min:320px;
+  --size-guide-corner:var(--space-6);
+  --ratio-guide-barcode:2 / 1;
+  --ratio-guide-photo:1 / 1;
+  --size-thumb:120px;
+  --ratio-recipe-image:4 / 3;
+  /* size-placeholder-stripe retired at the Stage 7 imagery pass: M1 carries real images, so the
+     striped placeholder fill it sized no longer exists. Nothing else ever referenced it. */
+  /* one conservative clearance for any sticky S2/S3 bar (added Stage 6, §10.6 — WCAG 2.2 SC 2.4.11):
+     sized to the tallest bar (two stacked S3 buttons), so a shorter bar just gets extra headroom */
+  --scroll-clear-bottom:calc(var(--size-button) * 2 + var(--space-8) + var(--inset-safe-bottom));
+
+  /* --- Stroke --- */
+  --stroke-hairline:1px;
+  --stroke-emphasis:1.5px;
+  --stroke-focus:2px;
+  --stroke-hatch:2px;
+  --stroke-icon:1.75;
+  --stroke-guide:3px;
+
+  /* --- Type roles (font shorthand + tracking) --- */
+  --type-voice-display:400 32px/36px var(--font-voice);   --track-voice-display:-.015em;
+  --type-voice-title:400 26px/32px var(--font-voice);     --track-voice-title:-.01em;
+  --type-voice-heading:400 22px/28px var(--font-voice);
+  --type-voice-card:400 20px/26px var(--font-voice);
+  --type-ui-body:400 16px/24px var(--font-ui);
+  --type-ui-body-strong:500 16px/24px var(--font-ui);
+  --type-ui-label:600 16px/20px var(--font-ui);
+  --type-ui-chip:500 14px/20px var(--font-ui);
+  --type-ui-chip-selected:600 14px/20px var(--font-ui);
+  --type-ui-secondary:400 14px/20px var(--font-ui);
+  --type-ui-secondary-strong:500 14px/20px var(--font-ui);
+  --type-ui-overline:500 12px/16px var(--font-ui);       --track-ui-overline:.08em;
+  --type-figure-hero:600 48px/52px var(--font-ui);        --track-figure-hero:-.02em;
+  --type-figure-lg:600 24px/28px var(--font-ui);          --track-figure-lg:-.01em;
+  --type-figure-md:500 16px/24px var(--font-ui);
+  --type-figure-md-key:600 16px/24px var(--font-ui);
+  --type-figure-sm:500 14px/20px var(--font-ui);
+  --type-figure-sm-key:600 14px/20px var(--font-ui);
+  --type-unit-hero:500 17px/24px var(--font-ui);
+  --type-unit-lg:400 15px/28px var(--font-ui);
+  --type-unit-md:400 14px/24px var(--font-ui);
+  --type-unit-sm:400 13px/20px var(--font-ui);
+  --type-unit-hero-strong:600 17px/24px var(--font-ui);
+  --type-unit-sm-strong:600 13px/20px var(--font-ui);
+  --figure-numerals:tabular-nums lining-nums;
+
+  /* --- Radius --- */
+  --radius-xs:3px; --radius-sm:8px; --radius-md:14px; --radius-lg:20px; --radius-full:999px;
+
+  /* --- Platform insets (added at Screens): provided by the OS, not the design scale --- */
+  --inset-safe-top:env(safe-area-inset-top,0px);
+  --inset-safe-bottom:env(safe-area-inset-bottom,0px);
+}
+
+/* =====================================================================
+   TYPE ROLES: classes only apply --type-* tokens. The `font` shorthand
+   resets font-variant-numeric, so figure numerals are declared after it.
+   ===================================================================== */
+.voice-display{font:var(--type-voice-display);letter-spacing:var(--track-voice-display);font-optical-sizing:auto}
+.voice-title{font:var(--type-voice-title);letter-spacing:var(--track-voice-title);font-optical-sizing:auto}
+.voice-heading{font:var(--type-voice-heading);font-optical-sizing:auto}
+.voice-card{font:var(--type-voice-card);font-optical-sizing:auto}
+.ui-body{font:var(--type-ui-body)}
+.ui-body-strong{font:var(--type-ui-body-strong)}
+.ui-label{font:var(--type-ui-label)}
+.ui-chip{font:var(--type-ui-chip)}
+.ui-secondary{font:var(--type-ui-secondary)}
+.ui-secondary-strong{font:var(--type-ui-secondary-strong)}
+.ui-overline{font:var(--type-ui-overline);letter-spacing:var(--track-ui-overline);text-transform:uppercase}
+
+.fig{color:var(--figure-value);white-space:nowrap}
+.fig-hero{display:inline-flex;flex-wrap:wrap;align-items:baseline;column-gap:var(--space-1);font:var(--type-figure-hero);letter-spacing:var(--track-figure-hero)}
+.fig-lg{font:var(--type-figure-lg);letter-spacing:var(--track-figure-lg)}
+.fig-md{font:var(--type-figure-md)}
+.fig-md.key{font:var(--type-figure-md-key)}
+.fig-sm{font:var(--type-figure-sm)}
+.fig-sm.key{font:var(--type-figure-sm-key)}
+.fig-hero,.fig-lg,.fig-md,.fig-sm,.fig-md.key,.fig-sm.key{font-variant-numeric:var(--figure-numerals)}
+.fig .unit{color:var(--figure-unit);letter-spacing:0}
+.fig-hero .unit{font:var(--type-unit-hero)}
+.fig-lg .unit{font:var(--type-unit-lg)}
+.fig-md .unit{font:var(--type-unit-md)}
+.fig-sm .unit{font:var(--type-unit-sm)}
+/* status word inside a unit (J1 revised at Screens): "over" reads at a glance, still no hue */
+.fig .unit-strong{color:var(--figure-value)}
+.fig-hero .unit-strong{font:var(--type-unit-hero-strong)}
+.fig-sm .unit-strong{font:var(--type-unit-sm-strong)}
+
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.ico{width:var(--size-icon);height:var(--size-icon);fill:none;stroke:currentColor;stroke-width:var(--stroke-icon);stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ico.sm{width:var(--size-icon-sm);height:var(--size-icon-sm)}
+
+/* =====================================================================
+   COMPONENTS: semantic tokens only. No raw px, font size or weight.
+   ===================================================================== */
+
+/* B · Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;text-align:center;gap:var(--gap-inline);min-height:var(--size-button);padding-block:0;padding-inline:var(--space-6);border:0;border-radius:var(--radius-md);font:var(--type-ui-label);cursor:pointer;text-decoration:none;touch-action:manipulation}
+.btn-primary{background:var(--action-primary);color:var(--text-on-action)}
+.btn-secondary{background:var(--surface-paper);color:var(--text-action);box-shadow:inset 0 0 0 var(--stroke-emphasis) var(--action-primary)}
+.btn-text{background:transparent;color:var(--text-action);min-height:var(--size-hit-min);padding-inline:var(--space-3)}
+.btn-block{display:flex;width:100%}
+/* B3 addition (Screens, IA 3): a text button at the start of a column, pulled into the gutter so its icon or first letter lines up with the content edge (Back, Cancel) */
+.btn-flush{justify-self:start;margin-inline-start:calc(var(--space-3) * -1)}
+/* focus ring: outline rendering, not just the token. Pine already clears 3:1 on every surface it
+   sits on (§1.4), and a 2px outline at a 2px offset meets WCAG 2.2 SC 2.4.13's minimum area even
+   though this system only targets AA (2.4.7). See §10.6 for the one gap that check found: a
+   sticky S2/S3 bar can cover a focused control lower on the screen (SC 2.4.11), fixed below. */
+.btn:focus-visible,.chip:focus-visible,.seg button:focus-visible,.stepper button:focus-visible,.tab:focus-visible{outline:var(--stroke-focus) solid var(--focus-ring);outline-offset:var(--stroke-focus)}
+
+/* --- States (added Stage 6, §10) ---
+   Hover/pressed follow Material 3's state-layer convention: a low-opacity overlay in the
+   control's own foreground color, over its resting fill (checked against Material 3 directly,
+   per the Stage 4 carry-forward rule; the exact opacities are an aesthetic pick within that
+   convention). Hover is gated to pointer devices so touch never gets a stuck hover; pressed
+   applies everywhere, since :active fires on touch too. */
+@media (hover:hover){
+  .btn-primary:hover{background:color-mix(in srgb, var(--action-primary), var(--text-on-action) calc(var(--state-hover-opacity) * 100%))}
+  .btn-secondary:hover,.btn-text:hover{background:color-mix(in srgb, var(--surface-paper), var(--text-action) calc(var(--state-hover-opacity) * 100%))}
+}
+.btn-primary:active{background:color-mix(in srgb, var(--action-primary), var(--text-on-action) calc(var(--state-pressed-opacity) * 100%))}
+.btn-secondary:active,.btn-text:active{background:color-mix(in srgb, var(--surface-paper), var(--text-action) calc(var(--state-pressed-opacity) * 100%))}
+/* Disabled: the neutral pair §1.4 already measured (Ink Soft on Oat Deep, 4.82:1), not a fourth
+   opacity token. WCAG 2.2's non-text-contrast note explicitly exempts inactive controls from any
+   contrast minimum (1.4.11) — this still clears AA anyway, which is why it was picked over a
+   washed-out opacity fade (measured at 2.05:1, legible but needlessly so for a non-interactive state). */
+.btn:disabled,.btn[aria-disabled="true"]{background:var(--surface-sunken);color:var(--text-secondary);box-shadow:none;cursor:not-allowed}
+.btn-secondary:disabled,.btn-secondary[aria-disabled="true"]{background:var(--surface-paper);box-shadow:inset 0 0 0 var(--stroke-hairline) var(--line-hairline)}
+/* Loading: the label is hidden, not removed, so the button keeps its width and never reflows;
+   a spinner takes its place. aria-disabled stops a second tap, and the sr-only text is the only
+   thing that changes for a screen reader, announced once via the button's own accessible name. */
+.btn.is-loading{position:relative;pointer-events:none}
+.btn.is-loading .btn-label{visibility:hidden}
+/* .btn-label carries the button’s own row layout, so a label made of more than one element
+   ("Log this · 1.5 servings", IA 5) can be wrapped into the single element .is-loading hides,
+   without changing anything at rest — same gap, same centring as .btn itself.
+   Added at Propagation (Stage 6 → 05-screens), the first time a real screen used the loading hook. */
+.btn-label{display:inline-flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--gap-inline)}
+.btn .spinner{display:none}
+.btn.is-loading .spinner{display:block;position:absolute;inset:0;margin:auto}
+.spinner{width:var(--size-icon);height:var(--size-icon);border-radius:50%;border:calc(var(--stroke-icon) * 1px) solid currentColor;border-top-color:transparent;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(1turn)}}
+@media (prefers-reduced-motion:reduce){.spinner{animation-duration:1.6s}}
+
+/* C1 · Paper block */
+.block{background:var(--surface-paper);border-radius:var(--radius-lg);padding:var(--inset-block)}
+.block.list{padding-block:var(--space-1)}
+.overline{margin:0;color:var(--text-secondary)}
+
+/* C2 · Ledger row */
+.ledger{list-style:none;margin:0;padding:0}
+.ledger > li + li{border-top:var(--stroke-hairline) solid var(--line-hairline)}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:var(--space-4);padding-block:var(--row-pad-y);min-height:var(--size-hit-min)}
+.row-name{font:var(--type-ui-body-strong);color:var(--text-primary)}
+.row-meta{display:flex;flex-wrap:wrap;align-items:center;column-gap:var(--space-3);font:var(--type-ui-secondary);color:var(--text-secondary)}
+.row > .fig{grid-column:2;grid-row:1 / span 2;align-self:center;text-align:right}
+/* meta line (typeset pass): source first and most legible; amount is a figure; time last. "amount · time" wraps as one unit, the source never moves */
+.row-source{display:inline-flex;align-items:center;gap:var(--gap-inline);min-width:0;font:var(--type-ui-secondary-strong);color:var(--text-primary)}
+.row-when{white-space:nowrap}
+/* tappable row (Screens, Flow 4): a link with a trailing chevron */
+.row-link{grid-template-columns:minmax(0,1fr) auto auto;column-gap:var(--space-3);color:inherit;text-decoration:none;touch-action:manipulation}
+.row-link > .ico{grid-column:3;grid-row:1 / span 2;align-self:center;color:var(--text-secondary)}
+.row-link:focus-visible{outline:var(--stroke-focus) solid var(--focus-ring);outline-offset:calc(var(--stroke-focus) * -1);border-radius:var(--radius-sm)}
+/* Focus not obscured (added Stage 6, §10.6, WCAG 2.2 SC 2.4.11): S2/S3 are sticky, so the last
+   rows of a scrollable list can land underneath one when a focused row scrolls into view.
+   scroll-margin-block reserves that space, the same way inset-safe-bottom reserves the OS's */
+.row-link,.rcard-link{scroll-margin-block:var(--scroll-clear-bottom)}
+
+/* C3 · Recipe card */
+.rcard{background:var(--surface-paper);border-radius:var(--radius-lg);overflow:hidden}
+/* the image slot is M1 (.rimg), a real image since the Stage 7 imagery pass */
+.rcard-img{aspect-ratio:var(--ratio-recipe-image)}
+/* Screens, IA 4: the results list, and the whole card as one link to Recipe Detail (no chevron: a card already reads as an object, not a data row) */
+.rcards{list-style:none;margin:0;padding:0;display:grid;gap:var(--space-4)}
+.rcard-link{display:block;color:inherit;text-decoration:none;touch-action:manipulation}
+.rcard-link:focus-visible{outline:var(--stroke-focus) solid var(--focus-ring);outline-offset:var(--stroke-focus)}
+/* C3 compact (Screens, IA 4 critique): a results card is a row, thumbnail beside the body, reusing M1's
+   .thumb. A full-bleed 4:3 image cost 262 px of a 398 px card, so no two results were ever comparable
+   on one screen — and a results list exists to be compared. The hero crop stays for Recipe Detail. */
+.rcard.compact{display:flex;flex-wrap:wrap;align-items:flex-start;gap:var(--inset-block);padding:var(--inset-block)}
+/* the body wraps below the thumbnail rather than being squeezed, as in the S1 head with media.
+   Its basis is 1.2 x size-thumb, not 1.5: a card body carries three short lines, not a title and
+   a context line, so it keeps the row down to a 360 px phone instead of only a 390 px one. */
+.rcard.compact > .rcard-body{padding:0;flex:1 1 calc(var(--size-thumb) * 1.2);min-width:0}
+.rcard-body{padding:var(--inset-block);display:grid;gap:var(--gap-stack)}
+.rcard-title{margin:0;color:var(--text-primary)}
+.matches{list-style:none;margin:0;padding:var(--space-3) 0 0;border-top:var(--stroke-hairline) solid var(--line-hairline);display:flex;flex-wrap:wrap;gap:var(--space-1) var(--space-4);font:var(--type-ui-secondary);color:var(--text-primary)}
+.matches li{display:inline-flex;align-items:center;gap:var(--gap-inline)}
+.matches .ico{color:var(--text-secondary)}
+
+/* M1 · Recipe image (Screens, IA 3; filled at the Krea imagery pass, Stage 7): the recipe picture.
+   It carries no text, badge or figure of any kind — every figure sits below it on paper (hybrid §7, L1/L2).
+   Supersedes the striped "IMAGE · UNVALIDATED (§7)" placeholder this component shipped as through Stage 6b. */
+.rimg{position:relative;display:block;overflow:hidden;background:var(--surface-sunken)}
+/* the crop is the component's, not the file's: one 4:3 source per dish, cover-fitted at every size,
+   so a thumbnail is the same picture as the card it was chosen from (A9) */
+.rimg > img{display:block;width:100%;height:100%;object-fit:cover}
+.rimg.thumb{flex:none;width:var(--size-thumb);aspect-ratio:var(--ratio-recipe-image);border-radius:var(--radius-sm)}
+/* hero (Screens, IA 5): the detail screen's one picture, full width and on the same crop as the card
+   it was chosen from, so the thumbnail, the card and the hero are three sizes of one image, not three crops */
+.rimg.hero{width:100%;aspect-ratio:var(--ratio-recipe-image)}
+
+/* N1 · Nutrition strip */
+.strip{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-1) var(--space-4)}
+.strip.compact{column-gap:var(--space-3)}
+.mac{display:inline-flex;align-items:center;gap:var(--space-1);white-space:nowrap}
+.mark{width:var(--size-mark);height:var(--size-mark);border-radius:var(--radius-xs);background:var(--mc);flex:none}
+.mac-label{font:var(--type-ui-body);color:var(--text-secondary)}
+.compact .mac-label{font:var(--type-ui-secondary)}
+.p{--mc:var(--macro-protein)} .c{--mc:var(--macro-carbs)} .f{--mc:var(--macro-fat)}
+
+/* N2 · Macro breakdown */
+.split{display:flex;gap:var(--size-separator);height:var(--size-meter);border-radius:var(--radius-full);overflow:hidden;margin-block:var(--space-4) var(--space-1)}
+.split span{flex:var(--fl);background:var(--mc)}
+.mb-rows{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr) auto auto;column-gap:var(--space-4)}
+.mb-rows li{grid-column:1 / -1;display:grid;grid-template-columns:subgrid;align-items:center;padding-block:var(--row-pad-y)}
+.mb-rows li + li{border-top:var(--stroke-hairline) solid var(--line-hairline)}
+.mb-rows .mac-label{color:var(--text-primary)}
+.mb-rows .fig{text-align:right}
+/* N2 addition (Screens, IA 5 critique): when the label names the AMOUNT the figures describe rather than
+   the section they sit in, it takes the stronger of the two label treatments. text-secondary is barred from
+   anything the user must read to act (tokens §1.2), and on a screen whose control is below the fold this
+   label is the only thing that says whether 412 kcal is a serving or the pot. A section name ("Your portion")
+   stays an overline; an amount ("For 1.5 servings") does not. */
+.mb-amount{margin:0;font:var(--type-ui-secondary-strong);color:var(--text-primary)}
+/* N2 addition (Screens, IA 3 critique): one column label names the share, so “53%” is never read as a share of a target */
+.mb-rows .mb-head{padding-block:0 var(--space-1);font:var(--type-ui-secondary);color:var(--text-secondary)}
+.mb-head > :last-child{text-align:right}
+
+/* N3 · Daily target summary */
+.sum-hero{margin-block:0 var(--space-3)}
+.meter{position:relative;display:flex;gap:var(--size-separator);height:var(--size-meter);background:var(--meter-track);border-radius:var(--radius-full)}
+.meter .fill{flex:0 0 var(--w);border-radius:var(--radius-full);background:var(--mc,var(--meter-fill))}
+.meter .over{flex:0 1 var(--wo);min-width:0;border-radius:var(--radius-full);background:repeating-linear-gradient(135deg,var(--mc,var(--meter-fill)) 0 var(--stroke-hatch),transparent var(--stroke-hatch) var(--size-hatch-period))}
+/* shared scale (critique run 2): every track puts the target at meter-target, marked by a tick that fills the separator gap */
+.meter::before{content:"";position:absolute;inset-block:calc(var(--space-1) * -1);left:var(--meter-target);width:var(--size-separator);background:var(--meter-fill)}
+.sum-caption{display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--space-1) var(--space-4);margin-top:var(--space-2)}
+.mmeters{display:grid;gap:var(--space-4);margin-top:var(--space-5);padding-top:var(--space-4);border-top:var(--stroke-hairline) solid var(--line-hairline)}
+.mm-top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:var(--space-1) var(--space-3);margin-bottom:var(--space-2)}
+.mm-label{display:inline-flex;flex-wrap:wrap;align-items:center;column-gap:var(--gap-inline);min-width:0}
+.mm-top .mac-label{font:var(--type-ui-secondary);color:var(--text-primary)}
+
+/* N4 · Source note, plus the J2 helper line that goes with a photo estimate */
+.source{display:inline-flex;align-items:center;gap:var(--gap-inline);font:var(--type-ui-secondary-strong);color:var(--text-primary)}
+.helper{margin:0;padding-top:var(--space-3);border-top:var(--stroke-hairline) solid var(--line-hairline);font:var(--type-ui-secondary);color:var(--text-secondary)}
+
+/* F1/F2 · Filter chips */
+.chips{display:flex;flex-wrap:wrap;gap:var(--gap-inline)}
+.chip{position:relative;display:inline-flex;align-items:center;gap:var(--gap-inline);min-height:var(--size-chip);padding-block:0;padding-inline:var(--space-4);border:0;border-radius:var(--radius-full);background:var(--surface-paper);box-shadow:inset 0 0 0 var(--stroke-hairline) var(--line-control);color:var(--text-primary);font:var(--type-ui-chip);cursor:pointer;white-space:nowrap;touch-action:manipulation}
+/* invisible hit-area extension: (size-chip - size-hit-min) / 2 above and below */
+.chip::after,.seg button::after{content:"";position:absolute;inset:calc((var(--size-chip) - var(--size-hit-min)) / 2) 0}
+.chip[aria-pressed="true"]{background:var(--action-selected);box-shadow:inset 0 0 0 var(--stroke-emphasis) var(--line-selected);padding-left:var(--space-3)}
+.chip .ico{color:var(--text-action)}
+/* States (added Stage 6, §10): same state-layer convention as buttons, tinted with the
+   label's own color (Ink) rather than Pine, since an unselected chip has no Pine to tint with */
+@media (hover:hover){
+  .chip:hover{background:color-mix(in srgb, var(--surface-paper), var(--text-primary) calc(var(--state-hover-opacity) * 100%))}
+  .chip[aria-pressed="true"]:hover{background:color-mix(in srgb, var(--action-selected), var(--text-primary) calc(var(--state-hover-opacity) * 100%))}
+}
+.chip:active{background:color-mix(in srgb, var(--surface-paper), var(--text-primary) calc(var(--state-pressed-opacity) * 100%))}
+.chip[aria-pressed="true"]:active{background:color-mix(in srgb, var(--action-selected), var(--text-primary) calc(var(--state-pressed-opacity) * 100%))}
+/* Disabled: provisioned for the system, not yet asked for by an IA screen (like B2/B3 once were) */
+.chip:disabled,.chip[aria-disabled="true"]{background:var(--surface-sunken);color:var(--text-secondary);box-shadow:none;cursor:not-allowed}
+.chip:disabled .ico,.chip[aria-disabled="true"] .ico{color:var(--text-secondary)}
+/* Error and loading: not applicable. A chip is a value toggle, never a submission — there's
+   nothing to validate and nothing to wait on (left undocumented rather than invented, §10.7) */
+
+/* F3 · Mode switch */
+.seg{display:flex;gap:var(--space-1);padding:var(--space-1);background:var(--surface-sunken);border-radius:var(--radius-full)}
+.seg button{position:relative;flex:1 1 0;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:var(--gap-inline);min-height:var(--size-chip);padding-block:0;padding-inline:var(--space-3);border:0;border-radius:var(--radius-full);background:transparent;color:var(--text-primary);font:var(--type-ui-chip);cursor:pointer;white-space:nowrap;touch-action:manipulation}
+/* A8 (resolved at Add Food): labels only; icons appear only when the screen is too narrow for the words (S1 container rule) */
+.seg .ico{display:none}
+/* A7 (resolved at Add Food): the switch is a tablist; each mode swaps the panel below it */
+.seg [role="tab"][aria-selected="true"]{background:var(--action-selected);box-shadow:inset 0 0 0 var(--stroke-emphasis) var(--line-selected);font:var(--type-ui-chip-selected)}
+/* States (added Stage 6, §10): same convention as F1/F2, tinted transparent→Ink so the sunken
+   track shows through an unselected segment, or Ink over the selected fill */
+@media (hover:hover){
+  .seg button:hover{background:color-mix(in srgb, transparent, var(--text-primary) calc(var(--state-hover-opacity) * 100%))}
+  .seg [role="tab"][aria-selected="true"]:hover{background:color-mix(in srgb, var(--action-selected), var(--text-primary) calc(var(--state-hover-opacity) * 100%))}
+}
+.seg button:active{background:color-mix(in srgb, transparent, var(--text-primary) calc(var(--state-pressed-opacity) * 100%))}
+.seg [role="tab"][aria-selected="true"]:active{background:color-mix(in srgb, var(--action-selected), var(--text-primary) calc(var(--state-pressed-opacity) * 100%))}
+/* Disabled: a mode with no camera permission (IA 2 Barcode/Photo) is the evidenced case — the
+   permission *request* flow itself is still v2 (Add Food carry notes), but the affordance exists now */
+.seg button:disabled,.seg [aria-disabled="true"]{color:var(--text-secondary);cursor:not-allowed}
+.seg button:disabled:hover,.seg button:disabled:active,.seg [aria-disabled="true"]:hover,.seg [aria-disabled="true"]:active{background:none}
+
+/* F · Filter group (Screens, IA 4): the mode switch and the panel of controls it owns.
+   A group is a label plus one set of chips or fields, so both halves of "suitable for me" are built the same way. */
+.filters{display:grid;gap:var(--gap-stack)}
+.filter-panel{display:grid;gap:var(--gap-stack)}
+.fgroup{display:grid;gap:var(--space-2)}
+/* where a pre-filled figure is derived rather than saved, the group says where it came from */
+.fgroup-note{margin:0;font:var(--type-ui-secondary);color:var(--text-secondary);text-wrap:pretty}
+
+/* I · Inputs */
+.field-label{display:block;font:var(--type-ui-secondary-strong);color:var(--text-primary);margin-bottom:var(--space-2)}
+.field{position:relative;display:flex;align-items:stretch;gap:var(--gap-inline);min-height:var(--size-control);padding-inline:var(--space-4);background:var(--surface-paper);border-radius:var(--radius-md);box-shadow:inset 0 0 0 var(--stroke-hairline) var(--line-control);color:var(--text-secondary)}
+.field > .ico,.field > .unit,.field > .spinner{align-self:center}
+.field:focus-within{box-shadow:inset 0 0 0 var(--stroke-focus) var(--focus-ring)}
+/* Hover (added Stage 6, §10): the edge only, since a filled hover would fight focus-within
+   for the same signal. Pressed doesn't apply to a field — there's no press, only focus */
+@media (hover:hover){
+  .field:hover{box-shadow:inset 0 0 0 var(--stroke-hairline) color-mix(in srgb, var(--line-control), var(--text-primary) calc(var(--state-hover-opacity) * 100%))}
+}
+/* Disabled: the same neutral pair as buttons and chips (surface-sunken + text-secondary) */
+.field:has(:disabled),.field.disabled{background:var(--surface-sunken);box-shadow:inset 0 0 0 var(--stroke-hairline) var(--line-hairline);color:var(--text-secondary)}
+.field:has(:disabled) input,.field.disabled input{color:var(--text-secondary)}
+/* Error: the container and its icon carry state-error; a typed figure never does (L1 — figures
+   are never tinted — extends to an out-of-range one, exactly as J2 kept a photo estimate exact
+   in form). Text identifies the problem too, not color alone (WCAG 2.2 SC 3.3.1) */
+.field.error,.field:has([aria-invalid="true"]){box-shadow:inset 0 0 0 var(--stroke-emphasis) var(--state-error)}
+.field-error{display:flex;align-items:center;gap:var(--gap-inline);margin-top:var(--space-2);font:var(--type-ui-secondary);color:var(--state-error)}
+.field-error .ico{color:var(--state-error)}
+/* Loading: I1 only (search-as-you-type). The spinner takes the icon's place; the icon returns
+   once results (or E1's no-match message) land. aria-busy so a screen reader doesn't read a stale list */
+.field .spinner{display:none;color:var(--text-secondary)}
+.field.is-loading > .ico{display:none}
+.field.is-loading .spinner{display:block}
+.field input,.field select{flex:1;min-width:0;width:100%;margin:0;border:0;background:transparent;padding:0;font:var(--type-ui-body);color:var(--text-primary);outline:none;appearance:none;-webkit-appearance:none}
+.field input::placeholder{color:var(--text-secondary);opacity:1}
+.field.num input{font:var(--type-figure-md);font-variant-numeric:var(--figure-numerals);color:var(--figure-value)}
+.field .unit{font:var(--type-unit-md);color:var(--figure-unit)}
+/* select variant: the select fills the whole field, so the whole field is the target; chevron drawn over it */
+.field.select{padding-inline:0}
+.field.select select{padding-inline:var(--space-4) calc(var(--space-4) + var(--size-icon) + var(--gap-inline));cursor:pointer}
+.field.select > .ico{position:absolute;right:var(--space-4);top:50%;translate:0 -50%;pointer-events:none}
+.field-pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-3)}
+/* portion: the unit field wraps below the stepper instead of shrinking under 2 x hit target */
+.portion{display:flex;flex-wrap:wrap;gap:var(--gap-inline)}
+.portion .stepper{flex:none}
+.portion .field{flex:1 1 calc(var(--size-hit-min) * 2);min-height:var(--size-button)}
+.stepper{display:flex;align-items:stretch;min-height:var(--size-button);background:var(--surface-paper);border-radius:var(--radius-md);box-shadow:inset 0 0 0 var(--stroke-hairline) var(--line-control)}
+.stepper button{width:var(--size-hit-min);padding:0;display:grid;place-items:center;border:0;background:transparent;color:var(--text-action);font:var(--type-ui-label);cursor:pointer;border-radius:var(--radius-md);touch-action:manipulation}
+/* States (added Stage 6, §10): ± buttons are ghost buttons on Paper, so they tint with their
+   own glyph color (Pine) rather than Ink */
+@media (hover:hover){
+  .stepper button:hover:not(:disabled){background:color-mix(in srgb, transparent, var(--text-action) calc(var(--state-hover-opacity) * 100%))}
+}
+.stepper button:active:not(:disabled){background:color-mix(in srgb, transparent, var(--text-action) calc(var(--state-pressed-opacity) * 100%))}
+/* Disabled at a floor or ceiling: the affordance a screen already enforces (a count capped at
+   99, a weight/volume at 5,000, Stage 5b) now shows on the button, not just in aria-valuemax.
+   Where a screen also enforces a floor (Recipe Detail's 0.5), pair this with aria-valuemin —
+   left unset everywhere else, same "only where real" rule the audit set for the ceiling */
+.stepper button:disabled{color:var(--text-secondary);cursor:not-allowed}
+.stepper button:disabled:hover,.stepper button:disabled:active{background:none}
+.stepper input{width:var(--size-stepper-value);margin:0;border:0;border-inline:var(--stroke-hairline) solid var(--line-hairline);background:transparent;text-align:center;padding:0;font:var(--type-figure-lg);letter-spacing:var(--track-figure-lg);font-variant-numeric:var(--figure-numerals);color:var(--figure-value)}
+.stepper input:focus-visible{outline:var(--stroke-focus) solid var(--focus-ring);outline-offset:calc(var(--stroke-focus) * -1)}
+/* Error (added Stage 6, §10): the wrapper carries state-error, never the input — an out-of-range
+   amount stays exact-form Ink (L1), exactly as J2 kept a photo estimate exact in form */
+.stepper.error{box-shadow:inset 0 0 0 var(--stroke-emphasis) var(--state-error)}
+/* Loading: not applicable. Every stepper edit in this system is local state, resolved
+   instantly — there is no request in flight to wait on (left undocumented, §10.7) */
+.stepper-static{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-3)}
+/* I3 addition (Screens, IA 3): the portion group; a J2 helper line sits directly above the label and control */
+.portion-wrap{display:grid;gap:var(--gap-stack)}
+
+/* C1 addition (Screens, IA 1) · label above a list block, aligned with the row text inside it */
+.list-label{margin:0 0 var(--space-2);padding-inline:var(--inset-block)}
+/* C1 addition (Screens, IA 4): the label row, when one control acts on the whole list ("Reset to my usual").
+   The control sits with the thing it changes, in one place and one treatment, in every state. */
+.list-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-1) var(--space-3);margin-bottom:var(--space-2);padding-inline:var(--inset-block)}
+.list-head > .list-label{margin:0;padding-inline:0}
+.list-head > .btn-text{margin-inline-end:calc(var(--space-3) * -1)}
+
+/* S1 · Screen scaffold (Screens, IA 1): header + body + bottom bar, with platform safe-area insets */
+.screen{container:screen / inline-size;display:flex;flex-direction:column;min-height:100%;background:var(--surface-ground);color:var(--text-primary)}
+.screen-head{display:grid;gap:var(--space-1);padding-block:calc(var(--inset-safe-top) + var(--space-4)) 0;padding-inline:var(--inset-screen)}
+.screen-title{margin:0;color:var(--text-primary)}
+.screen-sub{margin:0;font:var(--type-ui-secondary);color:var(--text-secondary)}
+.screen-body{flex:1;display:grid;grid-template-columns:minmax(0,1fr);align-content:start;gap:var(--gap-section-log);padding-block:var(--gap-section-log);padding-inline:var(--inset-screen)}
+.screen-body.recipe{gap:var(--gap-section-recipe);padding-block:var(--gap-section-recipe)}
+
+/* S2 · Bottom bar (Screens, IA 1): Today tab · Add food (B1) · Recipes tab */
+.bar{position:sticky;bottom:0;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:var(--gap-inline);padding-block:var(--space-2) calc(var(--space-2) + var(--inset-safe-bottom));padding-inline:var(--inset-screen);background:var(--surface-paper);border-top:var(--stroke-hairline) solid var(--line-hairline)}
+.tab{display:grid;justify-items:center;align-content:center;gap:var(--space-1);min-width:var(--size-hit-min);min-height:var(--size-button);color:var(--text-primary);font:var(--type-ui-chip);text-decoration:none;touch-action:manipulation}
+.tab-ind{display:grid;place-items:center;padding-block:var(--space-1);padding-inline:var(--space-4);border-radius:var(--radius-full)}
+.tab[aria-current="page"]{font:var(--type-ui-chip-selected)}
+.tab[aria-current="page"] .tab-ind{background:var(--action-selected);box-shadow:inset 0 0 0 var(--stroke-emphasis) var(--line-selected)}
+.lbl-short{display:none}
+
+/* S1 addition (Screens, IA 2) · task header: title plus one dismiss action (B3); a body with no bar below clears the safe area itself */
+.screen-head-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--gap-inline)}
+.screen-head-row .btn-text{margin-inline-end:calc(var(--space-3) * -1)}
+.screen-body:last-child{padding-bottom:calc(var(--gap-section-log) + var(--inset-safe-bottom))}
+.panel{display:grid;align-content:start;gap:var(--gap-section-log)}
+.screen-body.fill{grid-template-rows:auto minmax(0,1fr);align-content:stretch}
+.fill > .panel{grid-template-rows:minmax(var(--size-viewfinder-min),1fr) auto;align-content:stretch;gap:var(--gap-stack)}
+
+/* S1 addition (Screens, IA 3) · step header: B3 "Back" (.btn-flush) above the title, because a step inside a task goes back while a task closes.
+   Head with media: the Flow 3 recipe thumbnail (M1) beside the title; it wraps below when the title column would be narrower than 1.5 x size-thumb */
+.screen-head-media{display:flex;flex-wrap:wrap;align-items:flex-start;gap:var(--space-4)}
+.screen-head-media > :first-child{flex:1 1 calc(var(--size-thumb) * 1.5);min-width:0;display:grid;gap:var(--space-1)}
+
+/* S1 addition (Screens, IA 5) · media band: a full-width image between the header and the body, running
+   to both screen edges. A detail screen has one picture and no list to compare it against, so it is not
+   held inside the gutter the way a card's thumbnail is. */
+.screen-media{margin-top:var(--gap-stack)}
+
+/* S3 · Action bar (Screens, IA 2; reused by IA 3 and 5): the screen's one or two actions, sticky within thumb reach */
+.actionbar{position:sticky;bottom:0;z-index:1;display:grid;gap:var(--gap-inline);padding-block:var(--space-3) calc(var(--space-3) + var(--inset-safe-bottom));padding-inline:var(--inset-screen);background:var(--surface-paper);border-top:var(--stroke-hairline) solid var(--line-hairline)}
+
+/* V1 · Viewfinder (Screens, IA 2): the camera feed with a framing guide; instructions sit below it, never over the feed */
+.viewfinder{container-type:size;display:grid;place-items:center;padding:var(--space-8);border-radius:var(--radius-lg);background:var(--surface-viewfinder);overflow:hidden}
+.vf-guide{width:100%;aspect-ratio:var(--ratio-guide-barcode);--c:var(--line-guide);--l:min(var(--size-guide-corner),25%);--s:var(--stroke-guide);
+  background:
+    linear-gradient(var(--c),var(--c)) top left / var(--l) var(--s),linear-gradient(var(--c),var(--c)) top left / var(--s) var(--l),
+    linear-gradient(var(--c),var(--c)) top right / var(--l) var(--s),linear-gradient(var(--c),var(--c)) top right / var(--s) var(--l),
+    linear-gradient(var(--c),var(--c)) bottom left / var(--l) var(--s),linear-gradient(var(--c),var(--c)) bottom left / var(--s) var(--l),
+    linear-gradient(var(--c),var(--c)) bottom right / var(--l) var(--s),linear-gradient(var(--c),var(--c)) bottom right / var(--s) var(--l);
+  background-repeat:no-repeat}
+/* photo: the largest square that fits the camera area (container units of the viewfinder's content box) */
+.vf-guide.photo{aspect-ratio:var(--ratio-guide-photo);width:min(100cqw,100cqh)}
+.vf-hint{margin:0;font:var(--type-ui-body);color:var(--text-primary);text-wrap:pretty}
+/* found (critique, Add Food): the corners join into a closed frame and the hint names the product, just before Food Confirmation opens */
+.vf-guide.found{box-shadow:inset 0 0 0 var(--stroke-hairline) var(--line-guide)}
+
+/* E1 · Message (critique, Add Food): a no-result state inside a panel. Plain words and the next step; no status hue, no illustration */
+.message{display:grid;gap:var(--space-1)}
+.message-title{margin:0;font:var(--type-ui-body-strong);color:var(--text-primary)}
+.message-text{margin:0;font:var(--type-ui-body);color:var(--text-primary);text-wrap:pretty}
+
+/* R · Recipe content (Screens, IA 5). The unifying rule at the scale of a section: the quantities are
+   figures in a ledger on Paper, the method is words on the ground. Same tokens, opposite emphasis (L3). */
+
+/* R1 · Ingredient list: a quantity column that lines up because every figure is tabular, and the
+   ingredient in words beside it */
+.ingredients{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:auto minmax(0,1fr)}
+.ingredients li{grid-column:1 / -1;display:grid;grid-template-columns:subgrid;column-gap:var(--space-4);align-items:baseline;padding-block:var(--row-pad-y)}
+.ingredients li + li{border-top:var(--stroke-hairline) solid var(--line-hairline)}
+.ingredients .ing-name{font:var(--type-ui-body);color:var(--text-primary);text-wrap:pretty}
+/* an ingredient with nothing to measure ("sea salt, to taste") keeps the empty column, so the names stay aligned */
+.ingredients .ing-none{font:var(--type-ui-secondary);color:var(--text-secondary)}
+
+/* R2 · Method steps: prose on the ground. A step number is not a nutrition figure, so it takes a ui role
+   rather than a figure role (L1) — but it is still tabular, so the column holds at step 10. */
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:var(--gap-stack);counter-reset:step}
+.steps li{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:var(--space-4);align-items:baseline;font:var(--type-ui-body);color:var(--text-primary);text-wrap:pretty}
+.steps li::before{counter-increment:step;content:counter(step);font:var(--type-ui-secondary-strong);font-variant-numeric:var(--figure-numerals);color:var(--text-secondary)}
+
+/* a titled section on a recipe screen: one heading and the content it names, at the within-block step
+   while the sections themselves keep the 40 of gap-section-recipe */
+.rsec{display:grid;gap:var(--gap-stack)}
+.rsec-head{display:grid;gap:var(--space-1)}
+.rsec-title{margin:0;color:var(--text-primary)}
+/* one line where a section needs saying what its content is measured against ("For all 4 servings") */
+.rsec-note{margin:0;color:var(--text-secondary);text-wrap:pretty}
+
+/* Narrow screens (Screens, critique R4). Container conditions can't read custom properties,
+   so these two widths are the documented breakpoints bp-screen-narrow (320) and bp-screen-compact (280). */
+@container screen (width < 320px){
+  .bar .lbl-full{display:none}
+  .bar .lbl-short{display:inline}
+  /* F3 (A8): icon-only; the label stays as the accessible name; gaps close so segments keep size-hit-min down to 195 */
+  .seg{gap:0}
+  .seg .ico{display:block}
+  .seg .seg-label{position:absolute;clip-path:inset(50%);white-space:nowrap}
+}
+@container screen (width < 280px){
+  .bar{padding-inline:var(--space-2);gap:var(--space-1)}
+  .bar .lbl-short{display:none}
+  .bar .btn{padding-inline:0;min-width:var(--size-button)}
+  .row{grid-template-columns:minmax(0,1fr)}
+  .row-link{grid-template-columns:minmax(0,1fr) auto}
+  .row > .fig{grid-column:1;grid-row:auto;text-align:left}
+  .row-link > .ico{grid-column:2;grid-row:1 / span 3}
+  /* IA 4: two number fields side by side fall under 2 x hit target here, so they stack */
+  .field-pair{grid-template-columns:minmax(0,1fr)}
+}
+
+/* =====================================================================
+   PRESENTATION CHROME — not part of the screen or the system.
+   Device frame, captions and annotations. Raw values are allowed here,
+   exactly as in the components-v1.html page chrome.
+   ===================================================================== */
+*{box-sizing:border-box}
+html{scroll-padding-top:16px}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+body{margin:0;background:var(--color-paper);color:var(--color-ink);font:400 16px/1.55 var(--font-ui)}
+a{color:var(--color-pine);text-underline-offset:.18em}
+::selection{background:var(--color-pine-light);color:var(--color-ink)}
+.skip{position:absolute;left:16px;top:-64px;z-index:10;padding:8px 14px;border-radius:999px;background:var(--color-ink);color:var(--color-paper);font-weight:600;text-decoration:none}
+.skip:focus{top:16px}
+code{font:500 13px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--color-oat);padding:1px 5px;border-radius:4px}
+
+.top{background:var(--color-ink);color:var(--color-paper);padding-block:clamp(36px,5vw,56px);padding-inline:clamp(16px,4vw,48px)}
+.top-inner{max-width:1240px;margin:0 auto}
+.top h1{font:400 clamp(36px,5vw,60px)/1.04 var(--font-voice);letter-spacing:-.025em;margin:0 0 16px;text-wrap:balance}
+.top .lede{margin:0;max-width:58ch;font-size:18px;color:var(--color-rule);text-wrap:pretty}
+.top .lede b{color:var(--color-paper);font-weight:500}
+.top a{color:inherit}
+.facts{list-style:none;margin:28px 0 0;padding:20px 0 0;border-top:1px solid rgba(255,253,249,.3);display:flex;flex-wrap:wrap;gap:8px 32px;font-size:14px}
+.facts b{font-weight:600}
+
+.wrap{max-width:1240px;margin:0 auto;padding-inline:clamp(16px,4vw,48px)}
+
+/* Device frames */
+.bay{background:var(--color-oat-deep)}
+.frames{display:flex;flex-wrap:wrap;justify-content:center;gap:56px;padding-block:56px}
+.frame{display:grid;gap:18px;justify-items:center;align-content:start;margin:0}
+.frame-cap{margin:0;max-width:390px;text-align:center;font:400 14px/20px var(--font-ui);color:var(--color-ink-soft);text-wrap:pretty}
+.frame-cap b{display:block;font:600 15px/22px var(--font-ui);color:var(--color-ink)}
+.device{--inset-safe-top:59px;--inset-safe-bottom:34px; /* iPhone 15-class safe areas, simulated */
+  position:relative;width:390px;height:844px;border-radius:56px;overflow:hidden;isolation:isolate;background:var(--surface-ground);
+  box-shadow:0 0 0 10px var(--color-ink),0 30px 60px rgba(31,36,33,.22)}
+.viewport{position:absolute;inset:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+.viewport::-webkit-scrollbar{display:none}
+.statusbar{position:absolute;z-index:3;inset:0 0 auto;height:59px;display:flex;align-items:center;justify-content:space-between;padding:8px 34px 0 52px;background:var(--surface-ground);font:600 17px/1 var(--font-ui);color:var(--color-ink);pointer-events:none;font-variant-numeric:tabular-nums}
+.island{position:absolute;left:50%;top:11px;translate:-50% 0;width:124px;height:36px;border-radius:20px;background:var(--color-ink)}
+.batt{position:relative;display:inline-block;width:27px;height:13px;border-radius:4px;box-shadow:inset 0 0 0 1.5px var(--color-ink)}
+.batt::after{content:"";position:absolute;inset:3px 7px 3px 3px;border-radius:1.5px;background:var(--color-ink)}
+.home-ind{position:absolute;z-index:3;left:50%;bottom:8px;translate:-50% 0;width:134px;height:5px;border-radius:3px;background:var(--color-ink);pointer-events:none}
+@media (max-width:520px){
+  .frames{display:grid;gap:40px;padding-block:24px 40px}
+  .frame{justify-items:stretch}
+  .frame-cap{max-width:none;padding-inline:16px}
+  .device{--inset-safe-top:env(safe-area-inset-top,0px);--inset-safe-bottom:env(safe-area-inset-bottom,0px);width:auto;height:auto;border-radius:0;overflow:visible;box-shadow:none;margin-inline:calc(-1 * clamp(16px,4vw,48px))}
+  .viewport{position:static;overflow:visible}
+  .statusbar,.home-ind{display:none}
+}
+
+/* Annotations */
+main.doc{max-width:1080px;padding-block:8px 120px}
+.sec{padding-block:56px 8px;border-top:2px solid var(--color-ink)}
+.sec:first-of-type{border-top:0}
+.sec h2{font:400 clamp(30px,3.6vw,42px)/1.1 var(--font-voice);letter-spacing:-.015em;margin:0 0 12px;text-wrap:balance}
+.sec h3{font:600 18px/1.3 var(--font-ui);margin:40px 0 12px;text-wrap:balance}
+.lead{max-width:62ch;color:var(--color-ink-soft);margin:0 0 28px;font-size:17px;text-wrap:pretty}
+.lead b{color:var(--color-ink);font-weight:600}
+.note{font-size:14px;color:var(--color-ink-soft);max-width:62ch;margin:14px 0 0}
+.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table.ref{width:100%;border-collapse:collapse;font-size:14px;line-height:1.5}
+table.ref th{text-align:left;font-weight:600;color:var(--color-ink-soft);padding:0 16px 10px 0;border-bottom:1.5px solid var(--color-ink);white-space:nowrap;vertical-align:bottom}
+table.ref td{padding:12px 16px 12px 0;border-bottom:1px solid var(--color-rule);vertical-align:top}
+table.ref td:first-child{font-weight:600;font-variant-numeric:tabular-nums}
+table.ref td b{font-weight:600}
+@media (max-width:720px){
+  table.ref thead{display:none} /* each cell shows its column name via data-label */
+  table.ref,table.ref tbody,table.ref tr,table.ref td{display:block;width:100%}
+  table.ref tr{padding-block:12px;border-bottom:1px solid var(--color-rule)}
+  table.ref td{border:0;padding:3px 0}
+  table.ref td::before{content:attr(data-label);display:block;font:600 13px/18px var(--font-ui);color:var(--color-ink-soft)}
+  table.ref td[data-label=""]::before{content:none}
+}
+.st{display:inline-block;margin:0 4px 4px 0;padding:1px 8px;border-radius:999px;font:600 11px/18px var(--font-ui);letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;color:var(--color-ink)}
+.st-ev{background:var(--color-ink);color:var(--color-paper)}
+.st-ia{box-shadow:inset 0 0 0 1px var(--color-ink)}
+.st-sys{background:var(--color-oat-deep)}
+.st-jc{outline:1.5px dashed var(--color-ink);outline-offset:-1.5px}
+.st-new{background:var(--color-pine-light);box-shadow:inset 0 0 0 1px var(--color-pine)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 24px;margin:0 0 24px;padding:0;list-style:none;font-size:14px;color:var(--color-ink-soft)}
+.refs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:4px 40px;margin:0;padding:0;list-style:none}
+.refs li{padding:12px 0;border-top:1px solid var(--color-rule);font-size:15px}
+.refs li b{font-weight:600}
+.refs .took{display:block;margin-top:4px;font-size:14px;color:var(--color-ink-soft)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:8px 48px}
+.cols h3{margin-top:0}
+.cols ul{margin:0;padding-left:18px;max-width:62ch}
+.cols li{margin-bottom:8px}
+@media (max-width:720px){.st{white-space:normal}}
+</style>
+</head>
+<body>
+<a class="skip" href="#doc">Skip to the notes</a>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="13" r="3.25"/></symbol>
+  <symbol id="i-barcode" viewBox="0 0 24 24"><path d="M4 8V5h3M17 5h3v3M20 16v3h-3M7 19H4v-3M8 9v6M11 9v6M13.5 9v6M16 9v6"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M5 5.5A1.5 1.5 0 0 1 6.5 4H19v13H6.5A1.5 1.5 0 0 0 5 18.5z"/><path d="M5 18.5A1.5 1.5 0 0 0 6.5 20H19"/></symbol>
+  <symbol id="i-today" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 9h6M9 12.5h6M9 16h3.5"/></symbol>
+  <symbol id="i-chev-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-chev-left" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="top-inner">
+    <h1>Today / Daily Log</h1>
+    <p class="lede">The home screen, and the place both stories return to (IA 1). At a glance it answers <b>how much is left today</b>. It lists every entry with where its number came from, lets you correct any entry, and keeps <b>Add food</b> one tap away. Built only from <a href="../04-design-system/components-v1.html">Design System v1</a>.</p>
+    <ul class="facts">
+      <li><b>Stage 5 · Screens</b>, 01 of 05 · revision 2, after critique</li>
+      <li><b>Phone frame:</b> 390 × 844 with iPhone safe areas; scroll inside the frame</li>
+      <li><b>Sample figures</b> are illustrative, never real nutrition data</li>
+    </ul>
+  </div>
+</header>
+
+<div class="bay">
+  <div class="wrap frames">
+    <figure class="frame">
+      <div class="device" role="region" aria-label="Today screen, under target">
+        <div class="statusbar" aria-hidden="true"><span>16:32</span><span class="island"></span><span class="batt"></span></div>
+        <div class="viewport">
+          <div class="screen">
+            <header class="screen-head">
+              <h2 class="screen-title voice-title"><span class="sr-only">Frame A, under target: </span>Today</h2>
+              <p class="screen-sub">Tuesday, 15 September</p>
+            </header>
+
+            <div class="screen-body">
+              <section class="block" aria-labelledby="a-sum">
+                <h3 class="sr-only" id="a-sum">Calories and macros today</h3>
+                <div class="sum-hero"><span class="fig fig-hero">808<span class="unit">&nbsp;kcal left</span></span></div>
+                <div class="meter" aria-hidden="true"><span class="fill" style="--w:51.9%"></span></div>
+                <div class="sum-caption">
+                  <span class="fig fig-sm">1,192&nbsp;<span class="unit">eaten</span></span>
+                  <span class="fig fig-sm">2,000&nbsp;<span class="unit">target</span></span>
+                </div>
+                <div class="mmeters">
+                  <div><div class="mm-top"><span class="mm-label"><span class="mac"><span class="mark p"></span><span class="mac-label">Protein</span></span><span class="fig fig-sm">70&nbsp;<span class="unit">of</span>&nbsp;120&nbsp;<span class="unit">g</span></span></span><span class="fig fig-sm key">50&nbsp;<span class="unit">g left</span></span></div><div class="meter" style="--mc:var(--macro-protein)" aria-hidden="true"><span class="fill" style="--w:50.8%"></span></div></div>
+                  <div><div class="mm-top"><span class="mm-label"><span class="mac"><span class="mark c"></span><span class="mac-label">Carbs</span></span><span class="fig fig-sm">145&nbsp;<span class="unit">of</span>&nbsp;220&nbsp;<span class="unit">g</span></span></span><span class="fig fig-sm key">75&nbsp;<span class="unit">g left</span></span></div><div class="meter" style="--mc:var(--macro-carbs)" aria-hidden="true"><span class="fill" style="--w:57.3%"></span></div></div>
+                  <div><div class="mm-top"><span class="mm-label"><span class="mac"><span class="mark f"></span><span class="mac-label">Fat</span></span><span class="fig fig-sm">39&nbsp;<span class="unit">of</span>&nbsp;65&nbsp;<span class="unit">g</span></span></span><span class="fig fig-sm key">26&nbsp;<span class="unit">g left</span></span></div><div class="meter" style="--mc:var(--macro-fat)" aria-hidden="true"><span class="fill" style="--w:52.2%"></span></div></div>
+                </div>
+              </section>
+
+              <section aria-labelledby="a-log">
+                <h3 class="overline ui-overline list-label" id="a-log">Logged · newest first</h3>
+                <div class="block list">
+                  <ul class="ledger">
+                    <li><a class="row row-link" href="#flows"><span class="row-name">Banana &amp; peanut butter toast</span><span class="row-meta"><span class="row-source"><svg class="ico sm" aria-hidden="true"><use href="#i-camera"/></svg>Photo estimate</span> <span class="row-when"><span class="fig fig-sm">1&nbsp;<span class="unit">slice</span></span>&nbsp;<span class="sep" aria-hidden="true">·</span> 16:20</span></span><span class="fig fig-md">290&nbsp;<span class="unit">kcal</span></span><svg class="ico sm" aria-hidden="true"><use href="#i-chev-right"/></svg><span class="sr-only">Edit or remove</span></a></li>
+                    <li><a class="row row-link" href="#flows"><span class="row-name">Chickpea &amp; spinach stew</span><span class="row-meta"><span class="row-source"><svg class="ico sm" aria-hidden="true"><use href="#i-book"/></svg>From recipe</span> <span class="row-when"><span class="fig fig-sm">1&nbsp;<span class="unit">serving</span></span>&nbsp;<span class="sep" aria-hidden="true">·</span> 13:05</span></span><span class="fig fig-md">412&nbsp;<span class="unit">kcal</span></span><svg class="ico sm" aria-hidden="true"><use href="#i-chev-right"/></svg><span class="sr-only">Edit or remove</span></a></li>
+                    <li><a class="row row-link" href="#flows"><span class="row-name">Protein bar</span><span class="row-meta"><span class="row-source"><svg class="ico sm" aria-hidden="true"><use href="#i-barcode"/></svg>Barcode</span> <span class="row-when"><span class="fig fig-sm">1&nbsp;<span class="unit">bar</span></span>&nbsp;<span class="sep" aria-hidden="true">·</span> 10:45</span></span><span class="fig fig-md">210&nbsp;<span class="unit">kcal</span></span><svg class="ico sm" aria-hidden="true"><use href="#i-chev-right"/></svg><span class="sr-only">Edit or remove</span></a></li>
+                    <li><a class="row row-link" href="#flows"><span class="row-name">Rolled oats</span><span class="row-meta"><span class="row-source"><svg class="ico sm" aria-hidden="true"><use href="#i-search"/></svg>Food database</span> <span class="row-when"><span class="fig fig-sm">40&nbsp;<span class="unit">g</span></span>&nbsp;<span class="sep" aria-hidden="true">·</span> 08:10</span></span><span class="fig fig-md">150&nbsp;<span class="unit">kcal</span></span><svg class="ico sm" aria-hidden="true"><use href="#i-chev-right"/></svg><span class="sr-only">Edit or remove</span></a></li>
+                    <li><a class="row row-link" href="#flows"><span class="row-name">Greek yogurt, 2%</span><span class="row-meta"><span class="row-source"><svg class="ico sm" aria-hidden="true"><use href="#i-search"/></svg>Food database</span> <span class="row-when"><span class="fig fig-sm">170&nbsp;<span class="unit">g</span></span>&nbsp;<span class="sep" aria-hidden="true">·</span> 08:10</span></span><span class="fig fig-md">130&nbsp;<span class="unit">kcal</span></span><svg class="ico sm" aria-hidden="true"><use href="#i-chev-right"/></svg><span class="sr-only">Edit or remove</span></a></li>
+                  </ul>
+                </div>
+              </section>
+            </div>
+
+            <nav class="bar" aria-label="Main">
+              <a class="tab" href="#flows" aria-current="page"><span class="tab-ind"><svg class="ico" aria-hidden="true"><use href="#i-today"/></svg></span>Today</a>
+              <a class="btn btn-primary" href="#flows" aria-label="Add food"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg><span class="lbl-full">Add food</span><span class="lbl-short">Add</span></a>
+              <a class="tab" href="#flows"><span class="tab-ind"><svg class="ico" aria-hidden="true"><use href="#i-book"/></svg></span>Recipes</a>
+            </nav>
+          </div>
+        </div>
+        <div class="home-ind" aria-hidden="true"></div>
+      </div>
+      <figcaption class="frame-cap"><b>A · Under target, 16:32</b>Five entries: one from each logging method, plus a recipe. Newest on top; tap any entry to correct it.</figcaption>
+    </figure>
+
+    <figure class="frame">
+      <div class="device" role="region" aria-label="Today screen, over target">
+        <div class="statusbar" aria-hidden="true"><span>21:15</span><span class="island"></span><span class="batt"></span></div>
+        <div class="viewport">
+          <div class="screen">
+            <header class="screen-head">
+              <h2 class="screen-title voice-title"><span class="sr-only">Frame B, over target: </span>Today</h2>
+              <p class="screen-sub">Tuesday, 15 September</p>
+            </header>
+
+            <div class="screen-body">
+              <section class="block" aria-labelledby="b-sum">
+                <h3 class="sr-only" id="b-sum">Calories and macros today</h3>
+                <div class="sum-hero"><span class="fig fig-hero">47<span class="unit">&nbsp;kcal <strong class="unit-strong">over</strong></span></span></div>
+                <div class="meter" aria-hidden="true"><span class="fill" style="--w:var(--meter-target)"></span><span class="over" style="--wo:2%"></span></div>
+                <div class="sum-caption">
+                  <span class="fig fig-sm">2,047&nbsp;<span class="unit">eaten</span></span>
+                  <span class="fig fig-sm">2,000&nbsp;<span class="unit">target</span></span>
+                </div>
+                <div class="mmeters">
+                  <div><div class="mm-top"><span class="mm-label"><span class="mac"><span class="mark p"></span><span class="mac-label">Protein</span></span><span class="fig fig-sm">110&nbsp;<span class="unit">of</span>&nbsp;120&nbsp;<span class="unit">g</span></span></span><span class="fig fig-sm key">10&nbsp;<span class="unit">g left</span></span></div><div class="meter" style="--mc:var(--macro-protein)" aria-hidden="true"><span class="fill" style="--w:79.8%"></span></div></div>
+                  <div><div class="mm-top"><span class="mm-label"><span class="mac"><span class="mark c"></span><span class="mac-label">Carbs</span></span><span class="fig fig-sm">214&nbsp;<span class="unit">of</span>&nbsp;220&nbsp;<span class="unit">g</span></span></span><span class="fig fig-sm key">6&nbsp;<span class="unit">g left</span></span></div><div class="meter" style="--mc:var(--macro-carbs)" aria-hidden="true"><span class="fill" style="--w:84.6%"></span></div></div>
+                  <div><div class="mm-top"><span class="mm-label"><span class="mac"><span class="mark f"></span><span class="mac-label">Fat</span></span><span class="fig fig-sm">73&nbsp;<span class="unit">of</span>&nbsp;65&nbsp;<span class="unit">g</span></span></span><span class="fig fig-sm key">8&nbsp;<span class="unit">g <strong class="unit-strong">over</strong></span></span></div><div class="meter" style="--mc:var(--macro-fat)" aria-hidden="true"><span class="fill" style="--w:var(--meter-target)"></span><span class="over" style="--wo:10.7%"></span></div></div>
+                </div>
+              </section>
+
+              <section aria-labelledby="b-log">
+                <h3 class="overline ui-overline list-label" id="b-log">Logged · newest first</h3>
+                <div class="block list">
+                  <ul class="ledger">
+                    <li><a class="row row-link" href="#flows"><span class="row-name">Dark chocolate, 70%</span><span class="row-meta"><span class="row-source"><svg class="ico sm" aria-hidden="true"><use href="#i-barcode"/></svg>Barcode</span> <span class="row-when"><span class="fig fig-sm">30&nbsp;<span class="unit">g</span></span>&nbsp;<span class="sep" aria-hidden="true">·</span> 21:10</span></span><span class="fig fig-md">170&nbsp;<span class="unit">kcal</span></span><svg class="ico sm" aria-hidden="true"><use href="#i-chev-right"/></svg><span class="sr-only">Edit or remove</span></a></li>
+                    <li><a class="row row-link" href="#flows"><span class="row-name">Red wine</span><span class="row-meta"><span class="row-source"><svg class="ico sm" aria-hidden="true"><use href="#i-search"/></svg>Food database</span> <span class="row-when"><span class="fig fig-sm">150&nbsp;<span class="unit">ml</span></span>&nbsp;<span class="sep" aria-hidden="true">·</span> 19:40</span></span><span class="fig fig-md">125&nbsp;<span class="unit">kcal</span></span><svg class="ico sm" aria-hidden="true"><use href="#i-chev-right"/></svg><span class="sr-only">Edit or remove</span></a></li>
+                    <li><a class="row row-link" href="#flows"><span class="row-name">Salmon, rice &amp; green beans</span><span class="row-meta"><span class="row-source"><svg class="ico sm" aria-hidden="true"><use href="#i-camera"/></svg>Photo estimate</span> <span class="row-when"><span class="fig fig-sm">1&nbsp;<span class="unit">serving</span></span>&nbsp;<span class="sep" aria-hidden="true">·</span> 19:40</span></span><span class="fig fig-md">560&nbsp;<span class="unit">kcal</span></span><svg class="ico sm" aria-hidden="true"><use href="#i-chev-right"/></svg><span class="sr-only">Edit or remove</span></a></li>
+                    <li><a class="row row-link" href="#flows"><span class="row-name">Banana &amp; peanut butter toast</span><span class="row-meta"><span class="row-source"><svg class="ico sm" aria-hidden="true"><use href="#i-camera"/></svg>Photo estimate</span> <span class="row-when"><span class="fig fig-sm">1&nbsp;<span class="unit">slice</span></span>&nbsp;<span class="sep" aria-hidden="true">·</span> 16:20</span></span><span class="fig fig-md">290&nbsp;<span class="unit">kcal</span></span><svg class="ico sm" aria-hidden="true"><use href="#i-chev-right"/></svg><span class="sr-only">Edit or remove</span></a></li>
+                    <li><a class="row row-link" href="#flows"><span class="row-name">Chickpea &amp; spinach stew</span><span class="row-meta"><span class="row-source"><svg class="ico sm" aria-hidden="true"><use href="#i-book"/></svg>From recipe</span> <span class="row-when"><span class="fig fig-sm">1&nbsp;<span class="unit">serving</span></span>&nbsp;<span class="sep" aria-hidden="true">·</span> 13:05</span></span><span class="fig fig-md">412&nbsp;<span class="unit">kcal</span></span><svg class="ico sm" aria-hidden="true"><use href="#i-chev-right"/></svg><span class="sr-only">Edit or remove</span></a></li>
+                    <li><a class="row row-link" href="#flows"><span class="row-name">Protein bar</span><span class="row-meta"><span class="row-source"><svg class="ico sm" aria-hidden="true"><use href="#i-barcode"/></svg>Barcode</span> <span class="row-when"><span class="fig fig-sm">1&nbsp;<span class="unit">bar</span></span>&nbsp;<span class="sep" aria-hidden="true">·</span> 10:45</span></span><span class="fig fig-md">210&nbsp;<span class="unit">kcal</span></span><svg class="ico sm" aria-hidden="true"><use href="#i-chev-right"/></svg><span class="sr-only">Edit or remove</span></a></li>
+                    <li><a class="row row-link" href="#flows"><span class="row-name">Rolled oats</span><span class="row-meta"><span class="row-source"><svg class="ico sm" aria-hidden="true"><use href="#i-search"/></svg>Food database</span> <span class="row-when"><span class="fig fig-sm">40&nbsp;<span class="unit">g</span></span>&nbsp;<span class="sep" aria-hidden="true">·</span> 08:10</span></span><span class="fig fig-md">150&nbsp;<span class="unit">kcal</span></span><svg class="ico sm" aria-hidden="true"><use href="#i-chev-right"/></svg><span class="sr-only">Edit or remove</span></a></li>
+                    <li><a class="row row-link" href="#flows"><span class="row-name">Greek yogurt, 2%</span><span class="row-meta"><span class="row-source"><svg class="ico sm" aria-hidden="true"><use href="#i-search"/></svg>Food database</span> <span class="row-when"><span class="fig fig-sm">170&nbsp;<span class="unit">g</span></span>&nbsp;<span class="sep" aria-hidden="true">·</span> 08:10</span></span><span class="fig fig-md">130&nbsp;<span class="unit">kcal</span></span><svg class="ico sm" aria-hidden="true"><use href="#i-chev-right"/></svg><span class="sr-only">Edit or remove</span></a></li>
+                  </ul>
+                </div>
+              </section>
+            </div>
+
+            <nav class="bar" aria-label="Main">
+              <a class="tab" href="#flows" aria-current="page"><span class="tab-ind"><svg class="ico" aria-hidden="true"><use href="#i-today"/></svg></span>Today</a>
+              <a class="btn btn-primary" href="#flows" aria-label="Add food"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg><span class="lbl-full">Add food</span><span class="lbl-short">Add</span></a>
+              <a class="tab" href="#flows"><span class="tab-ind"><svg class="ico" aria-hidden="true"><use href="#i-book"/></svg></span>Recipes</a>
+            </nav>
+          </div>
+        </div>
+        <div class="home-ind" aria-hidden="true"></div>
+      </div>
+      <figcaption class="frame-cap"><b>B · Over target, 21:15</b>The same day, later. Calories and fat are over; protein and carbs are still short of target.</figcaption>
+    </figure>
+  </div>
+</div>
+
+<main class="wrap doc" id="doc">
+<section class="sec" aria-labelledby="n-glance">
+  <h2 id="n-glance">At a glance</h2>
+  <p class="lead">This is revision 2. Revision 1 scored <b>23/40</b> in <code>/impeccable critique</code>. Revision 2 scored <b>25/40</b> in a second, independent run, which led to two more changes: a shared meter scale, then a source-first meta line in every row. Every decision the notes had already documented was kept.</p>
+  <div class="cols">
+    <div>
+      <h3>What the screen does</h3>
+      <ul>
+        <li>Shows what’s left today, with the arithmetic behind it in plain view.</li>
+        <li>Lists every entry, newest first, each with the source of its number.</li>
+        <li>Opens any entry for correction, and keeps Add food and Recipes one tap away.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Changed in revision 2</h3>
+      <ul>
+        <li>Entries open Food Confirmation to fix or remove them (new IA Flow 4).</li>
+        <li>“Over” reads at a glance: bold word, a target tick on every meter, macros in words.</li>
+        <li>Macros answer the question directly: “50 g left”.</li>
+        <li>Each entry leads with where its number came from.</li>
+        <li>Works down to 195 px wide (200% zoom on a 390 px phone).</li>
+        <li>A misleading label removed; details and page fixes listed below.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Still open</h3>
+      <ul>
+        <li>Undo straight after “Log it” and the empty day: v2 states.</li>
+        <li>Where the 2,000 target comes from: profile is out of scope (IA).</li>
+        <li>OS text-size settings: native build maps type to pt / sp.</li>
+        <li>From run 2: a dense summary, an ungrouped list, and row names still to confirm with a real screen reader.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="sec" aria-labelledby="n-trace">
+  <h2 id="n-trace">Why each element is where it is</h2>
+  <p class="lead">Top to bottom, in screen order and prominence. Each row cites its source. <b>Dashed badges mark judgment calls:</b> decisions without direct evidence, open to challenge.</p>
+  <ul class="legend">
+    <li><span class="st st-ev">Evidenced</span>research finding</li>
+    <li><span class="st st-ia">IA</span>information architecture</li>
+    <li><span class="st st-sys">System</span>design system or Stage 3 rule</li>
+    <li><span class="st st-jc">Judgment call</span>designer’s decision</li>
+    <li><span class="st st-new">Rev 2</span>changed after critique</li>
+  </ul>
+  <div class="tablewrap"><table class="ref">
+    <thead><tr><th scope="col">#</th><th scope="col">Element · prominence</th><th scope="col">Why</th><th scope="col">Source</th><th scope="col">Status</th></tr></thead>
+    <tbody>
+      <tr><td data-label="#">1</td><td data-label="Element · prominence"><b>“Today”</b> title (<code>voice-title</code>) and the date under it. The only serif element on the screen.</td><td data-label="Why">Today is home, and both stories come back to it. With no day switcher, the date names the day the figures belong to.</td><td data-label="Source">IA 1 (“home”, shared entry point); hybrid §3 dial, serif “screen title only”; tokens §2.3 rule 3</td><td data-label="Status"><span class="st st-ia">IA</span><span class="st st-sys">System</span><span class="st st-jc">Date line</span></td></tr>
+      <tr><td data-label="#">2</td><td data-label="Element · prominence"><b>Summary block</b> (N3) comes first. “808 kcal left” is the one large figure, and it has no label above it.</td><td data-label="Why">Trackers check what’s left, often one-handed and in passing, so the largest type goes to that answer. “kcal left” already names the figure; the removed label (“Daily target”) described the wrong number.</td><td data-label="Source">IA 1 item 1; Segment 1 <i>What</i>: “check that number against a running daily budget”; Segment 1 <i>Where/When</i>; H1; tokens §2.3 rule 5; critique R5</td><td data-label="Status"><span class="st st-ev">Evidenced</span><span class="st st-ia">IA</span><span class="st st-new">Rev 2</span></td></tr>
+      <tr><td data-label="#">3</td><td data-label="Element · prominence"><b>“1,192 eaten · 2,000 target”</b> under the calorie meter.</td><td data-label="Why">Makes the big number checkable: left = target − eaten, with both inputs on screen. MyFitnessPal’s diary spends a whole equation line on the same job.</td><td data-label="Source">Stage 3 guardrail: figures “consistent and checkable”; L1; H2; <code>mfp_log</code></td><td data-label="Status"><span class="st st-sys">System</span><span class="st st-ev">Evidenced</span></td></tr>
+      <tr><td data-label="#">4</td><td data-label="Element · prominence"><b>Over target:</b> the word “over” in bold Ink. Every meter marks its target with a tick at the same position, and anything past it is hatched.</td><td data-label="Why">In revision 1, “47 kcal over” looked almost the same as “47 kcal left”. The bold word appears only when the state changes, still with no color. One shared scale makes protein at 92% and calories at 102% end at visibly different points. A second review read the bold word on a small overage as an alarm; it stays on purpose, because the plain word was missed.</td><td data-label="Source">J1, revised at Screens (tokens §5); critique R2 (run 1), N1 and N2 (run 2); users who gain as well as lose (<code>PRODUCT.md</code>)</td><td data-label="Status"><span class="st st-jc">J1 (revised)</span><span class="st st-jc">Bold “over” kept</span><span class="st st-new">Rev 2</span></td></tr>
+      <tr><td data-label="#">5</td><td data-label="Element · prominence"><b>Macro lines</b>, one step below calories: the answer on the right (“50 g left”, “8 g over”), the eaten and target figures beside the name (“70 of 120 g”).</td><td data-label="Why">The meal planner’s question is how much protein is left for dinner. The line answers that with no subtraction, and screen readers no longer announce “slash”.</td><td data-label="Source">IA 1 (“calories and macros vs. today’s target”); P0 #4, #5; Segment 3; critique R3</td><td data-label="Status"><span class="st st-ia">IA</span><span class="st st-ev">Evidenced</span><span class="st st-new">Rev 2</span></td></tr>
+      <tr><td data-label="#">6</td><td data-label="Element · prominence"><b>Log list</b> (C2) is the second block, newest first; its label states the order.</td><td data-label="Why">A running list is evidenced, and its ordering is the IA’s judgment call. Newest first puts the entry you just logged on top when “Log it” brings you back.</td><td data-label="Source">IA 1 item 2 and ordering note; IA Flow 1: “entry now visible in the list”; H1</td><td data-label="Status"><span class="st st-ia">IA</span><span class="st st-jc">Newest first</span></td></tr>
+      <tr><td data-label="#">7</td><td data-label="Element · prominence"><b>Every entry is tappable</b>, marked by a quiet chevron, and opens Food Confirmation pre-filled.</td><td data-label="Why">Wrong entries are common: barcodes that pull “up the wrong food”, photo portions misjudged. Without a fix, one wrong entry skews “left” all day. Reusing Food Confirmation keeps one place for setting a portion.</td><td data-label="Source">IA Flow 4 and structural rule 3 (added at Stage 5); H2; accuracy findings (<code>01-secondary-research.md</code>); critique R1</td><td data-label="Status"><span class="st st-ev">Evidenced</span><span class="st st-ia">IA</span><span class="st st-jc">Reuse of IA 3</span><span class="st st-new">Rev 2</span></td></tr>
+      <tr><td data-label="#">8</td><td data-label="Element · prominence"><b>Source first in every row</b>, with its icon, in Ink at 500: Food database · Barcode · Photo estimate · From recipe. The amount follows as a figure; the time comes last and lightest.</td><td data-label="Why">The source is the fact people check before trusting a number, so it is the most legible part of the meta line, as well as a distinct one. When space runs out, the amount and time wrap and the source stays put. Every method carries a source, so photo entries aren’t singled out.</td><td data-label="Source">J2 point 4; H2; research: the logging method’s accuracy is “the top scrutiny point”, and transparency about confidence has “outsized upside” (<code>01-secondary-research.md</code>); database figures that vary “−13% to +7%”</td><td data-label="Status"><span class="st st-jc">J2 (provisional)</span><span class="st st-new">Typeset</span></td></tr>
+      <tr><td data-label="#">9</td><td data-label="Element · prominence"><b>A recipe entry uses the same row</b>, with no thumbnail.</td><td data-label="Why">A logged recipe is food you ate, so it looks like every other entry. That’s where the two stories visibly meet.</td><td data-label="Source">IA Flow 3: “identical in form to a manually-logged item”; H4; L3; hybrid §3</td><td data-label="Status"><span class="st st-ia">IA</span><span class="st st-sys">System</span></td></tr>
+      <tr><td data-label="#">10</td><td data-label="Element · prominence"><b>“Add food”</b> (B1) in the middle of the persistent bottom bar. On narrow screens it shortens to “Add”, then to its icon.</td><td data-label="Why">One tap from Today and from Recipes, since the bar stays on both. It sits in thumb reach with a text label, and keeps a 52 px target at every width.</td><td data-label="Source">IA 1 item 3; IA structural rule 1; Segment 1 job story “as few taps as possible”, <i>Where</i> “often one-handed”; Cronometer multi-tap thread (H1); critique R4</td><td data-label="Status"><span class="st st-ev">Evidenced</span><span class="st st-ia">IA</span><span class="st st-jc">Placement in the bar</span></td></tr>
+      <tr><td data-label="#">11</td><td data-label="Element · prominence"><b>Today and Recipes tabs</b> on either side (S2).</td><td data-label="Why">Story 2 starts from the navigation, so Recipes carries the same weight as Today.</td><td data-label="Source">IA Flow 2: “tap Recipes in navigation”; Principle 1; H3</td><td data-label="Status"><span class="st st-ia">IA</span><span class="st st-ev">Evidenced</span><span class="st st-jc">Tab-bar pattern</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Left off the screen, on purpose</h3>
+  <div class="tablewrap"><table class="ref">
+    <thead><tr><th scope="col">Not shown</th><th scope="col">Why</th><th scope="col">Status</th></tr></thead>
+    <tbody>
+      <tr><td data-label="Not shown">Exercise, steps, water, weight</td><td data-label="Why">Outside both user stories (research scope; the 5W segments were scoped away from them). MyFitnessPal’s home screen and MacroFactor’s dashboard lead with exactly these.</td><td data-label="Status"><span class="st st-ev">Evidenced</span></td></tr>
+      <tr><td data-label="Not shown">Streaks, badges, celebrations</td><td data-label="Why">Excluded in hybrid §6. Cal AI’s streak resets draw complaints (supporting only), and its streak modal covers the home screen (<code>calai1</code>).</td><td data-label="Status"><span class="st st-sys">System</span></td></tr>
+      <tr><td data-label="Not shown">Premium badges, locked features</td><td data-label="Why">Paywalling a logging method is the loudest complaint in the sample (H2). <code>mfp_dash</code> shows a PREMIUM crown beside the logo on its home screen.</td><td data-label="Status"><span class="st st-ev">Evidenced</span></td></tr>
+      <tr><td data-label="Not shown">Setup or promo cards</td><td data-label="Why">MacroFactor’s dashboard (<code>macro1</code>) stacks “Configure” cards above nutrition that reads “---- kcal”. Today keeps the figures at the top (H1).</td><td data-label="Status"><span class="st st-jc">Judgment call</span></td></tr>
+      <tr><td data-label="Not shown">Previous / next day</td><td data-label="Why">Missing from IA 1; history belongs to neither story.</td><td data-label="Status"><span class="st st-jc">Judgment call · scope</span></td></tr>
+      <tr><td data-label="Not shown">Meal groups (Breakfast, Lunch…)</td><td data-label="Why">The IA specifies one chronological list; clock times keep the sequence readable.</td><td data-label="Status"><span class="st st-jc">Judgment call</span></td></tr>
+      <tr><td data-label="Not shown">Per-entry macros</td><td data-label="Why">Missing from IA 1 and C2. Macros are summed at the top, and each entry’s breakdown lives on Food Confirmation.</td><td data-label="Status"><span class="st st-ia">IA</span></td></tr>
+      <tr><td data-label="Not shown">Recipes that fit what’s left</td><td data-label="Why">Strong for the positioning, and outside IA 1 content. Reconsidered after the critique and kept out; adding it would be a deliberate IA change.</td><td data-label="Status"><span class="st st-jc">Idea, kept out</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="sec" aria-labelledby="flows">
+  <h2 id="flows">Where each control leads</h2>
+  <p class="lead">In this prototype every control links here until the screen it opens exists.</p>
+  <div class="tablewrap"><table class="ref">
+    <thead><tr><th scope="col">Control</th><th scope="col">Opens</th><th scope="col">Flow</th></tr></thead>
+    <tbody>
+      <tr><td data-label="Control">Add food</td><td data-label="Opens">Add Food (IA 2): search, barcode or photo</td><td data-label="Flow">Flow 1</td></tr>
+      <tr><td data-label="Control">Recipes tab</td><td data-label="Opens">Recipes &amp; Filter (IA 4)</td><td data-label="Flow">Flow 2</td></tr>
+      <tr><td data-label="Control">Today tab</td><td data-label="Opens">Today, the current screen</td><td data-label="Flow">—</td></tr>
+      <tr><td data-label="Control">A logged entry</td><td data-label="Opens">Food Confirmation &amp; Log (IA 3), pre-filled with that entry, with “Save changes” and “Remove entry”</td><td data-label="Flow">Flow 4 <span class="st st-new">Rev 2</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="sec" aria-labelledby="n-rev">
+  <h2 id="n-rev">What the critique changed</h2>
+  <p class="lead">Each priority issue from both critique runs, what it looked like, and where the fix is recorded. <b>System changes went into the design system first</b>, then this screen was rebuilt from it.</p>
+  <div class="tablewrap"><table class="ref">
+    <thead><tr><th scope="col">Finding</th><th scope="col">Revision 1</th><th scope="col">Revision 2</th><th scope="col">Recorded in</th></tr></thead>
+    <tbody>
+      <tr><td data-label="Finding">R1 · P1</td><td data-label="Revision 1">Entries did nothing when tapped. A wrong entry stayed wrong all day.</td><td data-label="Revision 2">Every entry is a link with a chevron, named “Edit or remove” for screen readers. It opens Food Confirmation pre-filled; that screen’s edit mode is built with IA 3.</td><td data-label="Recorded in">IA Flow 4 and rule 3; C2 <code>.row-link</code></td></tr>
+      <tr><td data-label="Finding">R2 · P1</td><td data-label="Revision 1">“kcal over” in small grey type; a 47 kcal overflow drew a 5 px hatch; macro overflow had no word.</td><td data-label="Revision 2">“over” in Ink at 600; “8 g over” spelled out. The overflow first got a 24&nbsp;px minimum, later replaced by the shared scale (N2).</td><td data-label="Recorded in">Tokens §5 J1 (revised), §2.3; N3; <code>type-unit-*-strong</code></td></tr>
+      <tr><td data-label="Finding">R3 · P2</td><td data-label="Revision 1">“70 / 120 g” needed subtraction and was read as “slash”.</td><td data-label="Revision 2">“50 g left” as the answer, “70 of 120 g” beside the name.</td><td data-label="Recorded in">N3</td></tr>
+      <tr><td data-label="Finding">R4 · P2</td><td data-label="Revision 1">At 195 px the bar overlapped and the page scrolled sideways; at 320 px the meta line split mid-phrase.</td><td data-label="Revision 2">Under 320 px the button reads “Add”; under 280 px it is icon-only, the bar tightens and the kcal figure moves under the meta line. The hero unit wraps; meta segments never split.</td><td data-label="Recorded in">S1 container, S2, C2; <code>bp-screen-narrow</code>, <code>bp-screen-compact</code></td></tr>
+      <tr><td data-label="Finding">R5 · P2</td><td data-label="Revision 1">“Daily target” sat above a remaining figure.</td><td data-label="Revision 2">Label removed; the block keeps a heading for screen readers.</td><td data-label="Recorded in">N3</td></tr>
+      <tr><td data-label="Finding">N1 · P1 (run 2)</td><td data-label="Revision 1">Bold “over” on a 47&nbsp;kcal overage read as an alarm to the second reviewer.</td><td data-label="Revision 2">Kept by decision and recorded as a judgment call: the plain word was missed in revision 1.</td><td data-label="Recorded in">Tokens §5 J1</td></tr>
+      <tr><td data-label="Finding">N2 · P2 (run 2)</td><td data-label="Revision 1">Meters used two scales. Under target the track meant the target; over target it meant what was eaten, so protein at 92% looked like calories at 100%.</td><td data-label="Revision 2">One scale: the target sits at 87% of every track, marked by an Ink tick, and the hatch continues past it.</td><td data-label="Recorded in">N3; <code>meter-target</code></td></tr>
+      <tr><td data-label="Finding">Typeset</td><td data-label="Revision 1">“1 slice · 16:20 · Photo estimate”: one grey role for three facts. The source came last, in Ink Soft at 400, and was the first segment to wrap.</td><td data-label="Revision 2">Source first, with its icon, in Ink at 500; the amount as a figure; the time last in Ink Soft. The amount and time wrap together; the source stays put.</td><td data-label="Recorded in">C2, N4; tokens §1.2, §2.3, §5 J2</td></tr>
+      <tr><td data-label="Finding">Minor</td><td data-label="Revision 1">A 13 px gap between “808” and its unit; “·” read aloud.</td><td data-label="Revision 2">About 8 px, from <code>space-1</code> plus a unit-sized space; separators hidden from screen readers.</td><td data-label="Recorded in"><code>figure-hero</code>; C2</td></tr>
+      <tr><td data-label="Finding">Page</td><td data-label="Revision 1">Links to a missing anchor; tables 760 px wide on phones; lines up to 124 characters; eyebrow labels; findings buried.</td><td data-label="Revision 2">Links lead to “Where each control leads”; tables stack on phones; measure capped near 62 characters; eyebrows removed; this summary sits first.</td><td data-label="Recorded in">This page</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note"><b>Kept as documented</b>, after being reconsidered: “left” as the framing for every goal (J1), the tab indicator’s chip look (S2), no recipe-fit link on Today, the newest-first label, no meal groups and no day switcher.</p>
+</section>
+
+<section class="sec" aria-labelledby="n-refs">
+  <h2 id="n-refs">What the reference screens show</h2>
+  <p class="lead">All 12 images were viewed directly. The 12 embedded in <code>04-stylescape.html</code> match the files in <code>03-branding/refs/</code> byte for byte (MD5).</p>
+  <ul class="refs">
+    <li><b>mfp_log · MyFitnessPal diary.</b> The header spells out “Goal − Food + Exercise = Remaining”, and kcal sits in a right-aligned column. <span class="took">Taken: a checkable caption (N3) and the ledger figure column (C2). Left: meal headers, and a blue all-caps “ADD FOOD” link under every meal.</span></li>
+    <li><b>mfp_dash · MyFitnessPal Today.</b> The remaining number sits inside a ring, with goal, food and exercise in a separate column. A PREMIUM crown sits by the logo, and cards for steps, exercise and weight fill the rest. <span class="took">Left: all of it. A ring is harder to check than a caption, the crown signals the paywall (H2), and the cards belong to neither story.</span></li>
+    <li><b>mfp_nutr · MyFitnessPal nutrition.</b> Each meter sits beside its numbers (“22% · 210g”). <span class="took">Same principle in N3: a bar never carries a value alone.</span></li>
+    <li><b>mfp_scr · Weekly digest.</b> “Keep It Up… 8 days!” in large blue type. <span class="took">Left: the reward tone Stage 3 excluded.</span></li>
+    <li><b>macro2 · MacroFactor expenditure.</b> “1366 kcal”: a big numeral with a small, light unit reads instantly. <span class="took">Confirms the <code>figure-hero</code> and unit pairing.</span></li>
+    <li><b>macro1 · MacroFactor dashboard.</b> The home screen opens on “Configure” promo cards with illustration, while nutrition shows “---- kcal”. <span class="took">Left: nothing on Today sits above the figures.</span></li>
+    <li><b>lifesum_goal, lifesum_and · Lifesum.</b> Oat ground, a serif question, calm paper surfaces, tracked section labels (“FOOD PREFERENCES”). <span class="took">Taken: the ground, the single serif title and the list section label.</span></li>
+    <li><b>calai1 · Cal AI, yazio1 · Yazio.</b> A streak modal over the home screen; a mascot handing out meal tips. <span class="took">Left: excluded direction C (hybrid §6).</span></li>
+    <li><b>lifesum2, noom1.</b> Launch and loading screens. <span class="took">Brand mood only; nothing for a daily-log layout.</span></li>
+    <li><b>Known gap.</b> None of the 12 shows a logged recipe inside a daily log, or a way to correct an entry. <span class="took">Those rows follow IA Flows 3 and 4.</span></li>
+  </ul>
+</section>
+
+<section class="sec" aria-labelledby="n-heur">
+  <h2 id="n-heur">Heuristics, applied while building</h2>
+  <p class="lead">Nielsen’s ten heuristics served as design constraints during generation, and the <code>/impeccable critique</code> runs tested them afterwards.</p>
+  <div class="tablewrap"><table class="ref">
+    <thead><tr><th scope="col">Heuristic</th><th scope="col">Applied as</th></tr></thead>
+    <tbody>
+      <tr><td data-label="Heuristic">1 · Visibility of system status</td><td data-label="Applied as">The hero says what’s left or how far over, with the weight change and overflow visible at a glance. The caption shows eaten and target. The newest entry sits on top; the current tab is marked by fill, line, weight and <code>aria-current</code>.</td></tr>
+      <tr><td data-label="Heuristic">2 · Match with the real world</td><td data-label="Applied as">Everyday words: “left”, “eaten”, “target”, “over”, “70 of 120 g”. Clock times, kcal and grams. Sources named in words.</td></tr>
+      <tr><td data-label="Heuristic">3 · User control and freedom</td><td data-label="Applied as">Any entry opens for correction or removal (Flow 4). Today and Recipes stay one tap apart. Undo right after logging comes with v2 states.</td></tr>
+      <tr><td data-label="Heuristic">4 · Consistency and standards</td><td data-label="Applied as">Calories and macros both state what’s left. A log entry, a search result and a recipe entry share one row (C2). Add food is the same B1 as “Log it” and “Log this”.</td></tr>
+      <tr><td data-label="Heuristic">5 · Error prevention</td><td data-label="Applied as">No signed numbers such as “−47”. Every row names its source, so a doubtful entry stands out before it skews the day.</td></tr>
+      <tr><td data-label="Heuristic">6 · Recognition over recall</td><td data-label="Applied as">Targets are printed beside what’s eaten, and macro answers need no arithmetic. Tabs and Add food carry text labels; the list label states the order.</td></tr>
+      <tr><td data-label="Heuristic">7 · Flexibility and efficiency</td><td data-label="Applied as">Add food is one tap from Today and Recipes, in thumb reach at every width. Quick re-log stays out of scope (<code>04-conclusions.md</code> §2).</td></tr>
+      <tr><td data-label="Heuristic">8 · Aesthetic and minimalist design</td><td data-label="Applied as">Only IA 1’s content; a redundant label removed; nothing sits above the figures.</td></tr>
+      <tr><td data-label="Heuristic">9 · Recognize and recover from errors</td><td data-label="Applied as">A wrong entry can be corrected or removed from where it’s noticed. Empty and error states follow in v2.</td></tr>
+      <tr><td data-label="Heuristic">10 · Help and documentation</td><td data-label="Applied as">The caption shows the arithmetic behind “left”. The target’s origin sits in the out-of-scope profile.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Still open</h3>
+  <div class="tablewrap"><table class="ref">
+    <thead><tr><th scope="col">Item</th><th scope="col">Severity</th><th scope="col">Plan</th></tr></thead>
+    <tbody>
+      <tr><td data-label="Item">Undo right after “Log it”</td><td data-label="Severity">2 · Minor</td><td data-label="Plan">A short “Logged · Undo” message with no status hue, designed with v2 states.</td></tr>
+      <tr><td data-label="Item">Empty day (no entries yet)</td><td data-label="Severity">2 · Minor</td><td data-label="Plan">One warm line pointing to Add food, with v2 empty states. The summary already works (“2,000 kcal left”).</td></tr>
+      <tr><td data-label="Item">Where the target comes from</td><td data-label="Severity">2 · Minor</td><td data-label="Plan">Profile and onboarding are out of scope (IA judgment call); a sixth screen would be a deliberate addition.</td></tr>
+      <tr><td data-label="Item">Quick re-log of frequent foods</td><td data-label="Severity">1 · Cosmetic</td><td data-label="Plan">Recorded only: quick-add is out of scope by research (<code>04-conclusions.md</code> §2).</td></tr>
+      <tr><td data-label="Item">OS text-size settings</td><td data-label="Severity">Advisory</td><td data-label="Plan">Browser zoom to 200% now works (narrow-screen rules). px tokens still ignore Dynamic Type; the native build maps roles to pt / sp (audit E6).</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="sec" aria-labelledby="n-img">
+  <h2 id="n-img">Images: none on this screen, on purpose</h2>
+  <p class="lead">Placeholder space is reserved wherever the IA or the system calls for an image. <b>For Today, neither does</b>, and adding one would break a documented rule.</p>
+  <div class="cols">
+    <ul>
+      <li><b>IA Flow 3:</b> a logged recipe appears “identical in form to a manually-logged item”, so recipe rows can’t carry a thumbnail the others lack.</li>
+      <li><b>Hybrid §3:</b> IA 1 imagery is “None”. <b>§7</b> places the small recipe thumbnail “when arriving from a recipe”, which is Food Confirmation (IA 3); tokens §4 gives that thumbnail <code>radius-sm</code>.</li>
+    </ul>
+    <ul>
+      <li><b>Where image slots will appear:</b> the IA 3 thumbnail (Flow 3 only), IA 4 card images (4:3, provisional) and the IA 5 hero.</li>
+      <li><b>How they’ll be marked:</b> a striped block labelled “IMAGE · UNVALIDATED (§7)”, following <code>03-branding/03-direction-preview.html</code>. It gets rebuilt from tokens and added to the system when IA 3 needs it; real images arrive in the Krea pass.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="sec" aria-labelledby="n-sys">
+  <h2 id="n-sys">System changes and checks</h2>
+  <p class="lead">Nothing on this screen is styled locally. Whatever the screen needed went into <code>tokens-v1.md</code> and <code>components-v1.html</code> first; the build copies the system CSS in verbatim.</p>
+  <div class="cols">
+    <div>
+      <h3>Added to the system</h3>
+      <ul>
+        <li><b>Revision 1:</b> S1 screen scaffold with safe-area insets; S2 bottom bar <span class="st st-jc">Judgment call · pattern</span>; C1 list label; <code>i-today</code>.</li>
+        <li><b>Revision 2:</b> C2 tappable row and unbreakable meta segments; N3 without a label, with macro answers; J1 revised (<code>type-unit-hero-strong</code>, <code>type-unit-sm-strong</code>, a shared meter scale with <code>meter-target</code>); narrow-screen rules on the S1 container (<code>bp-screen-narrow</code> 320, <code>bp-screen-compact</code> 280); <code>i-chev-right</code>.</li>
+        <li>The two breakpoints are the only raw px in component CSS: container-query conditions can’t read custom properties.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Checks run on this file</h3>
+      <ul>
+        <li><b>Verbatim system CSS</b>, checked at build. Component CSS has no raw px, hex, size or weight values except the two documented <code>@container</code> breakpoints.</li>
+        <li><b>Rendered at 390&nbsp;px:</b> 0 colors outside the palette, 31 of 31 figures tabular, one visible serif element per frame. Every visible font combination maps to a role token.</li>
+        <li><b>Touch targets, at 390 / 320 / 300 / 195&nbsp;px:</b> tabs 94 / 59 / 68 / 60 wide; Add food 147 (“Add food”) / 147 / 107 (“Add”) / 52 (icon). Everything is 52&nbsp;px tall, and entry rows span the full width.</li>
+        <li><b>Breakpoints measured:</b> the bar needs 309&nbsp;px with “Add food”, 270&nbsp;px with “Add” and 182&nbsp;px icon-only, hence switches at 320 and 280.</li>
+        <li><b>Reflow:</b> no horizontal scrolling and no bar overlap at 390, 320, 300 or 195&nbsp;px. Meta segments never split, and at 195&nbsp;px the hero unit and the kcal figures move to their own lines.</li>
+        <li><b>Details:</b> hero number-to-unit gap 9&nbsp;px (was about 13); 13 entry links whose accessible names end in “Edit or remove”.</li>
+        <li><b>Shared meter scale, measured at 390&nbsp;px:</b> the target tick sits at 277 of 318&nbsp;px (87%) on all 8 meters. In frame B, protein ends at 254 and carbs at 269, short of the tick; calories stop at the tick with a 6&nbsp;px hatch past it, and fat’s hatch runs to 313. Nothing spills past a track at 390 or 195&nbsp;px.</li>
+        <li><b>Typeset pass, frame B:</b> the source sits on line 1 in 8 of 8 rows at 390 and 320&nbsp;px (before: 7 of 8 wrapped at 320&nbsp;px) and never splits. It measures 14&nbsp;px / 500 / 15.51:1 with its icon; amount digits 14 / 500 / 15.51:1 tabular with the unit at 6.27:1; time 14 / 400 / 6.27:1. Cost: at 390&nbsp;px, 5 of 8 rows now put amount and time on a second line (list 564 → 668&nbsp;px). Accepted: trust in the logging method outranks list compactness. A tighter-gap variant was rejected because “Food database 150” reads as one phrase; density stays with N3.</li>
+        <li><b>Not verified:</b> a full screen-reader walkthrough (the two review tools disagreed on row names), and OS text-size settings (audit E6).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</main>
+</body>
+</html>

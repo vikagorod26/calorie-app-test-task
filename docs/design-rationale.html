@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#1F2421">
+<title>Design rationale · The Measured Kitchen</title>
+<!-- GENERATED from design-rationale.md by .claude/scripts/build-rationale.py. Edit the .md, then re-run. -->
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<style>
+:root{--oat:#F2EDE6;--paper:#FFFDF9;--ink:#1F2421;--ink-soft:#5E605A;--rule:#E3DCD2;--pine:#2F5245;
+  --serif:"Newsreader","Iowan Old Style",Georgia,"Times New Roman",serif;
+  --sans:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --gutter:clamp(16px,4vw,48px)}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--oat);color:var(--ink);font:400 17px/1.65 var(--sans)}
+a{color:var(--pine);text-underline-offset:3px}
+a:focus-visible{outline:2px solid var(--pine);outline-offset:2px;border-radius:4px}
+.wrap{max-width:760px;margin:0 auto;padding-inline:var(--gutter)}
+.top{background:var(--ink);color:var(--paper);padding-block:clamp(32px,6vw,64px) clamp(32px,5vw,48px)}
+.back{display:inline-flex;align-items:center;min-height:48px;color:var(--rule);font:500 14px/20px var(--sans);text-decoration:none}
+.back:hover{color:var(--paper);text-decoration:underline}
+.back:focus-visible{outline-color:var(--paper)}
+.kick{font:500 12px/16px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--rule);margin:16px 0 12px}
+h1{font:400 clamp(36px,6vw,60px)/1.05 var(--serif);letter-spacing:-.02em;margin:0;font-optical-sizing:auto;text-wrap:balance}
+main{background:var(--paper);padding-block:clamp(32px,5vw,56px)}
+h2{font:400 clamp(26px,3.4vw,32px)/1.15 var(--serif);letter-spacing:-.01em;margin:8px 0 16px;scroll-margin-top:16px;text-wrap:balance}
+h3{font:400 22px/1.25 var(--serif);margin:28px 0 10px}
+p,ul,ol{margin:0 0 16px}
+ul,ol{padding-left:22px}
+li{margin-bottom:8px}
+li::marker{color:var(--ink-soft)}
+strong{font-weight:600}
+code{font:500 .86em/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--oat);padding:2px 5px;border-radius:4px;overflow-wrap:anywhere}
+a code{background:transparent;padding:0;color:inherit}
+hr{border:0;border-top:1px solid var(--rule);margin:40px 0}
+.decision{border-left:3px solid var(--rule);padding-left:16px;margin-bottom:22px}
+.table{overflow-x:auto;margin:0 0 20px;border:1px solid var(--rule);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:15px;line-height:1.5}
+th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--rule)}
+tbody tr:last-child td{border-bottom:0}
+th{font-weight:600;background:var(--oat)}
+footer{padding-block:24px 40px;color:var(--ink-soft);font-size:14px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="back" href="../index.html">&larr; The Measured Kitchen</a>
+    <p class="kick">Design rationale</p>
+    <h1>The Measured Kitchen</h1>
+  </div>
+</header>
+<main>
+  <div class="wrap">
+<p>A short account of the decisions that shaped this calorie app, in the order they were made. Each section links to the file where the full reasoning lives. It summarises existing work and adds no new justifications.</p>
+<p><strong>Reading time:</strong> about 8 minutes · <strong>Deeper context:</strong> <a href="../CLAUDE.md"><code>CLAUDE.md</code></a> (stage notes) and <a href="../PRODUCT.md"><code>PRODUCT.md</code></a> (product context)</p>
+<hr>
+<h2 id="1-the-problem">1. The problem</h2>
+<p>The brief asks for two things: <em>calculate the calories in a dish or product</em>, and <em>find a recipe that suits me</em>. Research showed the first is a crowded, well-served category. The second, and especially <strong>the step from finding a recipe to logging it</strong>, is a real gap that no major competitor fills.</p>
+<hr>
+<h2 id="2-what-research-told-us">2. What research told us</h2>
+<p>Evidence came from review mining of ~1,557 App Store and Google Play reviews (MyFitnessPal, Lose It!, Cal AI), the MyFitnessPal and Cronometer community forums, and store data for a competitor feature comparison. Full synthesis: <a href="../01-research/04-conclusions.md"><code>01-research/04-conclusions.md</code></a>.</p>
+<div class="table"><table><thead><tr><th></th><th>Finding</th><th>Evidence</th></tr></thead><tbody><tr><td><strong>H1</strong></td><td><strong>Speed beats feature depth for logging.</strong> People log several times a day, often one-handed, mid-meal-prep.</td><td>Ease of use was the most repeated praise across all three apps; repetitive multi-step entry was a recurring Cronometer forum complaint. <a href="../01-research/01-secondary-research.md"><code>01-secondary-research.md</code></a></td></tr><tr><td><strong>H2</strong></td><td><strong>Trust depends on the accuracy of each logging method, and paywalling that method feels like betrayal.</strong></td><td>Moving barcode scanning behind a paywall was the loudest complaint in the whole sample. Cal AI's most repeated complaint was wrong foods and wrong portions.</td></tr><tr><td><strong>H3</strong></td><td><strong>Recipe discovery is a real, unserved need.</strong></td><td>No competitor has a positive review pattern around recipes; home cooks leave for external sites; a whole niche app category exists just for "recipes that fit my macros". <a href="../01-research/03-competitor-analysis.md"><code>03-competitor-analysis.md</code></a></td></tr><tr><td><strong>H4</strong></td><td><strong>The handoff from finding a recipe to logging it is the biggest differentiation point.</strong></td><td>A multi-year, still-open feature request on both the MyFitnessPal and Cronometer forums; MyFitnessPal's own version is imperfect.</td></tr></tbody></table></div>
+<p>From these, the scope set itself: a fast, ungated logging core (search, barcode, photo, macros, targets), plus recipe discovery filtered by <strong>both</strong> diet tags and macro targets, joined to logging in one action. Research also gave us a third audience between the two stories, the <strong>macro-conscious meal planner</strong> (<a href="../01-research/02-audience-5w.md"><code>02-audience-5w.md</code></a>). This person wants a recipe that hits their numbers, then wants to log it just as precisely.</p>
+<hr>
+<h2 id="3-the-branding-decision-the-measured-kitchen">3. The branding decision: The Measured Kitchen</h2>
+<p>Three directions were explored against real reference screens (<a href="../03-branding/01-direction-options.md"><code>03-branding/01-direction-options.md</code></a>):</p>
+<ul><li><strong>A · Clinical Ledger</strong> (MyFitnessPal): the strongest for numeric trust (H2), but it reads as the incumbent users are frustrated with.</li><li><strong>B · Oat &amp; Serif</strong> (Lifesum, Noom): the strongest for recipes (H3), but weak for fast logging and for trust in the numbers.</li><li><strong>C · Bold Coach</strong> (Yazio, Cal AI, MacroFactor): the most glanceable (H1), but its gamified tone puts trust at risk.</li></ul>
+<p><strong>The finding: no single reference served both stories.</strong> The chosen direction is a hybrid. It takes A's figure discipline and B's cookbook warmth, and drops C's gamification (<a href="../03-branding/02-hybrid-direction.md"><code>02-hybrid-direction.md</code></a>, final presentation in <a href="../03-branding/04-stylescape.html"><code>04-stylescape.html</code></a>).</p>
+<p>The rule that makes the hybrid hold together is <strong>"Words are warm, figures are exact."</strong></p>
+<ul><li><strong>L1:</strong> every nutrition figure gets one identical treatment (Inter, tabular numerals, Ink, never the serif) on logging and recipe screens alike.</li><li><strong>L2:</strong> warmth lives only in words, the ground colour and imagery: Oat and Paper surfaces, the Newsreader serif for names and headlines, warm-graded food photography.</li><li><strong>L3:</strong> logging and recipe screens share every token and differ only in emphasis. For example, section spacing is 24 px on logging screens and 40 px on recipe screens: two steps on one scale.</li></ul>
+<p>Pine green is the <strong>only</strong> action colour, so "Log it" on Food Confirmation and "Log this" on Recipe Detail are visibly the same button. That makes H4's continuity something you can see.</p>
+<hr>
+<h2 id="4-the-structural-insight-one-convergence-screen">4. The structural insight: one convergence screen</h2>
+<p>The information architecture (<a href="../02-information-architecture/information-architecture.md"><code>information-architecture.md</code></a>) keeps exactly five screens: Today, Add Food, Food Confirmation, Recipes &amp; Filter, and Recipe Detail. Its key move is where the two stories meet:</p>
+<ul><li><strong>Flow 1 (story 1):</strong> Today → Add Food → Search / Barcode / Photo → <strong>Food Confirmation</strong> → Log it → Today</li><li><strong>Flow 2 (story 2):</strong> Today → Recipes &amp; Filter → Recipe Detail</li><li><strong>Flow 3 (the handoff):</strong> Recipe Detail → Log this → <strong>Food Confirmation</strong>, pre-filled with the recipe's nutrition → Log it → Today</li><li><strong>Flow 4 (added at Screens):</strong> Today → tap an entry → <strong>Food Confirmation</strong> (Save changes / Remove entry) → Today</li></ul>
+<p>Food Confirmation is the <strong>single convergence screen</strong>. Every way of logging (search, barcode, photo, recipe, correcting an entry) ends there, so the recipe handoff is not a parallel logging path. It reuses Flow 1's final step. Three structural rules follow from it:</p>
+<ol><li>Logging is reachable in one tap from anywhere (H1).</li><li>A recipe never dead-ends: it always resolves into Food Confirmation (H4).</li><li>A logged entry is never final (H2). This rule was added after the Today critique.</li></ol>
+<p>On screen, "one convergence screen" became <strong>one skeleton with named slots</strong>: Back · source note · name · macro breakdown · portion · primary button. Each path only fills slots and never adds layout.</p>
+<hr>
+<h2 id="5-key-screen-decisions">5. Key screen decisions</h2>
+<p class="decision"><strong>1 · Every logged entry names where its number came from</strong><br>→ <strong>Why:</strong> H2 says trust depends on the accuracy of each method, and the research notes that "being transparent about confidence has outsized upside". The source (Photo estimate / Barcode / Food database / From recipe) leads each Today row, ahead of the amount and the time. We accepted the cost (more rows wrap onto a second line) because legibility of the source outranks compactness.<br>→ <strong>Proves:</strong> <a href="../05-screens/01-today.html"><code>05-screens/01-today.html</code></a></p>
+<p class="decision"><strong>2 · An AI photo estimate looks exactly like any other figure (judgment call J2)</strong><br>→ <strong>Why:</strong> H2 plus Cal AI's portion complaints. Figures stay exact in form, because an estimate becomes a real entry that sums into the day, and a "~" or a range can't be summed. The uncertainty is carried in words instead: a source note, and one helper line placed directly above the portion control ("Estimated from your photo. Check the portion before you log it."). We rejected confidence percentages as a precision claim the product can't back. (<a href="../04-design-system/tokens-v1.md"><code>tokens-v1.md</code></a> §5)<br>→ <strong>Proves:</strong> <a href="../05-screens/03-food-confirmation.html"><code>05-screens/03-food-confirmation.html</code></a>, frame C</p>
+<p class="decision"><strong>3 · Going over target is information, not an alarm (judgment call J1)</strong><br>→ <strong>Why:</strong> the audience includes people <em>gaining</em> weight and training, so "over" is not bad for everyone (<code>PRODUCT.md</code>, Segment 1). The stylescape's tone is "no confetti, no guilt trips", and L1 forbids a red figure. The word "over" and a hatched meter overflow carry the meaning with no colour, which also works for colour-blind users. The Today critique found "over" too easy to miss, so it was strengthened with weight, not hue.<br>→ <strong>Proves:</strong> <a href="../05-screens/01-today.html"><code>05-screens/01-today.html</code></a>, frame B</p>
+<p class="decision"><strong>4 · Recipe filtering has two modes, and switching modes never drops a criterion</strong><br>→ <strong>Why:</strong> <code>PRODUCT.md</code> defines "suitable for me" as <strong>both</strong> diet tags (the home cook) and macro targets (the meal planner), with neither a subset of the other. The critique caught macro mode silently dropping diet criteria, which showed chicken to a vegetarian. The resulting rule: <em>a mode switches which criteria you tune, never which ones apply.</em><br>→ <strong>Proves:</strong> <a href="../05-screens/04-recipes-filter.html"><code>05-screens/04-recipes-filter.html</code></a></p>
+<p class="decision"><strong>5 · The proof of fit lives on the result card, not inside the recipe</strong><br>→ <strong>Why:</strong> the MyFitnessPal reference (<a href="../03-branding/refs/mfp_nutr.png"><code>mfp_nutr.png</code></a>) computes goal fit only <em>inside</em> an opened recipe. That is the research's "flags problem recipes retrospectively rather than recommending ones that already fit", seen directly. So each card names <em>your</em> criterion or margin ("170 kcal under your limit"), and results are ordered best fit first. The critique then moved the image beside the card body. This roughly doubled the number of results visible per screen, so options can be compared.<br>→ <strong>Proves:</strong> <a href="../05-screens/04-recipes-filter.html"><code>05-screens/04-recipes-filter.html</code></a></p>
+<p class="decision"><strong>6 · A serving count means "the servings you are eating", and it carries into logging</strong><br>→ <strong>Why:</strong> Flow 3 requires that what gets logged is what the screen showed. The Cronometer forum finding says label servings aren't what people eat, and MyFitnessPal's "save and log a serving" pattern points the same way. The other reading ("servings the recipe makes") would have to rescale every ingredient, which the IA never asks for. The critique made the commit button say what it will log: <strong>"Log this · 1.5 servings"</strong>. The same dish also reads 412 kcal / 26 / 48 / 12 g on the recipe card, the detail page, Confirmation and Today; this was checked at build.<br>→ <strong>Proves:</strong> <a href="../05-screens/05-recipe-detail.html"><code>05-screens/05-recipe-detail.html</code></a> → <a href="../06-prototype/index.html"><code>06-prototype/index.html</code></a> (clickable)</p>
+<hr>
+<h2 id="6-honest-tensions">6. Honest tensions</h2>
+<p>These are left open on purpose and recorded where they arise, not hidden.</p>
+<ul><li><strong>"Authored, but undifferentiated."</strong> The cross-screen taste pass found the product unmistakably its own against the twelve competitor references, but visually monotonous across its own set. Every element is a full-width band, two of the five screens open the same way, and the serif sets nouns only: not one sentence in 21 frames. The cookbook half of the brand is closer to a typeface than to a voice. Recorded for a copy and layout pass that was never scheduled. (<a href="../CLAUDE.md"><code>CLAUDE.md</code></a>, Stage 5b)</li><li><strong>The handoff carries the value, but not the name.</strong> The portion control is called "Servings you're eating" / "Increase servings" on Recipe Detail and "Portion" / "Increase amount" on Food Confirmation. Similarly, "Log this" (go to Confirmation) and "Log it" (commit) are one word apart and do opposite things. Both labels come from the IA, so fixing them is an IA change, not a screen tweak. Related: neither screen yet tells you when a bigger portion breaks the fit that brought you to the recipe (a shared v2 item).</li><li><strong>J1's bold "over": a reviewer disagreed, and the decision was kept.</strong> The second critique read a bold "over" on a 2.3% overage as an alarm set in type. Both alternatives were weighed. Bold stays because the first revision showed the plain word was missed. The objection is recorded in <a href="../04-design-system/tokens-v1.md"><code>tokens-v1.md</code></a> §5 J1, to revisit with real users.</li></ul>
+<hr>
+<h2 id="7-what-ties-it-together">7. What ties it together</h2>
+<p>Every layer answers to the one before it. <strong>Research</strong> produced four hypotheses. The <strong>IA</strong> turned H4 into a structural rule (a recipe never dead-ends) and into one convergence screen. <strong>Branding</strong> turned the tension between trust and warmth into one law ("words are warm, figures are exact"). The <strong>design system</strong> made that law checkable: semantic tokens only, one figure treatment, two judgment calls written down with their reasons and their rejected alternatives. The <strong>screens</strong> were built only from that system, each element traced to research, the IA or a flagged judgment call, and each screen critiqued once with its P1/P2 findings fixed. <strong>Verification</strong> checks the whole chain, not just the pixels: one byte-identical system stylesheet across the reference and all ten screen and prototype files, 0 contrast failures, every figure tabular and in Inter, and the same dish's numbers identical on every screen it passes through. Where a decision rests on judgment rather than evidence, it says so.</p>
+<hr>
+<p><strong>Where to go deeper</strong></p>
+<div class="table"><table><thead><tr><th>Topic</th><th>File</th></tr></thead><tbody><tr><td>Research synthesis</td><td><a href="../01-research/04-conclusions.md"><code>01-research/04-conclusions.md</code></a></td></tr><tr><td>Screens, flows, structural rules</td><td><a href="../02-information-architecture/information-architecture.md"><code>02-information-architecture/information-architecture.md</code></a></td></tr><tr><td>Branding rationale and traceability</td><td><a href="../03-branding/02-hybrid-direction.md"><code>03-branding/02-hybrid-direction.md</code></a> · <a href="../03-branding/04-stylescape.html"><code>04-stylescape.html</code></a></td></tr><tr><td>Tokens, J1/J2, backlog</td><td><a href="../04-design-system/tokens-v1.md"><code>04-design-system/tokens-v1.md</code></a> · <a href="../04-design-system/components-v1.html"><code>components-v1.html</code></a></td></tr><tr><td>Screens with per-element "why" notes</td><td><a href="../05-screens/"><code>05-screens/</code></a></td></tr><tr><td>Clickable prototype (start here)</td><td><a href="../06-prototype/index.html"><code>06-prototype/index.html</code></a></td></tr><tr><td>Full stage log, critiques, audits</td><td><a href="../CLAUDE.md"><code>CLAUDE.md</code></a></td></tr></tbody></table></div>
+  </div>
+</main>
+<footer class="wrap">
+  <p>This page is generated from <a href="design-rationale.md">design-rationale.md</a>. <a href="../index.html">Back to the project home</a>.</p>
+</footer>
+</body>
+</html>

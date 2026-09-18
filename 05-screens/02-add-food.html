@@ -1,0 +1,1120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#FFFDF9">
+<title>Measured Kitchen · 02 Add Food</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css"><!-- Inter + Newsreader, vendored locally (Stage 7b): no network needed -->
+<style>
+/* =====================================================================
+   SYSTEM — verbatim copy of 04-design-system/components-v1.html
+   (tokens, type roles, components). Do not edit here: change the system
+   first (tokens-v1.md + components-v1.html), then rebuild.
+   ===================================================================== */
+/* =====================================================================
+   TOKENS v1 — mirror of tokens-v1.md. Names must match that document.
+   ===================================================================== */
+:root{
+  /* --- Primitives --- */
+  --color-oat:#F2EDE6;
+  --color-oat-deep:#E7DFD4;
+  --color-paper:#FFFDF9;
+  --color-ink:#1F2421;
+  --color-ink-soft:#5E605A;
+  --color-rule:#E3DCD2;
+  --color-stone:#857F76;
+  --color-pine:#2F5245;
+  --color-pine-light:#DCE6DF;
+  --color-terracotta:#B0513A;
+  --color-ochre:#A87A1F;
+  --color-slate:#4D6A85;
+  --color-error:#B3261E; /* added Stage 6 — §10: a true validation error, not J1's over-target */
+
+  /* --- Semantic: surfaces --- */
+  --surface-ground:var(--color-oat);
+  --surface-paper:var(--color-paper);
+  --surface-sunken:var(--color-oat-deep);
+  --surface-viewfinder:var(--color-ink); /* stands in for the live camera feed (Screens, IA 2) */
+  /* --- Semantic: text --- */
+  --text-primary:var(--color-ink);
+  --text-secondary:var(--color-ink-soft);
+  --text-action:var(--color-pine);
+  --text-on-action:var(--color-paper);
+  /* --- Semantic: figures --- */
+  --figure-value:var(--color-ink);
+  --figure-unit:var(--color-ink-soft);
+  /* --- Semantic: lines --- */
+  --line-hairline:var(--color-rule);
+  --line-control:var(--color-stone);
+  --line-selected:var(--color-pine);
+  --line-guide:var(--color-paper);
+  /* --- Semantic: action --- */
+  --action-primary:var(--color-pine);
+  --action-selected:var(--color-pine-light);
+  --focus-ring:var(--color-pine);
+  /* --- Semantic: interaction states (added Stage 6, §10) --- */
+  --state-error:var(--color-error);
+  --state-hover-opacity:0.08;
+  --state-pressed-opacity:0.12;
+  /* --- Semantic: data --- */
+  --macro-protein:var(--color-terracotta);
+  --macro-carbs:var(--color-ochre);
+  --macro-fat:var(--color-slate);
+  --meter-track:var(--color-oat);
+  --meter-fill:var(--color-ink);
+
+  /* --- Type families --- */
+  --font-voice:"Newsreader","Iowan Old Style",Georgia,"Times New Roman",serif;
+  --font-ui:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+
+  /* --- Spacing scale --- */
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px;
+  --space-6:24px; --space-8:32px; --space-10:40px; --space-12:48px; --space-16:64px;
+  /* --- Semantic spacing --- */
+  --inset-screen:var(--space-5);
+  --inset-block:var(--space-4);
+  --row-pad-y:var(--space-3);
+  --gap-inline:var(--space-2);
+  --gap-stack:var(--space-3);
+  --gap-section-log:var(--space-6);
+  --gap-section-recipe:var(--space-10);
+
+  /* --- Sizing --- */
+  --size-hit-min:48px;
+  --size-control:48px;
+  --size-button:52px;
+  --size-chip:40px;
+  --size-icon:20px;
+  --size-mark:10px;
+  --size-meter:8px;
+  --size-icon-sm:16px;
+  --size-stepper-value:64px;
+  --size-separator:2px;
+  --size-hatch-period:6px;
+  --meter-target:87%;
+  --size-viewfinder-min:320px;
+  --size-guide-corner:var(--space-6);
+  --ratio-guide-barcode:2 / 1;
+  --ratio-guide-photo:1 / 1;
+  --size-thumb:120px;
+  --ratio-recipe-image:4 / 3;
+  /* size-placeholder-stripe retired at the Stage 7 imagery pass: M1 carries real images, so the
+     striped placeholder fill it sized no longer exists. Nothing else ever referenced it. */
+  /* one conservative clearance for any sticky S2/S3 bar (added Stage 6, §10.6 — WCAG 2.2 SC 2.4.11):
+     sized to the tallest bar (two stacked S3 buttons), so a shorter bar just gets extra headroom */
+  --scroll-clear-bottom:calc(var(--size-button) * 2 + var(--space-8) + var(--inset-safe-bottom));
+
+  /* --- Stroke --- */
+  --stroke-hairline:1px;
+  --stroke-emphasis:1.5px;
+  --stroke-focus:2px;
+  --stroke-hatch:2px;
+  --stroke-icon:1.75;
+  --stroke-guide:3px;
+
+  /* --- Type roles (font shorthand + tracking) --- */
+  --type-voice-display:400 32px/36px var(--font-voice);   --track-voice-display:-.015em;
+  --type-voice-title:400 26px/32px var(--font-voice);     --track-voice-title:-.01em;
+  --type-voice-heading:400 22px/28px var(--font-voice);
+  --type-voice-card:400 20px/26px var(--font-voice);
+  --type-ui-body:400 16px/24px var(--font-ui);
+  --type-ui-body-strong:500 16px/24px var(--font-ui);
+  --type-ui-label:600 16px/20px var(--font-ui);
+  --type-ui-chip:500 14px/20px var(--font-ui);
+  --type-ui-chip-selected:600 14px/20px var(--font-ui);
+  --type-ui-secondary:400 14px/20px var(--font-ui);
+  --type-ui-secondary-strong:500 14px/20px var(--font-ui);
+  --type-ui-overline:500 12px/16px var(--font-ui);       --track-ui-overline:.08em;
+  --type-figure-hero:600 48px/52px var(--font-ui);        --track-figure-hero:-.02em;
+  --type-figure-lg:600 24px/28px var(--font-ui);          --track-figure-lg:-.01em;
+  --type-figure-md:500 16px/24px var(--font-ui);
+  --type-figure-md-key:600 16px/24px var(--font-ui);
+  --type-figure-sm:500 14px/20px var(--font-ui);
+  --type-figure-sm-key:600 14px/20px var(--font-ui);
+  --type-unit-hero:500 17px/24px var(--font-ui);
+  --type-unit-lg:400 15px/28px var(--font-ui);
+  --type-unit-md:400 14px/24px var(--font-ui);
+  --type-unit-sm:400 13px/20px var(--font-ui);
+  --type-unit-hero-strong:600 17px/24px var(--font-ui);
+  --type-unit-sm-strong:600 13px/20px var(--font-ui);
+  --figure-numerals:tabular-nums lining-nums;
+
+  /* --- Radius --- */
+  --radius-xs:3px; --radius-sm:8px; --radius-md:14px; --radius-lg:20px; --radius-full:999px;
+
+  /* --- Platform insets (added at Screens): provided by the OS, not the design scale --- */
+  --inset-safe-top:env(safe-area-inset-top,0px);
+  --inset-safe-bottom:env(safe-area-inset-bottom,0px);
+}
+
+/* =====================================================================
+   TYPE ROLES: classes only apply --type-* tokens. The `font` shorthand
+   resets font-variant-numeric, so figure numerals are declared after it.
+   ===================================================================== */
+.voice-display{font:var(--type-voice-display);letter-spacing:var(--track-voice-display);font-optical-sizing:auto}
+.voice-title{font:var(--type-voice-title);letter-spacing:var(--track-voice-title);font-optical-sizing:auto}
+.voice-heading{font:var(--type-voice-heading);font-optical-sizing:auto}
+.voice-card{font:var(--type-voice-card);font-optical-sizing:auto}
+.ui-body{font:var(--type-ui-body)}
+.ui-body-strong{font:var(--type-ui-body-strong)}
+.ui-label{font:var(--type-ui-label)}
+.ui-chip{font:var(--type-ui-chip)}
+.ui-secondary{font:var(--type-ui-secondary)}
+.ui-secondary-strong{font:var(--type-ui-secondary-strong)}
+.ui-overline{font:var(--type-ui-overline);letter-spacing:var(--track-ui-overline);text-transform:uppercase}
+
+.fig{color:var(--figure-value);white-space:nowrap}
+.fig-hero{display:inline-flex;flex-wrap:wrap;align-items:baseline;column-gap:var(--space-1);font:var(--type-figure-hero);letter-spacing:var(--track-figure-hero)}
+.fig-lg{font:var(--type-figure-lg);letter-spacing:var(--track-figure-lg)}
+.fig-md{font:var(--type-figure-md)}
+.fig-md.key{font:var(--type-figure-md-key)}
+.fig-sm{font:var(--type-figure-sm)}
+.fig-sm.key{font:var(--type-figure-sm-key)}
+.fig-hero,.fig-lg,.fig-md,.fig-sm,.fig-md.key,.fig-sm.key{font-variant-numeric:var(--figure-numerals)}
+.fig .unit{color:var(--figure-unit);letter-spacing:0}
+.fig-hero .unit{font:var(--type-unit-hero)}
+.fig-lg .unit{font:var(--type-unit-lg)}
+.fig-md .unit{font:var(--type-unit-md)}
+.fig-sm .unit{font:var(--type-unit-sm)}
+/* status word inside a unit (J1 revised at Screens): "over" reads at a glance, still no hue */
+.fig .unit-strong{color:var(--figure-value)}
+.fig-hero .unit-strong{font:var(--type-unit-hero-strong)}
+.fig-sm .unit-strong{font:var(--type-unit-sm-strong)}
+
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.ico{width:var(--size-icon);height:var(--size-icon);fill:none;stroke:currentColor;stroke-width:var(--stroke-icon);stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ico.sm{width:var(--size-icon-sm);height:var(--size-icon-sm)}
+
+/* =====================================================================
+   COMPONENTS: semantic tokens only. No raw px, font size or weight.
+   ===================================================================== */
+
+/* B · Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;text-align:center;gap:var(--gap-inline);min-height:var(--size-button);padding-block:0;padding-inline:var(--space-6);border:0;border-radius:var(--radius-md);font:var(--type-ui-label);cursor:pointer;text-decoration:none;touch-action:manipulation}
+.btn-primary{background:var(--action-primary);color:var(--text-on-action)}
+.btn-secondary{background:var(--surface-paper);color:var(--text-action);box-shadow:inset 0 0 0 var(--stroke-emphasis) var(--action-primary)}
+.btn-text{background:transparent;color:var(--text-action);min-height:var(--size-hit-min);padding-inline:var(--space-3)}
+.btn-block{display:flex;width:100%}
+/* B3 addition (Screens, IA 3): a text button at the start of a column, pulled into the gutter so its icon or first letter lines up with the content edge (Back, Cancel) */
+.btn-flush{justify-self:start;margin-inline-start:calc(var(--space-3) * -1)}
+/* focus ring: outline rendering, not just the token. Pine already clears 3:1 on every surface it
+   sits on (§1.4), and a 2px outline at a 2px offset meets WCAG 2.2 SC 2.4.13's minimum area even
+   though this system only targets AA (2.4.7). See §10.6 for the one gap that check found: a
+   sticky S2/S3 bar can cover a focused control lower on the screen (SC 2.4.11), fixed below. */
+.btn:focus-visible,.chip:focus-visible,.seg button:focus-visible,.stepper button:focus-visible,.tab:focus-visible{outline:var(--stroke-focus) solid var(--focus-ring);outline-offset:var(--stroke-focus)}
+
+/* --- States (added Stage 6, §10) ---
+   Hover/pressed follow Material 3's state-layer convention: a low-opacity overlay in the
+   control's own foreground color, over its resting fill (checked against Material 3 directly,
+   per the Stage 4 carry-forward rule; the exact opacities are an aesthetic pick within that
+   convention). Hover is gated to pointer devices so touch never gets a stuck hover; pressed
+   applies everywhere, since :active fires on touch too. */
+@media (hover:hover){
+  .btn-primary:hover{background:color-mix(in srgb, var(--action-primary), var(--text-on-action) calc(var(--state-hover-opacity) * 100%))}
+  .btn-secondary:hover,.btn-text:hover{background:color-mix(in srgb, var(--surface-paper), var(--text-action) calc(var(--state-hover-opacity) * 100%))}
+}
+.btn-primary:active{background:color-mix(in srgb, var(--action-primary), var(--text-on-action) calc(var(--state-pressed-opacity) * 100%))}
+.btn-secondary:active,.btn-text:active{background:color-mix(in srgb, var(--surface-paper), var(--text-action) calc(var(--state-pressed-opacity) * 100%))}
+/* Disabled: the neutral pair §1.4 already measured (Ink Soft on Oat Deep, 4.82:1), not a fourth
+   opacity token. WCAG 2.2's non-text-contrast note explicitly exempts inactive controls from any
+   contrast minimum (1.4.11) — this still clears AA anyway, which is why it was picked over a
+   washed-out opacity fade (measured at 2.05:1, legible but needlessly so for a non-interactive state). */
+.btn:disabled,.btn[aria-disabled="true"]{background:var(--surface-sunken);color:var(--text-secondary);box-shadow:none;cursor:not-allowed}
+.btn-secondary:disabled,.btn-secondary[aria-disabled="true"]{background:var(--surface-paper);box-shadow:inset 0 0 0 var(--stroke-hairline) var(--line-hairline)}
+/* Loading: the label is hidden, not removed, so the button keeps its width and never reflows;
+   a spinner takes its place. aria-disabled stops a second tap, and the sr-only text is the only
+   thing that changes for a screen reader, announced once via the button's own accessible name. */
+.btn.is-loading{position:relative;pointer-events:none}
+.btn.is-loading .btn-label{visibility:hidden}
+/* .btn-label carries the button’s own row layout, so a label made of more than one element
+   ("Log this · 1.5 servings", IA 5) can be wrapped into the single element .is-loading hides,
+   without changing anything at rest — same gap, same centring as .btn itself.
+   Added at Propagation (Stage 6 → 05-screens), the first time a real screen used the loading hook. */
+.btn-label{display:inline-flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--gap-inline)}
+.btn .spinner{display:none}
+.btn.is-loading .spinner{display:block;position:absolute;inset:0;margin:auto}
+.spinner{width:var(--size-icon);height:var(--size-icon);border-radius:50%;border:calc(var(--stroke-icon) * 1px) solid currentColor;border-top-color:transparent;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(1turn)}}
+@media (prefers-reduced-motion:reduce){.spinner{animation-duration:1.6s}}
+
+/* C1 · Paper block */
+.block{background:var(--surface-paper);border-radius:var(--radius-lg);padding:var(--inset-block)}
+.block.list{padding-block:var(--space-1)}
+.overline{margin:0;color:var(--text-secondary)}
+
+/* C2 · Ledger row */
+.ledger{list-style:none;margin:0;padding:0}
+.ledger > li + li{border-top:var(--stroke-hairline) solid var(--line-hairline)}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:var(--space-4);padding-block:var(--row-pad-y);min-height:var(--size-hit-min)}
+.row-name{font:var(--type-ui-body-strong);color:var(--text-primary)}
+.row-meta{display:flex;flex-wrap:wrap;align-items:center;column-gap:var(--space-3);font:var(--type-ui-secondary);color:var(--text-secondary)}
+.row > .fig{grid-column:2;grid-row:1 / span 2;align-self:center;text-align:right}
+/* meta line (typeset pass): source first and most legible; amount is a figure; time last. "amount · time" wraps as one unit, the source never moves */
+.row-source{display:inline-flex;align-items:center;gap:var(--gap-inline);min-width:0;font:var(--type-ui-secondary-strong);color:var(--text-primary)}
+.row-when{white-space:nowrap}
+/* tappable row (Screens, Flow 4): a link with a trailing chevron */
+.row-link{grid-template-columns:minmax(0,1fr) auto auto;column-gap:var(--space-3);color:inherit;text-decoration:none;touch-action:manipulation}
+.row-link > .ico{grid-column:3;grid-row:1 / span 2;align-self:center;color:var(--text-secondary)}
+.row-link:focus-visible{outline:var(--stroke-focus) solid var(--focus-ring);outline-offset:calc(var(--stroke-focus) * -1);border-radius:var(--radius-sm)}
+/* Focus not obscured (added Stage 6, §10.6, WCAG 2.2 SC 2.4.11): S2/S3 are sticky, so the last
+   rows of a scrollable list can land underneath one when a focused row scrolls into view.
+   scroll-margin-block reserves that space, the same way inset-safe-bottom reserves the OS's */
+.row-link,.rcard-link{scroll-margin-block:var(--scroll-clear-bottom)}
+
+/* C3 · Recipe card */
+.rcard{background:var(--surface-paper);border-radius:var(--radius-lg);overflow:hidden}
+/* the image slot is M1 (.rimg), a real image since the Stage 7 imagery pass */
+.rcard-img{aspect-ratio:var(--ratio-recipe-image)}
+/* Screens, IA 4: the results list, and the whole card as one link to Recipe Detail (no chevron: a card already reads as an object, not a data row) */
+.rcards{list-style:none;margin:0;padding:0;display:grid;gap:var(--space-4)}
+.rcard-link{display:block;color:inherit;text-decoration:none;touch-action:manipulation}
+.rcard-link:focus-visible{outline:var(--stroke-focus) solid var(--focus-ring);outline-offset:var(--stroke-focus)}
+/* C3 compact (Screens, IA 4 critique): a results card is a row, thumbnail beside the body, reusing M1's
+   .thumb. A full-bleed 4:3 image cost 262 px of a 398 px card, so no two results were ever comparable
+   on one screen — and a results list exists to be compared. The hero crop stays for Recipe Detail. */
+.rcard.compact{display:flex;flex-wrap:wrap;align-items:flex-start;gap:var(--inset-block);padding:var(--inset-block)}
+/* the body wraps below the thumbnail rather than being squeezed, as in the S1 head with media.
+   Its basis is 1.2 x size-thumb, not 1.5: a card body carries three short lines, not a title and
+   a context line, so it keeps the row down to a 360 px phone instead of only a 390 px one. */
+.rcard.compact > .rcard-body{padding:0;flex:1 1 calc(var(--size-thumb) * 1.2);min-width:0}
+.rcard-body{padding:var(--inset-block);display:grid;gap:var(--gap-stack)}
+.rcard-title{margin:0;color:var(--text-primary)}
+.matches{list-style:none;margin:0;padding:var(--space-3) 0 0;border-top:var(--stroke-hairline) solid var(--line-hairline);display:flex;flex-wrap:wrap;gap:var(--space-1) var(--space-4);font:var(--type-ui-secondary);color:var(--text-primary)}
+.matches li{display:inline-flex;align-items:center;gap:var(--gap-inline)}
+.matches .ico{color:var(--text-secondary)}
+
+/* M1 · Recipe image (Screens, IA 3; filled at the Krea imagery pass, Stage 7): the recipe picture.
+   It carries no text, badge or figure of any kind — every figure sits below it on paper (hybrid §7, L1/L2).
+   Supersedes the striped "IMAGE · UNVALIDATED (§7)" placeholder this component shipped as through Stage 6b. */
+.rimg{position:relative;display:block;overflow:hidden;background:var(--surface-sunken)}
+/* the crop is the component's, not the file's: one 4:3 source per dish, cover-fitted at every size,
+   so a thumbnail is the same picture as the card it was chosen from (A9) */
+.rimg > img{display:block;width:100%;height:100%;object-fit:cover}
+.rimg.thumb{flex:none;width:var(--size-thumb);aspect-ratio:var(--ratio-recipe-image);border-radius:var(--radius-sm)}
+/* hero (Screens, IA 5): the detail screen's one picture, full width and on the same crop as the card
+   it was chosen from, so the thumbnail, the card and the hero are three sizes of one image, not three crops */
+.rimg.hero{width:100%;aspect-ratio:var(--ratio-recipe-image)}
+
+/* N1 · Nutrition strip */
+.strip{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-1) var(--space-4)}
+.strip.compact{column-gap:var(--space-3)}
+.mac{display:inline-flex;align-items:center;gap:var(--space-1);white-space:nowrap}
+.mark{width:var(--size-mark);height:var(--size-mark);border-radius:var(--radius-xs);background:var(--mc);flex:none}
+.mac-label{font:var(--type-ui-body);color:var(--text-secondary)}
+.compact .mac-label{font:var(--type-ui-secondary)}
+.p{--mc:var(--macro-protein)} .c{--mc:var(--macro-carbs)} .f{--mc:var(--macro-fat)}
+
+/* N2 · Macro breakdown */
+.split{display:flex;gap:var(--size-separator);height:var(--size-meter);border-radius:var(--radius-full);overflow:hidden;margin-block:var(--space-4) var(--space-1)}
+.split span{flex:var(--fl);background:var(--mc)}
+.mb-rows{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr) auto auto;column-gap:var(--space-4)}
+.mb-rows li{grid-column:1 / -1;display:grid;grid-template-columns:subgrid;align-items:center;padding-block:var(--row-pad-y)}
+.mb-rows li + li{border-top:var(--stroke-hairline) solid var(--line-hairline)}
+.mb-rows .mac-label{color:var(--text-primary)}
+.mb-rows .fig{text-align:right}
+/* N2 addition (Screens, IA 5 critique): when the label names the AMOUNT the figures describe rather than
+   the section they sit in, it takes the stronger of the two label treatments. text-secondary is barred from
+   anything the user must read to act (tokens §1.2), and on a screen whose control is below the fold this
+   label is the only thing that says whether 412 kcal is a serving or the pot. A section name ("Your portion")
+   stays an overline; an amount ("For 1.5 servings") does not. */
+.mb-amount{margin:0;font:var(--type-ui-secondary-strong);color:var(--text-primary)}
+/* N2 addition (Screens, IA 3 critique): one column label names the share, so “53%” is never read as a share of a target */
+.mb-rows .mb-head{padding-block:0 var(--space-1);font:var(--type-ui-secondary);color:var(--text-secondary)}
+.mb-head > :last-child{text-align:right}
+
+/* N3 · Daily target summary */
+.sum-hero{margin-block:0 var(--space-3)}
+.meter{position:relative;display:flex;gap:var(--size-separator);height:var(--size-meter);background:var(--meter-track);border-radius:var(--radius-full)}
+.meter .fill{flex:0 0 var(--w);border-radius:var(--radius-full);background:var(--mc,var(--meter-fill))}
+.meter .over{flex:0 1 var(--wo);min-width:0;border-radius:var(--radius-full);background:repeating-linear-gradient(135deg,var(--mc,var(--meter-fill)) 0 var(--stroke-hatch),transparent var(--stroke-hatch) var(--size-hatch-period))}
+/* shared scale (critique run 2): every track puts the target at meter-target, marked by a tick that fills the separator gap */
+.meter::before{content:"";position:absolute;inset-block:calc(var(--space-1) * -1);left:var(--meter-target);width:var(--size-separator);background:var(--meter-fill)}
+.sum-caption{display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--space-1) var(--space-4);margin-top:var(--space-2)}
+.mmeters{display:grid;gap:var(--space-4);margin-top:var(--space-5);padding-top:var(--space-4);border-top:var(--stroke-hairline) solid var(--line-hairline)}
+.mm-top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:var(--space-1) var(--space-3);margin-bottom:var(--space-2)}
+.mm-label{display:inline-flex;flex-wrap:wrap;align-items:center;column-gap:var(--gap-inline);min-width:0}
+.mm-top .mac-label{font:var(--type-ui-secondary);color:var(--text-primary)}
+
+/* N4 · Source note, plus the J2 helper line that goes with a photo estimate */
+.source{display:inline-flex;align-items:center;gap:var(--gap-inline);font:var(--type-ui-secondary-strong);color:var(--text-primary)}
+.helper{margin:0;padding-top:var(--space-3);border-top:var(--stroke-hairline) solid var(--line-hairline);font:var(--type-ui-secondary);color:var(--text-secondary)}
+
+/* F1/F2 · Filter chips */
+.chips{display:flex;flex-wrap:wrap;gap:var(--gap-inline)}
+.chip{position:relative;display:inline-flex;align-items:center;gap:var(--gap-inline);min-height:var(--size-chip);padding-block:0;padding-inline:var(--space-4);border:0;border-radius:var(--radius-full);background:var(--surface-paper);box-shadow:inset 0 0 0 var(--stroke-hairline) var(--line-control);color:var(--text-primary);font:var(--type-ui-chip);cursor:pointer;white-space:nowrap;touch-action:manipulation}
+/* invisible hit-area extension: (size-chip - size-hit-min) / 2 above and below */
+.chip::after,.seg button::after{content:"";position:absolute;inset:calc((var(--size-chip) - var(--size-hit-min)) / 2) 0}
+.chip[aria-pressed="true"]{background:var(--action-selected);box-shadow:inset 0 0 0 var(--stroke-emphasis) var(--line-selected);padding-left:var(--space-3)}
+.chip .ico{color:var(--text-action)}
+/* States (added Stage 6, §10): same state-layer convention as buttons, tinted with the
+   label's own color (Ink) rather than Pine, since an unselected chip has no Pine to tint with */
+@media (hover:hover){
+  .chip:hover{background:color-mix(in srgb, var(--surface-paper), var(--text-primary) calc(var(--state-hover-opacity) * 100%))}
+  .chip[aria-pressed="true"]:hover{background:color-mix(in srgb, var(--action-selected), var(--text-primary) calc(var(--state-hover-opacity) * 100%))}
+}
+.chip:active{background:color-mix(in srgb, var(--surface-paper), var(--text-primary) calc(var(--state-pressed-opacity) * 100%))}
+.chip[aria-pressed="true"]:active{background:color-mix(in srgb, var(--action-selected), var(--text-primary) calc(var(--state-pressed-opacity) * 100%))}
+/* Disabled: provisioned for the system, not yet asked for by an IA screen (like B2/B3 once were) */
+.chip:disabled,.chip[aria-disabled="true"]{background:var(--surface-sunken);color:var(--text-secondary);box-shadow:none;cursor:not-allowed}
+.chip:disabled .ico,.chip[aria-disabled="true"] .ico{color:var(--text-secondary)}
+/* Error and loading: not applicable. A chip is a value toggle, never a submission — there's
+   nothing to validate and nothing to wait on (left undocumented rather than invented, §10.7) */
+
+/* F3 · Mode switch */
+.seg{display:flex;gap:var(--space-1);padding:var(--space-1);background:var(--surface-sunken);border-radius:var(--radius-full)}
+.seg button{position:relative;flex:1 1 0;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:var(--gap-inline);min-height:var(--size-chip);padding-block:0;padding-inline:var(--space-3);border:0;border-radius:var(--radius-full);background:transparent;color:var(--text-primary);font:var(--type-ui-chip);cursor:pointer;white-space:nowrap;touch-action:manipulation}
+/* A8 (resolved at Add Food): labels only; icons appear only when the screen is too narrow for the words (S1 container rule) */
+.seg .ico{display:none}
+/* A7 (resolved at Add Food): the switch is a tablist; each mode swaps the panel below it */
+.seg [role="tab"][aria-selected="true"]{background:var(--action-selected);box-shadow:inset 0 0 0 var(--stroke-emphasis) var(--line-selected);font:var(--type-ui-chip-selected)}
+/* States (added Stage 6, §10): same convention as F1/F2, tinted transparent→Ink so the sunken
+   track shows through an unselected segment, or Ink over the selected fill */
+@media (hover:hover){
+  .seg button:hover{background:color-mix(in srgb, transparent, var(--text-primary) calc(var(--state-hover-opacity) * 100%))}
+  .seg [role="tab"][aria-selected="true"]:hover{background:color-mix(in srgb, var(--action-selected), var(--text-primary) calc(var(--state-hover-opacity) * 100%))}
+}
+.seg button:active{background:color-mix(in srgb, transparent, var(--text-primary) calc(var(--state-pressed-opacity) * 100%))}
+.seg [role="tab"][aria-selected="true"]:active{background:color-mix(in srgb, var(--action-selected), var(--text-primary) calc(var(--state-pressed-opacity) * 100%))}
+/* Disabled: a mode with no camera permission (IA 2 Barcode/Photo) is the evidenced case — the
+   permission *request* flow itself is still v2 (Add Food carry notes), but the affordance exists now */
+.seg button:disabled,.seg [aria-disabled="true"]{color:var(--text-secondary);cursor:not-allowed}
+.seg button:disabled:hover,.seg button:disabled:active,.seg [aria-disabled="true"]:hover,.seg [aria-disabled="true"]:active{background:none}
+
+/* F · Filter group (Screens, IA 4): the mode switch and the panel of controls it owns.
+   A group is a label plus one set of chips or fields, so both halves of "suitable for me" are built the same way. */
+.filters{display:grid;gap:var(--gap-stack)}
+.filter-panel{display:grid;gap:var(--gap-stack)}
+.fgroup{display:grid;gap:var(--space-2)}
+/* where a pre-filled figure is derived rather than saved, the group says where it came from */
+.fgroup-note{margin:0;font:var(--type-ui-secondary);color:var(--text-secondary);text-wrap:pretty}
+
+/* I · Inputs */
+.field-label{display:block;font:var(--type-ui-secondary-strong);color:var(--text-primary);margin-bottom:var(--space-2)}
+.field{position:relative;display:flex;align-items:stretch;gap:var(--gap-inline);min-height:var(--size-control);padding-inline:var(--space-4);background:var(--surface-paper);border-radius:var(--radius-md);box-shadow:inset 0 0 0 var(--stroke-hairline) var(--line-control);color:var(--text-secondary)}
+.field > .ico,.field > .unit,.field > .spinner{align-self:center}
+.field:focus-within{box-shadow:inset 0 0 0 var(--stroke-focus) var(--focus-ring)}
+/* Hover (added Stage 6, §10): the edge only, since a filled hover would fight focus-within
+   for the same signal. Pressed doesn't apply to a field — there's no press, only focus */
+@media (hover:hover){
+  .field:hover{box-shadow:inset 0 0 0 var(--stroke-hairline) color-mix(in srgb, var(--line-control), var(--text-primary) calc(var(--state-hover-opacity) * 100%))}
+}
+/* Disabled: the same neutral pair as buttons and chips (surface-sunken + text-secondary) */
+.field:has(:disabled),.field.disabled{background:var(--surface-sunken);box-shadow:inset 0 0 0 var(--stroke-hairline) var(--line-hairline);color:var(--text-secondary)}
+.field:has(:disabled) input,.field.disabled input{color:var(--text-secondary)}
+/* Error: the container and its icon carry state-error; a typed figure never does (L1 — figures
+   are never tinted — extends to an out-of-range one, exactly as J2 kept a photo estimate exact
+   in form). Text identifies the problem too, not color alone (WCAG 2.2 SC 3.3.1) */
+.field.error,.field:has([aria-invalid="true"]){box-shadow:inset 0 0 0 var(--stroke-emphasis) var(--state-error)}
+.field-error{display:flex;align-items:center;gap:var(--gap-inline);margin-top:var(--space-2);font:var(--type-ui-secondary);color:var(--state-error)}
+.field-error .ico{color:var(--state-error)}
+/* Loading: I1 only (search-as-you-type). The spinner takes the icon's place; the icon returns
+   once results (or E1's no-match message) land. aria-busy so a screen reader doesn't read a stale list */
+.field .spinner{display:none;color:var(--text-secondary)}
+.field.is-loading > .ico{display:none}
+.field.is-loading .spinner{display:block}
+.field input,.field select{flex:1;min-width:0;width:100%;margin:0;border:0;background:transparent;padding:0;font:var(--type-ui-body);color:var(--text-primary);outline:none;appearance:none;-webkit-appearance:none}
+.field input::placeholder{color:var(--text-secondary);opacity:1}
+.field.num input{font:var(--type-figure-md);font-variant-numeric:var(--figure-numerals);color:var(--figure-value)}
+.field .unit{font:var(--type-unit-md);color:var(--figure-unit)}
+/* select variant: the select fills the whole field, so the whole field is the target; chevron drawn over it */
+.field.select{padding-inline:0}
+.field.select select{padding-inline:var(--space-4) calc(var(--space-4) + var(--size-icon) + var(--gap-inline));cursor:pointer}
+.field.select > .ico{position:absolute;right:var(--space-4);top:50%;translate:0 -50%;pointer-events:none}
+.field-pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--space-3)}
+/* portion: the unit field wraps below the stepper instead of shrinking under 2 x hit target */
+.portion{display:flex;flex-wrap:wrap;gap:var(--gap-inline)}
+.portion .stepper{flex:none}
+.portion .field{flex:1 1 calc(var(--size-hit-min) * 2);min-height:var(--size-button)}
+.stepper{display:flex;align-items:stretch;min-height:var(--size-button);background:var(--surface-paper);border-radius:var(--radius-md);box-shadow:inset 0 0 0 var(--stroke-hairline) var(--line-control)}
+.stepper button{width:var(--size-hit-min);padding:0;display:grid;place-items:center;border:0;background:transparent;color:var(--text-action);font:var(--type-ui-label);cursor:pointer;border-radius:var(--radius-md);touch-action:manipulation}
+/* States (added Stage 6, §10): ± buttons are ghost buttons on Paper, so they tint with their
+   own glyph color (Pine) rather than Ink */
+@media (hover:hover){
+  .stepper button:hover:not(:disabled){background:color-mix(in srgb, transparent, var(--text-action) calc(var(--state-hover-opacity) * 100%))}
+}
+.stepper button:active:not(:disabled){background:color-mix(in srgb, transparent, var(--text-action) calc(var(--state-pressed-opacity) * 100%))}
+/* Disabled at a floor or ceiling: the affordance a screen already enforces (a count capped at
+   99, a weight/volume at 5,000, Stage 5b) now shows on the button, not just in aria-valuemax.
+   Where a screen also enforces a floor (Recipe Detail's 0.5), pair this with aria-valuemin —
+   left unset everywhere else, same "only where real" rule the audit set for the ceiling */
+.stepper button:disabled{color:var(--text-secondary);cursor:not-allowed}
+.stepper button:disabled:hover,.stepper button:disabled:active{background:none}
+.stepper input{width:var(--size-stepper-value);margin:0;border:0;border-inline:var(--stroke-hairline) solid var(--line-hairline);background:transparent;text-align:center;padding:0;font:var(--type-figure-lg);letter-spacing:var(--track-figure-lg);font-variant-numeric:var(--figure-numerals);color:var(--figure-value)}
+.stepper input:focus-visible{outline:var(--stroke-focus) solid var(--focus-ring);outline-offset:calc(var(--stroke-focus) * -1)}
+/* Error (added Stage 6, §10): the wrapper carries state-error, never the input — an out-of-range
+   amount stays exact-form Ink (L1), exactly as J2 kept a photo estimate exact in form */
+.stepper.error{box-shadow:inset 0 0 0 var(--stroke-emphasis) var(--state-error)}
+/* Loading: not applicable. Every stepper edit in this system is local state, resolved
+   instantly — there is no request in flight to wait on (left undocumented, §10.7) */
+.stepper-static{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-3)}
+/* I3 addition (Screens, IA 3): the portion group; a J2 helper line sits directly above the label and control */
+.portion-wrap{display:grid;gap:var(--gap-stack)}
+
+/* C1 addition (Screens, IA 1) · label above a list block, aligned with the row text inside it */
+.list-label{margin:0 0 var(--space-2);padding-inline:var(--inset-block)}
+/* C1 addition (Screens, IA 4): the label row, when one control acts on the whole list ("Reset to my usual").
+   The control sits with the thing it changes, in one place and one treatment, in every state. */
+.list-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-1) var(--space-3);margin-bottom:var(--space-2);padding-inline:var(--inset-block)}
+.list-head > .list-label{margin:0;padding-inline:0}
+.list-head > .btn-text{margin-inline-end:calc(var(--space-3) * -1)}
+
+/* S1 · Screen scaffold (Screens, IA 1): header + body + bottom bar, with platform safe-area insets */
+.screen{container:screen / inline-size;display:flex;flex-direction:column;min-height:100%;background:var(--surface-ground);color:var(--text-primary)}
+.screen-head{display:grid;gap:var(--space-1);padding-block:calc(var(--inset-safe-top) + var(--space-4)) 0;padding-inline:var(--inset-screen)}
+.screen-title{margin:0;color:var(--text-primary)}
+.screen-sub{margin:0;font:var(--type-ui-secondary);color:var(--text-secondary)}
+.screen-body{flex:1;display:grid;grid-template-columns:minmax(0,1fr);align-content:start;gap:var(--gap-section-log);padding-block:var(--gap-section-log);padding-inline:var(--inset-screen)}
+.screen-body.recipe{gap:var(--gap-section-recipe);padding-block:var(--gap-section-recipe)}
+
+/* S2 · Bottom bar (Screens, IA 1): Today tab · Add food (B1) · Recipes tab */
+.bar{position:sticky;bottom:0;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:var(--gap-inline);padding-block:var(--space-2) calc(var(--space-2) + var(--inset-safe-bottom));padding-inline:var(--inset-screen);background:var(--surface-paper);border-top:var(--stroke-hairline) solid var(--line-hairline)}
+.tab{display:grid;justify-items:center;align-content:center;gap:var(--space-1);min-width:var(--size-hit-min);min-height:var(--size-button);color:var(--text-primary);font:var(--type-ui-chip);text-decoration:none;touch-action:manipulation}
+.tab-ind{display:grid;place-items:center;padding-block:var(--space-1);padding-inline:var(--space-4);border-radius:var(--radius-full)}
+.tab[aria-current="page"]{font:var(--type-ui-chip-selected)}
+.tab[aria-current="page"] .tab-ind{background:var(--action-selected);box-shadow:inset 0 0 0 var(--stroke-emphasis) var(--line-selected)}
+.lbl-short{display:none}
+
+/* S1 addition (Screens, IA 2) · task header: title plus one dismiss action (B3); a body with no bar below clears the safe area itself */
+.screen-head-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--gap-inline)}
+.screen-head-row .btn-text{margin-inline-end:calc(var(--space-3) * -1)}
+.screen-body:last-child{padding-bottom:calc(var(--gap-section-log) + var(--inset-safe-bottom))}
+.panel{display:grid;align-content:start;gap:var(--gap-section-log)}
+.screen-body.fill{grid-template-rows:auto minmax(0,1fr);align-content:stretch}
+.fill > .panel{grid-template-rows:minmax(var(--size-viewfinder-min),1fr) auto;align-content:stretch;gap:var(--gap-stack)}
+
+/* S1 addition (Screens, IA 3) · step header: B3 "Back" (.btn-flush) above the title, because a step inside a task goes back while a task closes.
+   Head with media: the Flow 3 recipe thumbnail (M1) beside the title; it wraps below when the title column would be narrower than 1.5 x size-thumb */
+.screen-head-media{display:flex;flex-wrap:wrap;align-items:flex-start;gap:var(--space-4)}
+.screen-head-media > :first-child{flex:1 1 calc(var(--size-thumb) * 1.5);min-width:0;display:grid;gap:var(--space-1)}
+
+/* S1 addition (Screens, IA 5) · media band: a full-width image between the header and the body, running
+   to both screen edges. A detail screen has one picture and no list to compare it against, so it is not
+   held inside the gutter the way a card's thumbnail is. */
+.screen-media{margin-top:var(--gap-stack)}
+
+/* S3 · Action bar (Screens, IA 2; reused by IA 3 and 5): the screen's one or two actions, sticky within thumb reach */
+.actionbar{position:sticky;bottom:0;z-index:1;display:grid;gap:var(--gap-inline);padding-block:var(--space-3) calc(var(--space-3) + var(--inset-safe-bottom));padding-inline:var(--inset-screen);background:var(--surface-paper);border-top:var(--stroke-hairline) solid var(--line-hairline)}
+
+/* V1 · Viewfinder (Screens, IA 2): the camera feed with a framing guide; instructions sit below it, never over the feed */
+.viewfinder{container-type:size;display:grid;place-items:center;padding:var(--space-8);border-radius:var(--radius-lg);background:var(--surface-viewfinder);overflow:hidden}
+.vf-guide{width:100%;aspect-ratio:var(--ratio-guide-barcode);--c:var(--line-guide);--l:min(var(--size-guide-corner),25%);--s:var(--stroke-guide);
+  background:
+    linear-gradient(var(--c),var(--c)) top left / var(--l) var(--s),linear-gradient(var(--c),var(--c)) top left / var(--s) var(--l),
+    linear-gradient(var(--c),var(--c)) top right / var(--l) var(--s),linear-gradient(var(--c),var(--c)) top right / var(--s) var(--l),
+    linear-gradient(var(--c),var(--c)) bottom left / var(--l) var(--s),linear-gradient(var(--c),var(--c)) bottom left / var(--s) var(--l),
+    linear-gradient(var(--c),var(--c)) bottom right / var(--l) var(--s),linear-gradient(var(--c),var(--c)) bottom right / var(--s) var(--l);
+  background-repeat:no-repeat}
+/* photo: the largest square that fits the camera area (container units of the viewfinder's content box) */
+.vf-guide.photo{aspect-ratio:var(--ratio-guide-photo);width:min(100cqw,100cqh)}
+.vf-hint{margin:0;font:var(--type-ui-body);color:var(--text-primary);text-wrap:pretty}
+/* found (critique, Add Food): the corners join into a closed frame and the hint names the product, just before Food Confirmation opens */
+.vf-guide.found{box-shadow:inset 0 0 0 var(--stroke-hairline) var(--line-guide)}
+
+/* E1 · Message (critique, Add Food): a no-result state inside a panel. Plain words and the next step; no status hue, no illustration */
+.message{display:grid;gap:var(--space-1)}
+.message-title{margin:0;font:var(--type-ui-body-strong);color:var(--text-primary)}
+.message-text{margin:0;font:var(--type-ui-body);color:var(--text-primary);text-wrap:pretty}
+
+/* R · Recipe content (Screens, IA 5). The unifying rule at the scale of a section: the quantities are
+   figures in a ledger on Paper, the method is words on the ground. Same tokens, opposite emphasis (L3). */
+
+/* R1 · Ingredient list: a quantity column that lines up because every figure is tabular, and the
+   ingredient in words beside it */
+.ingredients{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:auto minmax(0,1fr)}
+.ingredients li{grid-column:1 / -1;display:grid;grid-template-columns:subgrid;column-gap:var(--space-4);align-items:baseline;padding-block:var(--row-pad-y)}
+.ingredients li + li{border-top:var(--stroke-hairline) solid var(--line-hairline)}
+.ingredients .ing-name{font:var(--type-ui-body);color:var(--text-primary);text-wrap:pretty}
+/* an ingredient with nothing to measure ("sea salt, to taste") keeps the empty column, so the names stay aligned */
+.ingredients .ing-none{font:var(--type-ui-secondary);color:var(--text-secondary)}
+
+/* R2 · Method steps: prose on the ground. A step number is not a nutrition figure, so it takes a ui role
+   rather than a figure role (L1) — but it is still tabular, so the column holds at step 10. */
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:var(--gap-stack);counter-reset:step}
+.steps li{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:var(--space-4);align-items:baseline;font:var(--type-ui-body);color:var(--text-primary);text-wrap:pretty}
+.steps li::before{counter-increment:step;content:counter(step);font:var(--type-ui-secondary-strong);font-variant-numeric:var(--figure-numerals);color:var(--text-secondary)}
+
+/* a titled section on a recipe screen: one heading and the content it names, at the within-block step
+   while the sections themselves keep the 40 of gap-section-recipe */
+.rsec{display:grid;gap:var(--gap-stack)}
+.rsec-head{display:grid;gap:var(--space-1)}
+.rsec-title{margin:0;color:var(--text-primary)}
+/* one line where a section needs saying what its content is measured against ("For all 4 servings") */
+.rsec-note{margin:0;color:var(--text-secondary);text-wrap:pretty}
+
+/* Narrow screens (Screens, critique R4). Container conditions can't read custom properties,
+   so these two widths are the documented breakpoints bp-screen-narrow (320) and bp-screen-compact (280). */
+@container screen (width < 320px){
+  .bar .lbl-full{display:none}
+  .bar .lbl-short{display:inline}
+  /* F3 (A8): icon-only; the label stays as the accessible name; gaps close so segments keep size-hit-min down to 195 */
+  .seg{gap:0}
+  .seg .ico{display:block}
+  .seg .seg-label{position:absolute;clip-path:inset(50%);white-space:nowrap}
+}
+@container screen (width < 280px){
+  .bar{padding-inline:var(--space-2);gap:var(--space-1)}
+  .bar .lbl-short{display:none}
+  .bar .btn{padding-inline:0;min-width:var(--size-button)}
+  .row{grid-template-columns:minmax(0,1fr)}
+  .row-link{grid-template-columns:minmax(0,1fr) auto}
+  .row > .fig{grid-column:1;grid-row:auto;text-align:left}
+  .row-link > .ico{grid-column:2;grid-row:1 / span 3}
+  /* IA 4: two number fields side by side fall under 2 x hit target here, so they stack */
+  .field-pair{grid-template-columns:minmax(0,1fr)}
+}
+
+/* =====================================================================
+   PRESENTATION CHROME — not part of the screen or the system.
+   Device frame, captions and annotations. Raw values are allowed here,
+   exactly as in the components-v1.html page chrome.
+   ===================================================================== */
+*{box-sizing:border-box}
+html{scroll-padding-top:16px}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+body{margin:0;background:var(--color-paper);color:var(--color-ink);font:400 16px/1.55 var(--font-ui)}
+a{color:var(--color-pine);text-underline-offset:.18em}
+::selection{background:var(--color-pine-light);color:var(--color-ink)}
+.skip{position:absolute;left:16px;top:-64px;z-index:10;padding:8px 14px;border-radius:999px;background:var(--color-ink);color:var(--color-paper);font-weight:600;text-decoration:none}
+.skip:focus{top:16px}
+code{font:500 13px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--color-oat);padding:1px 5px;border-radius:4px}
+
+.top{background:var(--color-ink);color:var(--color-paper);padding-block:clamp(36px,5vw,56px);padding-inline:clamp(16px,4vw,48px)}
+.top-inner{max-width:1240px;margin:0 auto}
+.top h1{font:400 clamp(36px,5vw,60px)/1.04 var(--font-voice);letter-spacing:-.025em;margin:0 0 16px;text-wrap:balance}
+.top .lede{margin:0;max-width:58ch;font-size:18px;color:var(--color-rule);text-wrap:pretty}
+.top .lede b{color:var(--color-paper);font-weight:500}
+.top a{color:inherit}
+.facts{list-style:none;margin:28px 0 0;padding:20px 0 0;border-top:1px solid rgba(255,253,249,.3);display:flex;flex-wrap:wrap;gap:8px 32px;font-size:14px}
+.facts b{font-weight:600}
+
+.wrap{max-width:1240px;margin:0 auto;padding-inline:clamp(16px,4vw,48px)}
+
+/* Device frames */
+.bay{background:var(--color-oat-deep)}
+.frames{display:flex;flex-wrap:wrap;justify-content:center;gap:56px;padding-block:56px}
+.frame{display:grid;gap:18px;justify-items:center;align-content:start;margin:0}
+.frame-cap{margin:0;max-width:390px;text-align:center;font:400 14px/20px var(--font-ui);color:var(--color-ink-soft);text-wrap:pretty}
+.frame-cap b{display:block;font:600 15px/22px var(--font-ui);color:var(--color-ink)}
+.device{--inset-safe-top:59px;--inset-safe-bottom:34px; /* iPhone 15-class safe areas, simulated */
+  position:relative;width:390px;height:844px;border-radius:56px;overflow:hidden;isolation:isolate;background:var(--surface-ground);
+  box-shadow:0 0 0 10px var(--color-ink),0 30px 60px rgba(31,36,33,.22)}
+.viewport{position:absolute;inset:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+.viewport::-webkit-scrollbar{display:none}
+.statusbar{position:absolute;z-index:3;inset:0 0 auto;height:59px;display:flex;align-items:center;justify-content:space-between;padding:8px 34px 0 52px;background:var(--surface-ground);font:600 17px/1 var(--font-ui);color:var(--color-ink);pointer-events:none;font-variant-numeric:tabular-nums}
+.island{position:absolute;left:50%;top:11px;translate:-50% 0;width:124px;height:36px;border-radius:20px;background:var(--color-ink)}
+.batt{position:relative;display:inline-block;width:27px;height:13px;border-radius:4px;box-shadow:inset 0 0 0 1.5px var(--color-ink)}
+.batt::after{content:"";position:absolute;inset:3px 7px 3px 3px;border-radius:1.5px;background:var(--color-ink)}
+.home-ind{position:absolute;z-index:3;left:50%;bottom:8px;translate:-50% 0;width:134px;height:5px;border-radius:3px;background:var(--color-ink);pointer-events:none}
+@media (max-width:520px){
+  .frames{display:grid;gap:40px;padding-block:24px 40px}
+  .frame{justify-items:stretch}
+  .frame-cap{max-width:none;padding-inline:16px}
+  .device{--inset-safe-top:env(safe-area-inset-top,0px);--inset-safe-bottom:env(safe-area-inset-bottom,0px);width:auto;height:auto;border-radius:0;overflow:visible;box-shadow:none;margin-inline:calc(-1 * clamp(16px,4vw,48px))}
+  .viewport{position:static;overflow:visible}
+  .statusbar,.home-ind{display:none}
+}
+
+/* Annotations */
+main.doc{max-width:1080px;padding-block:8px 120px}
+.sec{padding-block:56px 8px;border-top:2px solid var(--color-ink)}
+.sec:first-of-type{border-top:0}
+.sec h2{font:400 clamp(30px,3.6vw,42px)/1.1 var(--font-voice);letter-spacing:-.015em;margin:0 0 12px;text-wrap:balance}
+.sec h3{font:600 18px/1.3 var(--font-ui);margin:40px 0 12px;text-wrap:balance}
+.lead{max-width:62ch;color:var(--color-ink-soft);margin:0 0 28px;font-size:17px;text-wrap:pretty}
+.lead b{color:var(--color-ink);font-weight:600}
+.note{font-size:14px;color:var(--color-ink-soft);max-width:62ch;margin:14px 0 0}
+.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table.ref{width:100%;border-collapse:collapse;font-size:14px;line-height:1.5}
+table.ref th{text-align:left;font-weight:600;color:var(--color-ink-soft);padding:0 16px 10px 0;border-bottom:1.5px solid var(--color-ink);white-space:nowrap;vertical-align:bottom}
+table.ref td{padding:12px 16px 12px 0;border-bottom:1px solid var(--color-rule);vertical-align:top}
+table.ref td:first-child{font-weight:600;font-variant-numeric:tabular-nums}
+table.ref td b{font-weight:600}
+@media (max-width:720px){
+  table.ref thead{display:none} /* each cell shows its column name via data-label */
+  table.ref,table.ref tbody,table.ref tr,table.ref td{display:block;width:100%}
+  table.ref tr{padding-block:12px;border-bottom:1px solid var(--color-rule)}
+  table.ref td{border:0;padding:3px 0}
+  table.ref td::before{content:attr(data-label);display:block;font:600 13px/18px var(--font-ui);color:var(--color-ink-soft)}
+  table.ref td[data-label=""]::before{content:none}
+}
+.st{display:inline-block;margin:0 4px 4px 0;padding:1px 8px;border-radius:999px;font:600 11px/18px var(--font-ui);letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;color:var(--color-ink)}
+.st-ev{background:var(--color-ink);color:var(--color-paper)}
+.st-ia{box-shadow:inset 0 0 0 1px var(--color-ink)}
+.st-sys{background:var(--color-oat-deep)}
+.st-jc{outline:1.5px dashed var(--color-ink);outline-offset:-1.5px}
+.st-new{background:var(--color-pine-light);box-shadow:inset 0 0 0 1px var(--color-pine)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 24px;margin:0 0 24px;padding:0;list-style:none;font-size:14px;color:var(--color-ink-soft)}
+.refs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:4px 40px;margin:0;padding:0;list-style:none}
+.refs li{padding:12px 0;border-top:1px solid var(--color-rule);font-size:15px}
+.refs li b{font-weight:600}
+.refs .took{display:block;margin-top:4px;font-size:14px;color:var(--color-ink-soft)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:8px 48px}
+.cols h3{margin-top:0}
+.cols ul{margin:0;padding-left:18px;max-width:62ch}
+.cols li{margin-bottom:8px}
+@media (max-width:720px){.st{white-space:normal}}
+</style>
+</head>
+<body>
+<a class="skip" href="#doc">Skip to the notes</a>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="13" r="3.25"/></symbol>
+  <symbol id="i-barcode" viewBox="0 0 24 24"><path d="M4 8V5h3M17 5h3v3M20 16v3h-3M7 19H4v-3M8 9v6M11 9v6M13.5 9v6M16 9v6"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M5 5.5A1.5 1.5 0 0 1 6.5 4H19v13H6.5A1.5 1.5 0 0 0 5 18.5z"/><path d="M5 18.5A1.5 1.5 0 0 0 6.5 20H19"/></symbol>
+  <symbol id="i-today" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="16" rx="2"/><path d="M9 9h6M9 12.5h6M9 16h3.5"/></symbol>
+  <symbol id="i-chev-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-chev-left" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="top-inner">
+    <h1>Add Food</h1>
+    <p class="lede">Story 1’s way in (IA 2), one tap from Today. Three ways to add food: <b>search, barcode or photo</b>. The switch stays put while the panel below it changes, and every way ends on the same Food Confirmation screen. Built only from <a href="../04-design-system/components-v1.html">Design System v1</a>.</p>
+    <ul class="facts">
+      <li><b>Stage 5 · Screens</b>, 02 of 05 · revision 2, after one critique</li>
+      <li><b>Phone frame:</b> 390 × 844 with iPhone safe areas; scroll inside the frame</li>
+      <li><b>Sample figures</b> are illustrative, never real nutrition data</li>
+    </ul>
+  </div>
+</header>
+
+<div class="bay">
+  <div class="wrap frames">
+    <figure class="frame" id="frame-a">
+      <div class="device" role="region" aria-label="Add Food screen, search, results">
+        <div class="statusbar" aria-hidden="true"><span>16:40</span><span class="island"></span><span class="batt"></span></div>
+        <div class="viewport">
+          <div class="screen">
+            <header class="screen-head">
+              <div class="screen-head-row">
+                <h2 class="screen-title voice-title"><span class="sr-only">Frame A, search results: </span>Add food</h2>
+                <a class="btn btn-text" href="#flows">Close<span class="sr-only"> and return to Today</span></a>
+              </div>
+            </header>
+
+            <div class="screen-body">
+              <div class="seg" role="tablist" aria-label="How to add food">
+                <button type="button" role="tab" id="a-tab-search" data-mode="search" aria-selected="true" aria-controls="a-panel" tabindex="0"><svg class="ico sm" aria-hidden="true"><use href="#i-search"/></svg><span class="seg-label">Search</span></button>
+                <button type="button" role="tab" id="a-tab-barcode" data-mode="barcode" aria-selected="false" tabindex="-1"><svg class="ico sm" aria-hidden="true"><use href="#i-barcode"/></svg><span class="seg-label">Barcode</span></button>
+                <button type="button" role="tab" id="a-tab-photo" data-mode="photo" aria-selected="false" tabindex="-1"><svg class="ico sm" aria-hidden="true"><use href="#i-camera"/></svg><span class="seg-label">Photo</span></button>
+              </div>
+              <div class="panel" role="tabpanel" id="a-panel" aria-labelledby="a-tab-search">
+                <div>
+                  <label class="sr-only" for="a-q">Search foods</label>
+                  <div class="field"><svg class="ico" aria-hidden="true"><use href="#i-search"/></svg><span class="spinner" role="status"><span class="sr-only">Searching&hellip;</span></span><input id="a-q" type="search" name="food-query" value="greek yogurt" placeholder="Search foods, e.g. oats…" autocomplete="off" enterkeyhint="search"></div>
+                </div>
+                <section aria-labelledby="a-res">
+                  <h3 class="overline ui-overline list-label" id="a-res" aria-live="polite">Food database · 5 results</h3>
+                  <div class="block list">
+                    <ul class="ledger">
+                    <li><a class="row row-link" href="#flows"><span class="row-name">Greek yogurt, 2%</span><span class="row-meta"><span class="row-when">per <span class="fig fig-sm">170&nbsp;<span class="unit">g</span></span></span></span><span class="fig fig-md">130&nbsp;<span class="unit">kcal</span></span><svg class="ico sm" aria-hidden="true"><use href="#i-chev-right"/></svg><span class="sr-only">Review and log</span></a></li>
+                    <li><a class="row row-link" href="#flows"><span class="row-name">Greek yogurt, 0%</span><span class="row-meta"><span class="row-when">per <span class="fig fig-sm">170&nbsp;<span class="unit">g</span></span></span></span><span class="fig fig-md">100&nbsp;<span class="unit">kcal</span></span><svg class="ico sm" aria-hidden="true"><use href="#i-chev-right"/></svg><span class="sr-only">Review and log</span></a></li>
+                    <li><a class="row row-link" href="#flows"><span class="row-name">Greek yogurt, full fat</span><span class="row-meta"><span class="row-when">per <span class="fig fig-sm">170&nbsp;<span class="unit">g</span></span></span></span><span class="fig fig-md">165&nbsp;<span class="unit">kcal</span></span><svg class="ico sm" aria-hidden="true"><use href="#i-chev-right"/></svg><span class="sr-only">Review and log</span></a></li>
+                    <li><a class="row row-link" href="#flows"><span class="row-name">Greek yogurt with honey</span><span class="row-meta"><span class="row-when">per <span class="fig fig-sm">150&nbsp;<span class="unit">g</span></span></span></span><span class="fig fig-md">150&nbsp;<span class="unit">kcal</span></span><svg class="ico sm" aria-hidden="true"><use href="#i-chev-right"/></svg><span class="sr-only">Review and log</span></a></li>
+                    <li><a class="row row-link" href="#flows"><span class="row-name">Greek yogurt &amp; granola pot</span><span class="row-meta"><span class="row-when">per <span class="fig fig-sm">1&nbsp;<span class="unit">pot</span></span></span></span><span class="fig fig-md">280&nbsp;<span class="unit">kcal</span></span><svg class="ico sm" aria-hidden="true"><use href="#i-chev-right"/></svg><span class="sr-only">Review and log</span></a></li>
+                    </ul>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="home-ind" aria-hidden="true"></div>
+      </div>
+      <figcaption class="frame-cap"><b>A · Search, results</b>Results for a typed query, keyboard dismissed. The label names the source once; each row shows its serving and kcal. Tap one to check the portion and log it.</figcaption>
+    </figure>
+
+    <figure class="frame" id="frame-b">
+      <div class="device" role="region" aria-label="Add Food screen, search, no match">
+        <div class="statusbar" aria-hidden="true"><span>16:40</span><span class="island"></span><span class="batt"></span></div>
+        <div class="viewport">
+          <div class="screen">
+            <header class="screen-head">
+              <div class="screen-head-row">
+                <h2 class="screen-title voice-title"><span class="sr-only">Frame B, search with no match: </span>Add food</h2>
+                <a class="btn btn-text" href="#flows">Close<span class="sr-only"> and return to Today</span></a>
+              </div>
+            </header>
+
+            <div class="screen-body">
+              <div class="seg" role="tablist" aria-label="How to add food">
+                <button type="button" role="tab" id="b-tab-search" data-mode="search" aria-selected="true" aria-controls="b-panel" tabindex="0"><svg class="ico sm" aria-hidden="true"><use href="#i-search"/></svg><span class="seg-label">Search</span></button>
+                <button type="button" role="tab" id="b-tab-barcode" data-mode="barcode" aria-selected="false" tabindex="-1"><svg class="ico sm" aria-hidden="true"><use href="#i-barcode"/></svg><span class="seg-label">Barcode</span></button>
+                <button type="button" role="tab" id="b-tab-photo" data-mode="photo" aria-selected="false" tabindex="-1"><svg class="ico sm" aria-hidden="true"><use href="#i-camera"/></svg><span class="seg-label">Photo</span></button>
+              </div>
+              <div class="panel" role="tabpanel" id="b-panel" aria-labelledby="b-tab-search">
+                <div>
+                  <label class="sr-only" for="b-q">Search foods</label>
+                  <div class="field"><svg class="ico" aria-hidden="true"><use href="#i-search"/></svg><span class="spinner" role="status"><span class="sr-only">Searching&hellip;</span></span><input id="b-q" type="search" name="food-query" value="grandma’s lentil soup" placeholder="Search foods, e.g. oats…" autocomplete="off" enterkeyhint="search"></div>
+                </div>
+                <div class="block message" role="status">
+                  <p class="message-title">No match for “grandma’s lentil soup”</p>
+                  <p class="message-text">Try a shorter name. Home-made dishes are rarely in the food database, so a photo estimate may be quicker.</p>
+                </div>
+              </div>
+            </div>
+            <div class="actionbar"><button type="button" class="btn btn-secondary btn-block" data-go="photo"><svg class="ico" aria-hidden="true"><use href="#i-camera"/></svg>Estimate from a photo</button></div>
+          </div>
+        </div>
+        <div class="home-ind" aria-hidden="true"></div>
+      </div>
+      <figcaption class="frame-cap"><b>B · Search, no match</b>A home-made dish isn’t in the database. The message says so and puts the next step in thumb reach: estimate it from a photo.</figcaption>
+    </figure>
+
+    <figure class="frame" id="frame-c">
+      <div class="device" role="region" aria-label="Add Food screen, barcode, scanning">
+        <div class="statusbar" aria-hidden="true"><span>16:41</span><span class="island"></span><span class="batt"></span></div>
+        <div class="viewport">
+          <div class="screen">
+            <header class="screen-head">
+              <div class="screen-head-row">
+                <h2 class="screen-title voice-title"><span class="sr-only">Frame C, barcode scanning: </span>Add food</h2>
+                <a class="btn btn-text" href="#flows">Close<span class="sr-only"> and return to Today</span></a>
+              </div>
+            </header>
+
+            <div class="screen-body fill">
+              <div class="seg" role="tablist" aria-label="How to add food">
+                <button type="button" role="tab" id="c-tab-search" data-mode="search" aria-selected="false" tabindex="-1"><svg class="ico sm" aria-hidden="true"><use href="#i-search"/></svg><span class="seg-label">Search</span></button>
+                <button type="button" role="tab" id="c-tab-barcode" data-mode="barcode" aria-selected="true" aria-controls="c-panel" tabindex="0"><svg class="ico sm" aria-hidden="true"><use href="#i-barcode"/></svg><span class="seg-label">Barcode</span></button>
+                <button type="button" role="tab" id="c-tab-photo" data-mode="photo" aria-selected="false" tabindex="-1"><svg class="ico sm" aria-hidden="true"><use href="#i-camera"/></svg><span class="seg-label">Photo</span></button>
+              </div>
+              <div class="panel" role="tabpanel" id="c-panel" aria-labelledby="c-tab-barcode">
+                <div class="viewfinder" role="img" aria-label="Camera view with a frame for the barcode"><div class="vf-guide"></div></div>
+                <p class="vf-hint">Line up the barcode inside the frame. It scans on its own.</p>
+              </div>
+            </div>
+            <div class="actionbar"><button type="button" class="btn btn-secondary btn-block">Type the barcode number</button></div>
+          </div>
+        </div>
+        <div class="home-ind" aria-hidden="true"></div>
+      </div>
+      <figcaption class="frame-cap"><b>C · Barcode, scanning</b>Scans on its own once the barcode is inside the frame. If the camera can’t read it, type the number instead.</figcaption>
+    </figure>
+
+    <figure class="frame" id="frame-d">
+      <div class="device" role="region" aria-label="Add Food screen, barcode, found">
+        <div class="statusbar" aria-hidden="true"><span>16:41</span><span class="island"></span><span class="batt"></span></div>
+        <div class="viewport">
+          <div class="screen">
+            <header class="screen-head">
+              <div class="screen-head-row">
+                <h2 class="screen-title voice-title"><span class="sr-only">Frame D, barcode found: </span>Add food</h2>
+                <a class="btn btn-text" href="#flows">Close<span class="sr-only"> and return to Today</span></a>
+              </div>
+            </header>
+
+            <div class="screen-body fill">
+              <div class="seg" role="tablist" aria-label="How to add food">
+                <button type="button" role="tab" id="d-tab-search" data-mode="search" aria-selected="false" tabindex="-1"><svg class="ico sm" aria-hidden="true"><use href="#i-search"/></svg><span class="seg-label">Search</span></button>
+                <button type="button" role="tab" id="d-tab-barcode" data-mode="barcode" aria-selected="true" aria-controls="d-panel" tabindex="0"><svg class="ico sm" aria-hidden="true"><use href="#i-barcode"/></svg><span class="seg-label">Barcode</span></button>
+                <button type="button" role="tab" id="d-tab-photo" data-mode="photo" aria-selected="false" tabindex="-1"><svg class="ico sm" aria-hidden="true"><use href="#i-camera"/></svg><span class="seg-label">Photo</span></button>
+              </div>
+              <div class="panel" role="tabpanel" id="d-panel" aria-labelledby="d-tab-barcode">
+                <div class="viewfinder" role="img" aria-label="Camera view, barcode found"><div class="vf-guide found"></div></div>
+                <p class="vf-hint" role="status"><span class="ui-body-strong">Found: Protein bar.</span> Opening it for a portion check…</p>
+              </div>
+            </div>
+            <div class="actionbar"><button type="button" class="btn btn-secondary btn-block">Type the barcode number</button></div>
+          </div>
+        </div>
+        <div class="home-ind" aria-hidden="true"></div>
+      </div>
+      <figcaption class="frame-cap"><b>D · Barcode, found</b>The frame closes and names the product for a moment, so the jump to Food Confirmation doesn’t look like a glitch.</figcaption>
+    </figure>
+
+    <figure class="frame" id="frame-e">
+      <div class="device" role="region" aria-label="Add Food screen, photo">
+        <div class="statusbar" aria-hidden="true"><span>19:38</span><span class="island"></span><span class="batt"></span></div>
+        <div class="viewport">
+          <div class="screen">
+            <header class="screen-head">
+              <div class="screen-head-row">
+                <h2 class="screen-title voice-title"><span class="sr-only">Frame E, photo: </span>Add food</h2>
+                <a class="btn btn-text" href="#flows">Close<span class="sr-only"> and return to Today</span></a>
+              </div>
+            </header>
+
+            <div class="screen-body fill">
+              <div class="seg" role="tablist" aria-label="How to add food">
+                <button type="button" role="tab" id="e-tab-search" data-mode="search" aria-selected="false" tabindex="-1"><svg class="ico sm" aria-hidden="true"><use href="#i-search"/></svg><span class="seg-label">Search</span></button>
+                <button type="button" role="tab" id="e-tab-barcode" data-mode="barcode" aria-selected="false" tabindex="-1"><svg class="ico sm" aria-hidden="true"><use href="#i-barcode"/></svg><span class="seg-label">Barcode</span></button>
+                <button type="button" role="tab" id="e-tab-photo" data-mode="photo" aria-selected="true" aria-controls="e-panel" tabindex="0"><svg class="ico sm" aria-hidden="true"><use href="#i-camera"/></svg><span class="seg-label">Photo</span></button>
+              </div>
+              <div class="panel" role="tabpanel" id="e-panel" aria-labelledby="e-tab-photo">
+                <div class="viewfinder" role="img" aria-label="Camera view with a frame for the plate"><div class="vf-guide photo"></div></div>
+                <p class="vf-hint">Fit the whole plate inside the frame. You’ll check the portion before anything is logged.</p>
+              </div>
+            </div>
+            <div class="actionbar"><button type="button" class="btn btn-primary btn-block"><span class="btn-label"><svg class="ico" aria-hidden="true"><use href="#i-camera"/></svg>Take photo</span><span class="spinner" role="status"><span class="sr-only">Reading your photo&hellip;</span></span></button></div>
+          </div>
+        </div>
+        <div class="home-ind" aria-hidden="true"></div>
+      </div>
+      <figcaption class="frame-cap"><b>E · Photo</b>The dark area stands in for the live camera. Nothing is logged from the photo: the estimate opens on Food Confirmation for a portion check.</figcaption>
+    </figure>
+  </div>
+</div>
+
+<main class="wrap doc" id="doc">
+<section class="sec" aria-labelledby="n-glance">
+  <h2 id="n-glance">At a glance</h2>
+  <p class="lead">Revision 2. Revision 1 was generated in one pass from Design System v1 and scored <b>24/40</b> in one <code>/impeccable critique</code> run; its two P1 and two P2 issues are fixed (details below). The screen also settles two questions the system audit left open: <b>A7</b>, how the mode switch is announced, and <b>A8</b>, how it fits at 320&nbsp;px.</p>
+  <div class="cols">
+    <div>
+      <h3>What the screen does</h3>
+      <ul>
+        <li>Offers three ways to add food (search, barcode, photo) behind one switch that stays in place.</li>
+        <li>Names the source once above the results and gives each one its serving and kcal, so near-duplicates can be told apart.</li>
+        <li>Never dead-ends: a search with no match points to a photo estimate, and a found barcode says what it found.</li>
+        <li>Sends every way to the same Food Confirmation screen. Nothing is logged from this screen.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Decided here</h3>
+      <ul>
+        <li><b>A7:</b> the mode switch is a set of tabs (<code>tablist</code>), because each mode swaps the whole panel.</li>
+        <li><b>A8:</b> text labels at 320&nbsp;px and up, icons only below that. Icons plus labels didn’t fit a 360&nbsp;px phone.</li>
+        <li>Camera UI joins the system: a viewfinder (V1) with a found state, a bottom action bar (S3) and a no-result message (E1).</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Still open</h3>
+      <ul>
+        <li>Camera permission, “no barcode found” and search on first open: v2 states.</li>
+        <li>Typing a barcode number: the button is here, its input state isn’t built yet.</li>
+        <li>“Retake photo” moves to Food Confirmation, where the estimate is reviewed.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="sec" aria-labelledby="n-trace">
+  <h2 id="n-trace">Why each element is where it is</h2>
+  <p class="lead">Top to bottom, in screen order and prominence. Each row cites its source. <b>Dashed badges mark judgment calls:</b> decisions without direct evidence, open to challenge.</p>
+  <ul class="legend">
+    <li><span class="st st-ev">Evidenced</span>research finding</li>
+    <li><span class="st st-ia">IA</span>information architecture</li>
+    <li><span class="st st-sys">System</span>design system or Stage 3 rule</li>
+    <li><span class="st st-jc">Judgment call</span>designer’s decision</li>
+    <li><span class="st st-new">New</span>added to the system for this screen</li>
+    <li><span class="st st-new">Rev 2</span>changed after the critique</li>
+  </ul>
+  <div class="tablewrap"><table class="ref">
+    <thead><tr><th scope="col">#</th><th scope="col">Element · prominence</th><th scope="col">Why</th><th scope="col">Source</th><th scope="col">Status</th></tr></thead>
+    <tbody>
+      <tr><td data-label="#">1</td><td data-label="Element · prominence"><b>“Add food”</b> title (<code>voice-title</code>), the screen’s only serif element, with <b>“Close”</b> (B3) on the same line.</td><td data-label="Why">Add Food is a task opened from the “Add food” button, so it closes back to where it came from. The bottom bar is left off: its main button would point at the screen you’re already on.</td><td data-label="Source">IA Flow 1 (Today → Add Food); tokens §2.3 rule 3 (one serif on logging screens); B3</td><td data-label="Status"><span class="st st-ia">IA</span><span class="st st-sys">System</span><span class="st st-jc">Task screen, no bar</span><span class="st st-new">S1 task header</span></td></tr>
+      <tr><td data-label="#">2</td><td data-label="Element · prominence"><b>Mode switch</b> (F3): Search · Barcode · Photo, first in the body. It stays in the same place in every mode, including when the keyboard is up.</td><td data-label="Why">All three methods are table stakes in every competitor. One entry point with switchable modes keeps any method one tap from the others.</td><td data-label="Source">IA 2 content; P0 #1–3 (<code>03-competitor-analysis.md</code>: Must-have in all three apps); H1. The switcher pattern is the IA’s own judgment call</td><td data-label="Status"><span class="st st-ev">Evidenced</span><span class="st st-ia">IA</span><span class="st st-jc">Switcher pattern (IA)</span></td></tr>
+      <tr><td data-label="#">3</td><td data-label="Element · prominence"><b>Search opens first</b>, with the field directly under the switch.</td><td data-label="Why">Search works for everything: packaged or not, at home or out. Barcode needs a package, and a photo needs a plate in front of you. The industry article argues photo logging is overtaking search, but reviews show photo accuracy is also the top complaint about Cal AI, so neither is promoted over the other visually.</td><td data-label="Source">IA 2 (Search listed first); Consumer Tech Wire article and Cal AI accuracy complaints (<code>01-secondary-research.md</code>)</td><td data-label="Status"><span class="st st-jc">Default mode</span></td></tr>
+      <tr><td data-label="#">4</td><td data-label="Element · prominence"><b>Search results</b> as ledger rows (C2). The label names the source once (“Food database · 5 results”); each row shows “per 170&nbsp;g” under the name and kcal on the right.</td><td data-label="Why">Database entries for the same food disagree, so a result has to show what its number refers to. With one source for every result, repeating it would hide the serving, which is what tells 2%, 0% and full fat apart. The source is still on screen, and on Food Confirmation. The row is the one Today uses, so a result looks like the entry it becomes.</td><td data-label="Source">IA 2 (“each result showing calories/serving”); database values that vary “−13% to +7%” and duplicate entries (<code>01-secondary-research.md</code>); J2 (source named); critique P1</td><td data-label="Status"><span class="st st-ev">Evidenced</span><span class="st st-ia">IA</span><span class="st st-sys">System</span><span class="st st-new">Rev 2</span></td></tr>
+      <tr><td data-label="#">5</td><td data-label="Element · prominence"><b>A result opens Food Confirmation</b>, not a one-tap log. The chevron and the accessible name (“Review and log”) say so.</td><td data-label="Why">Serving-size entry is its own friction point, and a portion taken from a label often isn’t what people eat. The IA routes every method through one portion check. This costs one tap against the Cronometer “add and done” request; the trade-off is recorded, not hidden.</td><td data-label="Source">IA Flow 1; Cronometer serving-size thread and “please make add food easier” thread (<code>01-secondary-research.md</code>); H2</td><td data-label="Status"><span class="st st-ev">Evidenced</span><span class="st st-ia">IA</span><span class="st st-jc">Tension with H1</span></td></tr>
+      <tr><td data-label="#">5a</td><td data-label="Element · prominence"><b>No match</b> (E1 message): “No match for “grandma’s lentil soup”” in plain words, “Try a shorter name”, and <b>“Estimate from a photo”</b> (B2) in the action bar.</td><td data-label="Why">A search that finds nothing must not end the flow. Home-made dishes are the likeliest miss for the home-cook segment, and a photo estimate is the one method that covers them; the review step on Food Confirmation still applies. No status hue and no illustration: it’s information, like J1.</td><td data-label="Source">IA structural rule 2, applied to logging (“never dead-ends”); Segment 2 home cooks; P0 #3; J1 tone; critique P1</td><td data-label="Status"><span class="st st-ia">IA</span><span class="st st-ev">Evidenced</span><span class="st st-jc">Photo as the route</span><span class="st st-new">Rev 2 · E1</span></td></tr>
+      <tr><td data-label="#">6</td><td data-label="Element · prominence"><b>Barcode viewfinder</b> (V1) with a wide frame, and the instruction below it: “Line up the barcode inside the frame. It scans on its own.”</td><td data-label="Why">No capture button: a match opens Food Confirmation straight away, because slow scan-to-diary handoffs are a named complaint. The words sit on the ground, never over the moving picture.</td><td data-label="Source">IA 2 (“camera viewfinder framed for a barcode”); Cronometer barcode threads: delays before an item reaches the diary (<code>01-secondary-research.md</code>); hybrid §7</td><td data-label="Status"><span class="st st-ev">Evidenced</span><span class="st st-ia">IA</span><span class="st st-new">V1</span></td></tr>
+      <tr><td data-label="#">6a</td><td data-label="Element · prominence"><b>Barcode found:</b> the corners join into a closed frame, and the hint becomes a status message: “Found: Protein bar. Opening it for a portion check…”</td><td data-label="Why">A screen that leaves on its own needs a visible lock-on moment, or the jump reads like a glitch. Naming the product lets you catch a wrong match, the named scanner complaint, before you even reach Food Confirmation.</td><td data-label="Source">Barcode “pulls up the wrong food” (MyFitnessPal, Lose It! reviews); H2; heuristic 1; critique P2</td><td data-label="Status"><span class="st st-ev">Evidenced</span><span class="st st-new">Rev 2 · V1 found</span></td></tr>
+      <tr><td data-label="#">7</td><td data-label="Element · prominence"><b>“Type the barcode number”</b> (B2) in the bottom action bar.</td><td data-label="Why">Scanners fail in reproducible ways: the wrong product, orientation, or a jump to a generic search. Typing the number keeps you on the exact product instead of starting a name search. It is secondary, because scanning should usually work.</td><td data-label="Source">Barcode failure modes (MyFitnessPal and Lose It! reviews; Cronometer threads); H2</td><td data-label="Status"><span class="st st-ev">Evidenced</span><span class="st st-jc">Fallback action</span><span class="st st-new">S3</span></td></tr>
+      <tr><td data-label="#">8</td><td data-label="Element · prominence"><b>Photo viewfinder</b> with a square frame: “Fit the whole plate inside the frame. You’ll check the portion before anything is logged.”</td><td data-label="Why">Portion is what photo estimates get wrong most. The frame asks for the whole plate, and the second sentence sets up the review step before the photo is taken, so the estimate isn’t a surprise.</td><td data-label="Source">IA 2 (“review before accepting”); Cal AI accuracy complaints (misjudged portions); J2; Stage 3 guardrail: figures are “checkable, not promised as accurate”</td><td data-label="Status"><span class="st st-ev">Evidenced</span><span class="st st-sys">J2</span><span class="st st-jc">Copy</span></td></tr>
+      <tr><td data-label="#">9</td><td data-label="Element · prominence"><b>“Take photo”</b> (B1) in the action bar, full width and labelled.</td><td data-label="Why">The primary action sits in thumb reach. It uses the same button as “Log it” rather than a round camera shutter: shapes that act are rounded rectangles in this system, and the label says what happens.</td><td data-label="Source">Segment 1 “often one-handed”; B1; tokens §4 “shape follows role”</td><td data-label="Status"><span class="st st-ev">Evidenced</span><span class="st st-sys">System</span><span class="st st-jc">No round shutter</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Left off the screen, on purpose</h3>
+  <div class="tablewrap"><table class="ref">
+    <thead><tr><th scope="col">Not shown</th><th scope="col">Why</th><th scope="col">Status</th></tr></thead>
+    <tbody>
+      <tr><td data-label="Not shown">Recent or frequent foods</td><td data-label="Why">Quick-add is excluded by the research synthesis (<code>04-conclusions.md</code> §2). It would also fill the empty search, which is a v2 state.</td><td data-label="Status"><span class="st st-ev">Evidenced</span></td></tr>
+      <tr><td data-label="Not shown">One-tap “+” on a result</td><td data-label="Why">The IA sends every method through the portion check (Flow 1). Recorded as a tension with the Cronometer “add and done” request.</td><td data-label="Status"><span class="st st-ia">IA</span></td></tr>
+      <tr><td data-label="Not shown">Confidence score or “95% accurate” copy</td><td data-label="Why">J2 rejects precision claims the product can’t back; Stage 3’s guardrail says figures are checkable, not promised.</td><td data-label="Status"><span class="st st-sys">System</span></td></tr>
+      <tr><td data-label="Not shown">Premium lock on Barcode or Photo</td><td data-label="Why">Gating a logging method is the loudest complaint in the sample (H2). All three modes look and work the same.</td><td data-label="Status"><span class="st st-ev">Evidenced</span></td></tr>
+      <tr><td data-label="Not shown">Pick a photo from the library, flash, zoom</td><td data-label="Why">Not in IA 2. Camera controls can follow on a device test.</td><td data-label="Status"><span class="st st-jc">Judgment call · scope</span></td></tr>
+      <tr><td data-label="Not shown">Bottom navigation bar</td><td data-label="Why">Add Food is a task with one way out (Close, or the system back gesture). Today and Recipes are one tap away again after closing.</td><td data-label="Status"><span class="st st-jc">Judgment call</span></td></tr>
+      <tr><td data-label="Not shown">Per-result macros</td><td data-label="Why">IA 2 asks for kcal per serving; the full breakdown lives on Food Confirmation.</td><td data-label="Status"><span class="st st-ia">IA</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="sec" aria-labelledby="n-a7a8">
+  <h2 id="n-a7a8">A7 and A8, resolved in context</h2>
+  <p class="lead">The Design System v1 audit left both open until a real screen could decide them. <b>Both are now system changes</b>, recorded in <code>components-v1.html</code> F3, <code>tokens-v1.md</code> and <code>audit-v1.md</code> §6.</p>
+  <div class="cols">
+    <div>
+      <h3>A7 · Tabs, not toggle buttons</h3>
+      <ul>
+        <li><b>What the switch does:</b> each mode replaces the whole panel below it: a results list or a camera. On Recipes, the two filter modes swap their filter controls. Both are tabs.</li>
+        <li><b>Markup:</b> <code>role="tablist"</code> named “How to add food”; each segment a <code>tab</code> with <code>aria-selected</code> and a roving <code>tabindex</code>; the panel a <code>tabpanel</code> labelled by its tab.</li>
+        <li><b>Keys:</b> arrows move focus, Enter or Space selects. Selection is manual because Barcode and Photo start the camera, which shouldn’t happen just by arrowing past.</li>
+        <li><b>Rejected:</b> <code>aria-pressed</code> (announces three separate toggles) and <code>radiogroup</code> (implies a form value, not a panel change).</li>
+      </ul>
+    </div>
+    <div>
+      <h3>A8 · Labels at 320 and up, icons below</h3>
+      <ul>
+        <li><b>Measured</b> in this screen, with Inter loaded: icon and label need about 104&nbsp;px per segment, which doesn’t fit a 360&nbsp;px phone (101&nbsp;px available). Labels alone fit at 320&nbsp;px, with 7.8&nbsp;px to spare in the tightest case, “Barcode” selected at 600.</li>
+        <li><b>Under <code>bp-screen-narrow</code></b> (320) the segments go icon-only, the word stays as the accessible name, and the gap closes: 49&nbsp;px wide at 195&nbsp;px, which is a 390&nbsp;px phone at 200% zoom.</li>
+        <li><b>No new breakpoint</b> and no new raw value: the rule reuses the one S2 already uses.</li>
+        <li><b>Found on the way:</b> the S1 body column grew to fit the switch, so a 320&nbsp;px screen would have scrolled sideways. The column is now <code>minmax(0,1fr)</code>, the same fix as audit P2.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="sec" aria-labelledby="flows">
+  <h2 id="flows">Where each control leads</h2>
+  <p class="lead">In this prototype every control links here until the screen it opens exists.</p>
+  <div class="tablewrap"><table class="ref">
+    <thead><tr><th scope="col">Control</th><th scope="col">Opens</th><th scope="col">Flow</th></tr></thead>
+    <tbody>
+      <tr><td data-label="Control">Close</td><td data-label="Opens">Back to where Add Food was opened from (Today or Recipes)</td><td data-label="Flow">—</td></tr>
+      <tr><td data-label="Control">Search · Barcode · Photo</td><td data-label="Opens">The matching panel on this screen</td><td data-label="Flow">Flow 1</td></tr>
+      <tr><td data-label="Control">A search result</td><td data-label="Opens">Food Confirmation &amp; Log (IA 3), source “Food database”</td><td data-label="Flow">Flow 1</td></tr>
+      <tr><td data-label="Control">Estimate from a photo (no match)</td><td data-label="Opens">The Photo panel on this screen</td><td data-label="Flow">Flow 1 <span class="st st-new">Rev 2</span></td></tr>
+      <tr><td data-label="Control">A recognised barcode</td><td data-label="Opens">A short “Found: …” moment, then Food Confirmation &amp; Log (IA 3), source “Barcode”, with no extra tap</td><td data-label="Flow">Flow 1</td></tr>
+      <tr><td data-label="Control">Type the barcode number</td><td data-label="Opens">A number field in the Barcode panel, then Food Confirmation (state not built yet)</td><td data-label="Flow">Flow 1</td></tr>
+      <tr><td data-label="Control">Take photo</td><td data-label="Opens">Food Confirmation &amp; Log (IA 3), source “Photo estimate”, with the “check the portion” helper line</td><td data-label="Flow">Flow 1 (review, not auto-logged)</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="sec" aria-labelledby="n-refs">
+  <h2 id="n-refs">What the reference screens show</h2>
+  <p class="lead">The logging-related images in <code>03-branding/refs/</code> were viewed again for this screen. <b>None of the 12 shows a search results list, a viewfinder or a capture step</b>, so the layout follows the IA, the research and platform conventions; the references only show where adding food is entered.</p>
+  <ul class="refs">
+    <li><b>mfp_dash · MyFitnessPal home.</b> “Search for a food” is a pill above the tab bar with a barcode icon inside it, so two methods share one field. <span class="took">Taken: the idea that methods live together behind one entry. Left: a barcode hidden as an icon in a search field; here each method has a named tab.</span></li>
+    <li><b>mfp_log · MyFitnessPal diary.</b> A blue all-caps “ADD FOOD” under every meal, and a black “Food logged!” toast. <span class="took">Left: per-meal entry points (IA 1 has one list). The toast is a v2 “undo” state noted on Today.</span></li>
+    <li><b>mfp_nutr · MyFitnessPal recipe.</b> A full-width “LOG TO DIARY” button pinned to the bottom. <span class="took">Taken: the pinned full-width action (S3). Left: all caps and the saturated blue.</span></li>
+    <li><b>calai1 · Cal AI, macro2 · MacroFactor.</b> A round black “+” in the corner or the middle of the tab bar. <span class="took">Left: an icon-only add button; Today already uses a labelled one, and this screen is what it opens.</span></li>
+    <li><b>lifesum_and · Lifesum preferences.</b> Oat ground, calm paper, tracked section labels. <span class="took">Taken, via the system: the ground and the list label above results.</span></li>
+    <li><b>yazio1, lifesum_goal, and the rest.</b> A mascot with tips; onboarding choices. <span class="took">Nothing for this screen.</span></li>
+  </ul>
+</section>
+
+<section class="sec" aria-labelledby="n-heur">
+  <h2 id="n-heur">Heuristics, applied while building</h2>
+  <p class="lead">Nielsen’s ten heuristics served as constraints during generation; the single <code>/impeccable critique</code> run tested them afterwards.</p>
+  <div class="tablewrap"><table class="ref">
+    <thead><tr><th scope="col">Heuristic</th><th scope="col">Applied as</th></tr></thead>
+    <tbody>
+      <tr><td data-label="Heuristic">1 · Visibility of system status</td><td data-label="Applied as">The current mode is marked by fill, outline, weight and <code>aria-selected</code>. The result count sits above the list and is announced when it changes. Barcode says it scans on its own, then shows “Found: …” before it moves on.</td></tr>
+      <tr><td data-label="Heuristic">2 · Match with the real world</td><td data-label="Applied as">Plain words: “per 170&nbsp;g”, “Take photo”, “the whole plate”, “Type the barcode number”. Servings in the units on the package.</td></tr>
+      <tr><td data-label="Heuristic">3 · User control and freedom</td><td data-label="Applied as">Close is always on screen, and the system back gesture does the same. Nothing is logged here, so choosing the wrong result costs one step back from Food Confirmation.</td></tr>
+      <tr><td data-label="Heuristic">4 · Consistency and standards</td><td data-label="Applied as">A result is the same row as a Today entry. “Take photo” is the same button as “Log it”. The switch uses the same “chosen” look as tabs and chips.</td></tr>
+      <tr><td data-label="Heuristic">5 · Error prevention</td><td data-label="Applied as">Serving and kcal on every result, so near-duplicates don’t get mixed up. A wide frame for barcodes, a square for plates. The photo step promises a portion check.</td></tr>
+      <tr><td data-label="Heuristic">6 · Recognition over recall</td><td data-label="Applied as">Modes are named, not icons, wherever the words fit. The placeholder shows an example query. Source and serving are printed on each result.</td></tr>
+      <tr><td data-label="Heuristic">7 · Flexibility and efficiency</td><td data-label="Applied as">Any method is one tap from the others. Barcode needs no capture tap. Recent foods stay out of scope (<code>04-conclusions.md</code> §2).</td></tr>
+      <tr><td data-label="Heuristic">8 · Aesthetic and minimalist design</td><td data-label="Applied as">One serif title, one switch, one panel. No promo, no lock icons, no confidence badges.</td></tr>
+      <tr><td data-label="Heuristic">9 · Recognize and recover from errors</td><td data-label="Applied as">A search with no match says so and offers a photo estimate. Typing the barcode number is a recovery route for a failed scan; its state, and “no barcode found”, come with v2 error states.</td></tr>
+      <tr><td data-label="Heuristic">10 · Help and documentation</td><td data-label="Applied as">Each camera mode has one sentence of instruction next to the camera, not a tutorial.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="sec" aria-labelledby="n-rev">
+  <h2 id="n-rev">What the critique changed</h2>
+  <p class="lead">One <code>/impeccable critique</code> run, with two isolated assessments: a design review and the automated detector. Revision 1 scored <b>24/40</b> (Acceptable), with 0 P0 and 2 P1 issues. <b>Only the P1 and P2 issues were fixed</b>, system first, then this screen was rebuilt; there was no second round.</p>
+  <div class="tablewrap"><table class="ref">
+    <thead><tr><th scope="col">Finding</th><th scope="col">Revision 1</th><th scope="col">Revision 2</th><th scope="col">Recorded in</th></tr></thead>
+    <tbody>
+      <tr><td data-label="Finding">P1 · Dead end</td><td data-label="Revision 1">Search showed only the happy path. A query with no match left an empty screen and no way forward (heuristic 9 scored 1).</td><td data-label="Revision 2">Frame B: “No match for …” in plain words, a next step (“Try a shorter name”), and “Estimate from a photo” in the action bar, since home-made dishes are the likeliest miss.</td><td data-label="Recorded in">E1 message; S3</td></tr>
+      <tr><td data-label="Finding">P1 · What tells results apart</td><td data-label="Revision 1">“Food database” with its icon led all five rows in Ink at 500, while the serving that separates 2%, 0% and full fat sat after it.</td><td data-label="Revision 2">The list label names the source once (“Food database · 5 results”); the meta line carries only the serving. The source-first rule still applies wherever sources differ, as on Today.</td><td data-label="Recorded in">C2 search result; J2 unchanged</td></tr>
+      <tr><td data-label="Finding">P2 · Silent auto-scan</td><td data-label="Revision 1">Barcode said “It scans on its own”, then jumped to Food Confirmation with no sign that anything was found.</td><td data-label="Revision 2">Frame D: the corners join into a closed frame and the hint names the product (“Found: Protein bar.”) as a status message, just before the handoff.</td><td data-label="Recorded in">V1 found state</td></tr>
+      <tr><td data-label="Finding">P2 · Keyboard and zoom</td><td data-label="Revision 1">Unselected tabs couldn’t be reached by keyboard in the prototype; at 195&nbsp;px the barcode guide’s corners met; updated results weren’t announced.</td><td data-label="Revision 2">Arrow keys, Home and End move between tabs, and choosing one shows that mode’s frame. Corner length is capped at a quarter of the guide. The result count is a polite live region.</td><td data-label="Recorded in">Page script (A7 behaviour); V1 guide; C2 label</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Detector findings</h3>
+  <p class="note">16 findings, <b>none fixed</b>. 14 are false positives: padding and font sizes the detector couldn’t resolve through <code>var()</code> tokens, and presentation chrome that isn’t part of the screen. The other 2 are deliberate: the Paper page background (a Stage 3 brand color) and the J1 hatch in the shared system CSS, which this screen doesn’t use. 11 of the 16 also appear on 01 Today. The in-browser overlay couldn’t run (the preview blocked the local script).</p>
+
+  <h3>Left standing, on purpose</h3>
+  <div class="tablewrap"><table class="ref">
+    <thead><tr><th scope="col">Item</th><th scope="col">Severity</th><th scope="col">Why it stays</th></tr></thead>
+    <tbody>
+      <tr><td data-label="Item">Close in the top-right corner</td><td data-label="Severity">P3</td><td data-label="Why it stays">A documented judgment call. The system back gesture closes the screen one-handed; a swipe-down sheet is a native-build detail.</td></tr>
+      <tr><td data-label="Item">Search on first open</td><td data-label="Severity">Minor</td><td data-label="Why it stays">With the keyboard up, the placeholder carries the example (“e.g. oats…”). An empty-state design comes with v2 states; the dead end the critique ranked P1 was the no-match case.</td></tr>
+      <tr><td data-label="Item">Which duplicate entry to trust (“Verified”, “Brand label”)</td><td data-label="Severity">Open question</td><td data-label="Why it stays">Needs a data source the product hasn’t chosen (<code>PRODUCT.md</code>, “still undecided”). Adding it would be an IA change.</td></tr>
+      <tr><td data-label="Item">Recent foods; macros on each result</td><td data-label="Severity">Open question</td><td data-label="Why it stays">Both were challenged. Recents are excluded by <code>04-conclusions.md</code> §2, and IA 2 lists kcal per serving only. Either would be a deliberate scope change, not a fix.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="sec" aria-labelledby="n-img">
+  <h2 id="n-img">Images: none on this screen, on purpose</h2>
+  <p class="lead">Image placeholders go only where the IA or the system calls for a picture. <b>Add Food has no image slot.</b></p>
+  <div class="cols">
+    <ul>
+      <li><b>The dark camera area is not an image placeholder.</b> It stands in for live video, which no generated image should imitate. Hybrid §7 allows logging screens “only the camera viewfinder”.</li>
+      <li><b>Search results have no thumbnails.</b> C2 carries none, and results must look like the Today entries they become.</li>
+    </ul>
+    <ul>
+      <li><b>Image slots, elsewhere:</b> the recipe thumbnail on Food Confirmation (Flow 3 only), recipe card images and the Recipe Detail hero — all filled with real dish photographs at the Stage 7 Krea pass. This screen still has none: its camera area is live video, not an image.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="sec" aria-labelledby="n-sys">
+  <h2 id="n-sys">System changes and checks</h2>
+  <p class="lead">Nothing on this screen is styled locally. Whatever it needed went into <code>tokens-v1.md</code> and <code>components-v1.html</code> first; the build copies the system CSS in verbatim, and 01 Today was rebuilt from the same copy.</p>
+  <div class="cols">
+    <div>
+      <h3>Added to the system</h3>
+      <ul>
+        <li><b>F3:</b> tabs (A7); text labels, icon-only under <code>bp-screen-narrow</code> (A8).</li>
+        <li><b>S1:</b> task header with Close; <code>.panel</code> for tab panels; <code>.fill</code> for a camera panel; the body clears the bottom safe area when nothing follows it; body column <code>minmax(0,1fr)</code>.</li>
+        <li><b>S3 action bar</b>, ready for “Log it” and “Log this”.</li>
+        <li><b>V1 viewfinder</b> with <code>surface-viewfinder</code> (Ink), <code>line-guide</code> (Paper), <code>stroke-guide</code>, <code>size-guide-corner</code>, <code>size-viewfinder-min</code>, <code>ratio-guide-barcode</code> and <code>ratio-guide-photo</code>.</li>
+        <li><b>B2 and B3</b> move from “anticipated” to real uses. Buttons centre a wrapped label.</li>
+        <li><b>After the critique:</b> E1 message; V1 found state and corners capped at a quarter of the guide; C2 search results name the source once in the list label, which is a polite live region.</li>
+        <li><b>Stage 3 unchanged:</b> Ink is an existing palette color, used as a surface only for the camera, which hybrid §7 already allows.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Checks run on this file</h3>
+      <ul>
+<li><b>Verbatim system CSS</b>, checked at build. Component CSS has no raw px, hex, size or weight values except the two documented <code>@container</code> breakpoints and the standard <code>.sr-only</code> utility.</li>
+        <li><b>Rendered:</b> 0 colors outside the palette; 10 of 10 figures tabular; one visible serif element per frame (“Add food”) across all five frames.</li>
+        <li><b>Mode switch, measured with each tab selected:</b> labels at 390 / 360 / 320&nbsp;px (segments 111 / 101 / 88&nbsp;px wide, tightest spare space 7.8&nbsp;px for “Barcode” at 600); icon-only at 300 / 240 / 195&nbsp;px (84 / 64 / 49&nbsp;px wide). Hit height 48 at every width.</li>
+        <li><b>Keyboard (after the critique):</b> from Search, Right Arrow moves focus to Barcode and End to Photo; tab stops update to −1 / −1 / 0.</li>
+        <li><b>Touch targets:</b> Close 68 × 48; search field 48 tall; results are full-width rows; action buttons full width and 52 tall (60 at 195&nbsp;px, where “Type the barcode number” and “Estimate from a photo” wrap to two centred lines).</li>
+        <li><b>Reflow:</b> no horizontal scrolling at 390, 320 or 195&nbsp;px. Close hangs 12&nbsp;px into the 20&nbsp;px gutter by design, so its label lines up with the edge of the content.</li>
+        <li><b>Viewfinder:</b> at a 310&nbsp;px-wide camera area the barcode guide is 246 × 123 and the photo guide 246 × 246; at 195&nbsp;px, 91 × 46 and 91 × 91, with each corner mark capped at a quarter of its side, so the marks stay apart. The found state draws the closing outline; the area never drops below 320&nbsp;px tall.</li>
+        <li><b>Search results:</b> 0 repeated source labels in rows; the list label reads “Food database · 5 results” with <code>aria-live="polite"</code>.</li>
+        <li><b>01 Today rebuilt</b> from the same system copy. Its markup is unchanged; the diff is system CSS only.</li>
+        <li><b>Not verified:</b> a full screen-reader walkthrough, and the guide over real camera video.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</main>
+<script>
+/* Prototype behaviour for F3 (A7): arrow keys, Home and End move focus between tabs (roving tabindex).
+   Choosing a tab, or an action that switches mode, scrolls to the frame that shows that mode. */
+(() => {
+  const first = {search: "frame-a", barcode: "frame-c", photo: "frame-e"};
+  const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const show = mode => {
+    const f = document.getElementById(first[mode]); if (!f) return;
+    f.scrollIntoView({block: "center", behavior: calm ? "auto" : "smooth"});
+    const t = f.querySelector('[role="tab"][aria-selected="true"]'); if (t) t.focus({preventScroll: true});
+  };
+  document.querySelectorAll('[role="tablist"]').forEach(list => {
+    const tabs = [...list.querySelectorAll('[role="tab"]')];
+    list.addEventListener("keydown", e => {
+      const i = tabs.indexOf(document.activeElement); if (i < 0) return;
+      const n = {ArrowRight: (i + 1) % tabs.length, ArrowLeft: (i + tabs.length - 1) % tabs.length, Home: 0, End: tabs.length - 1}[e.key];
+      if (n === undefined) return;
+      e.preventDefault(); tabs.forEach(t => t.tabIndex = -1); tabs[n].tabIndex = 0; tabs[n].focus();
+    });
+    tabs.forEach(t => t.addEventListener("click", () => { if (t.getAttribute("aria-selected") !== "true") show(t.dataset.mode); }));
+  });
+  document.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => show(b.dataset.go)));
+})();
+</script>
+</body>
+</html>
