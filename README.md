@@ -4,9 +4,9 @@ A calorie tracker that also finds recipes that suit you, then logs them just as 
 
 This is a UX/UI design test task, made with an AI-native workflow: research, information architecture, branding, a design system, and five final screens with a clickable prototype.
 
-## Video walkthrough
+## Video presentation
 
-**▶ [Watch the walkthrough on Google Drive](https://drive.google.com/file/d/1tSHXqkwef8sRvdjh2sL3ZbbWhpBurUmL/view?usp=sharing)**
+**▶ [Watch the presentation on Google Drive](https://drive.google.com/file/d/1tSHXqkwef8sRvdjh2sL3ZbbWhpBurUmL/view?usp=sharing)**
 
 A short video tour of the project: the research behind it, the branding decision, the design system, and both user stories clicked through the prototype from start to finish. The written version of the same story is the [design rationale](docs/design-rationale.md).
 
